@@ -1,0 +1,15 @@
+{
+  "name": "ofacasaurus",
+  "version": "1.0.0",
+  "description": "Archer/C4ADS Ofacasaurus OFAC Interface",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Archer",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2"
+  }
+}
