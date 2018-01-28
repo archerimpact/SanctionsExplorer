@@ -7,13 +7,26 @@ with open('sdn.csv', 'r') as csvfile:
 		log.append(row)
 
 
+# print(type(log))
+
+
+col = []
+for i in log:
+	if(len(i)>5):
+		if(i[5] != '-0- '):
+			col.append(i[5])
+			# print(i)
+
+print(set(col))
+
+
 
 comments = [i[11] if len(i) == 12 and i[11] != '-0- ' else None for i in log]
 comments = [c for c in comments if c is not None]
 
 keywords = {'DOB', 'a.k.a.', 'POB', 'Passport', 'SSN', 'NIT', 'Cedula No.', 'D.N.I', 'Linked To:', 'R.F.C.', 'nationality', 'National ID No.', 'Additional Sanctions Information -', 'citizen', 'UK Company Number', 'Website:', 'Website', 'Aircraft Construction', 'Vessel Registration Identification', 'Gender', 'SWIFT/BIC', 'Tax ID No.', 'Email Address', 'Telephone:', 'Phone No.', 'Registration ID', 'Company Number'}
 semicomments = [c.split('; ') for c in comments]
-print(semicomments)
+# print(semicomments)
 
 attrs = []
 
@@ -21,6 +34,14 @@ for s in semicomments:
 	words = s[0].split(' ')
 	if words[0] not in [key.split(' ')[0] for key in keywords]:
 		attrs.append(' '.join(words))
+
+
+
+
+
+	
+
+
 
 
 
