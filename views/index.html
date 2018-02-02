@@ -3,9 +3,11 @@
 	<!-- Bootstrap Files -->
 	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
 	<link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
+	<link rel="stylesheet" href="../static/css/style.css"></link>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-	<link rel="stylesheet" href="../static/css/style.css"></link>
+	<script src="../static/js/doT.min.js" charset="utf-8"></script>
 	<script src="../static/js/index.js"></script>
 </head>
 
@@ -52,7 +54,7 @@
 
 				<br>
 				<h3>Advanced Search</h3> <!--<span class="badge badge-primary badge-pill">Beta</span>--></h3>
-				<form>
+				<form class="search-form">
 					<div class="form-row">
 						<div class="form-group col-md-7">
 							<label for="name-input">Name</label>
@@ -70,51 +72,23 @@
 					</div><!-- /form-row for name/designation type -->
 
 					<hr>
-
-					<div class="form-row">
-						<div class="form-group col-md-5">
-							<select class="custom-select form-control form-control-sm">
-								<option selected="">Nationality</option>
-								<option value="1">Type</option>
-								<option value="2">Two</option>
-								<option value="3">Three</option>
-							</select>
-						</div>
-						<div class="form-group col-md-7">
-							<input type="text" class="form-control form-control-sm" id="exampleInputEmail1">
-						</div>
+<!--
+					<div class="input-group mb-3">
+					  <div class="input-group-prepend">
+					    <button class="btn btn-sm btn-outline-dark dropdown-toggle search-select-dropdown" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select</button>
+					    <div class="dropdown-menu">
+					      <a class="dropdown-item">Action</a>
+					      <a class="dropdown-item">Another action</a>
+					      <a class="dropdown-item">Something else here</a>
+					    </div>
+					  </div>
+					  <input type="text" class="form-control form-control-sm" aria-label="Text input with dropdown button">
 					</div>
-
-					<div class="form-row">
-						<div class="form-group col-md-5">
-							<select class="custom-select form-control form-control-sm">
-								<option selected="">Passport Number</option>
-								<option value="1">Type</option>
-								<option value="2">Two</option>
-								<option value="3">Three</option>
-							</select>
-						</div>
-						<div class="form-group col-md-7">
-							<input type="text" class="form-control form-control-sm" id="exampleInputEmail1">
-						</div>
-					</div>
-
-					<div class="form-row">
-						<div class="form-group col-md-5">
-							<select class="custom-select form-control form-control-sm">
-								<option selected="">Select field</option>
-								<option value="1">Type</option>
-								<option value="2">Two</option>
-								<option value="3">Three</option>
-							</select>
-						</div>
-						<div class="form-group col-md-7">
-							<input type="text" class="form-control form-control-sm" id="exampleInputEmail1">
-						</div>
-					</div>
+-->
 					<div class="form-group">
-						<button type="submit" class="btn btn-primary btn-sm float-right">Search</button>
+						<button type="submit" class="btn btn-primary btn-sm float-right search-button">Search</button>
 					</div>
+
 					<br><br><br>
 				</form>
 
@@ -122,95 +96,47 @@
 
 			<div class="col-md-8 page-col right-col">
 				<h3 class="text-center">Results</h3>
-				<p class="text-center">Table View | <u>Card View</u></p>
 				<br>
-				<div class="card">
-					<div class="card-body">
-						<h5>BIN LADEN, Osama</h5>
-						<hr>
-						<p class="card-text">Location: Pakistan</p>
-						<p class="card-text">DOB: 10 Mar 1957</p>
-						<p class="card-text">POB: Saudi Arabia</p>
-					</div>
-				</div>
-				<div class="card">
-					<div class="card-body">
-						<h5>TRUMP, Donald</h5>
-						<hr>
-						<p class="card-text">Location: 'Murica</p>
-						<p class="card-text">Date of Birth: 10 Aug 1950</p>
-						<p class="card-text">Place of Birth: 'Murica</p>
-						<p class="card-text">Citizenship: 'Murica</p>
-						<p class="card-text">Passport Number: Don't need one</p>
-					</div>
-				</div>
-				<div class="card">
-					<div class="card-body">
-						<h5>MA, Alice</h5>
-						<hr>
-						<p class="card-text">Location: Boalt</p>
-						<p class="card-text">Date of Birth: 10 Sept 1950</p>
-						<p class="card-text">Citizenship: Northside</p>
-						<p class="card-text">Passport Number: 6A40D99662</p>
-					</div>
-				</div>
-				<div class="card">
-					<div class="card-body">
-						<h5>SMITH, John</h5>
-						<hr>
-						<p class="card-text">Location: Middle of Nowhere</p>
-						<p class="card-text">DOB: 19 Jul 1950</p>
-						<p class="card-text">Citizenship: American</p>
-					</div>
-				</div>
-				<div class="card">
-					<div class="card-body">
-						<h5>BIN LADEN, Osama</h5>
-						<hr>
-						<p class="card-text">Location: Pakistan</p>
-						<p class="card-text">DOB: 10 Mar 1957</p>
-						<p class="card-text">POB: Saudi Arabia</p>
-					</div>
-				</div>
-				<div class="card">
-					<div class="card-body">
-						<h5>TRUMP, Donald</h5>
-						<hr>
-						<p class="card-text">Location: 'Murica</p>
-						<p class="card-text">DOB: 10 Aug 1950</p>
-						<p class="card-text">POB: 'Murica</p>
-						<p class="card-text">Citizenship: 'Murica</p>
-					</div>
-				</div>
-				<div class="card">
-					<div class="card-body">
-						<h5>SMITH, John</h5>
-						<hr>
-						<p class="card-text">Location: Middle of Nowhere</p>
-						<p class="card-text">DOB: 19 Jul 1950</p>
-						<p class="card-text">Citizenship: American</p>
-					</div>
-				</div>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-				<p>Hello</p>
-			</div>
+			</div><!-- /col-md-8 -->
 
 		</div><!-- /row -->
 	</div><!-- /container-fluid -->
+
+
+
+	<script id="card-template" type="text/template">
+		<div class="card">
+			<div class="card-header">
+				<a data-toggle="collapse" href="#card-body-{{=it.id}}">
+					{{=it.name}}
+				</a>
+			</div>
+			<div class="collapse" id="card-body-{{=it.id}}">
+				<div class="card-body">
+					<p class="card-text">Location: Pakistan</p>
+					<p class="card-text">DOB: 10 Mar 1957</p>
+					<p class="card-text">POB: Saudi Arabia</p>
+				</div>
+			</div>
+		</div>
+	</script>
+
+	<script id="search-row-template" type="text/template">
+		<div id="search-row-{{=it.id}}" class="search-row form-row">
+			<div class="form-group col-md-5">
+				<select id="search-row-{{=it.id}}-select" class="search-row-select custom-select form-control form-control-sm">
+					<option selected="">Select field</option>
+					{{~it.fields :value:index}} <!-- for loop over the 'fields' key -->
+						<option value="{{=index}}">{{=value}}</option>
+					{{~}}
+				</select>
+			</div>
+			<div class="form-group col-md-7">
+				<input type="text" id="search-row-{{=it.id}}-input" class="form-control form-control-sm">
+			</div>
+		</div>
+	</script>
+
 </body>
 
 </html>

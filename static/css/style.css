@@ -1,5 +1,12 @@
 .card {
-	margin-bottom: 25px;
+	margin-bottom: 0px;
+	border-left: 0px;
+	border-right: 0px;
+	border-top: 0px;
+}
+
+.card-header {
+	border-bottom: 0px;
 }
 
 .page-col {
@@ -25,4 +32,12 @@
 
 .filter-col {
 	background-color: #eeeeee;
+}
+
+.card-header {
+	background-color: #ffffff;
+}
+
+.search-select-dropdown {
+	/*width: 200%;*/
 }
