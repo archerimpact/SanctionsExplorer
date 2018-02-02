@@ -193,7 +193,7 @@ let loadData = () => {
         });
 }
 
-loadData();
+// loadData();
 
 
 function shipToDB(json_data) {
