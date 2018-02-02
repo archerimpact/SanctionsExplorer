@@ -1,0 +1,216 @@
+<html>
+<head>
+	<!-- Bootstrap Files -->
+	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
+	<link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<link rel="stylesheet" href="../static/css/style.css"></link>
+	<script src="../static/js/index.js"></script>
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container-fluid">
+		  <a class="navbar-brand" href="#">OFACasaurus</a>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		    <span class="navbar-toggler-icon"></span>
+		  </button>
+
+		  <div class="collapse navbar-collapse" id="navbarSupportedContent navbarColor02">
+		    <ul class="navbar-nav mr-auto">
+		      <li class="nav-item active">
+		        <a class="nav-link" href="#">Search <span class="sr-only">(current)</span></a>
+		      </li>
+		      <li class="nav-item">
+		        <a class="nav-link" href="#">About</a>
+		      </li>
+				</ul>
+				<form class="form-inline">
+			    <input class="form-control mr-sm-2" type="search" placeholder="Quick Search" aria-label="Search">
+			    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+			  </form>
+		  </div>
+		</div>
+	</nav>
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-4 page-col left-col filter-col">
+				<h3>I'm Feeling Lucky</h3>
+				<br>
+				<form>
+					<div class="form-row">
+						<div class="form-group col-lg-10 col-md-6">
+					    <input type="text" class="form-control form-control-sm" id="feeling-lucky-field" placeholder="Search query">
+					    <small id="quicksearch-help" class="form-text text-muted">Search all database fields.</small>
+					  </div>
+						<div class="col-lg-2 col-md-2">
+							<button type="submit" class="btn btn-primary btn-sm float-right">Search</button>
+						</div>
+					</div><!-- /form-row -->
+				</form>
+
+				<br>
+				<h3>Advanced Search</h3> <!--<span class="badge badge-primary badge-pill">Beta</span>--></h3>
+				<form>
+					<div class="form-row">
+						<div class="form-group col-md-7">
+							<label for="name-input">Name</label>
+							<input type="text" class="form-control form-control-sm" id="name-input">
+						</div>
+						<div class="form-group col-md-5">
+							<label for="type-select">Designation Type</label>
+							<select class="custom-select form-control form-control-sm" id="type-select">
+								<option selected="">Individual</option>
+								<option value="1">Entity</option>
+								<option value="2">Aircraft</option>
+								<option value="3">Vessel</option>
+							</select>
+						</div>
+					</div><!-- /form-row for name/designation type -->
+
+					<hr>
+
+					<div class="form-row">
+						<div class="form-group col-md-5">
+							<select class="custom-select form-control form-control-sm">
+								<option selected="">Nationality</option>
+								<option value="1">Type</option>
+								<option value="2">Two</option>
+								<option value="3">Three</option>
+							</select>
+						</div>
+						<div class="form-group col-md-7">
+							<input type="text" class="form-control form-control-sm" id="exampleInputEmail1">
+						</div>
+					</div>
+
+					<div class="form-row">
+						<div class="form-group col-md-5">
+							<select class="custom-select form-control form-control-sm">
+								<option selected="">Passport Number</option>
+								<option value="1">Type</option>
+								<option value="2">Two</option>
+								<option value="3">Three</option>
+							</select>
+						</div>
+						<div class="form-group col-md-7">
+							<input type="text" class="form-control form-control-sm" id="exampleInputEmail1">
+						</div>
+					</div>
+
+					<div class="form-row">
+						<div class="form-group col-md-5">
+							<select class="custom-select form-control form-control-sm">
+								<option selected="">Select field</option>
+								<option value="1">Type</option>
+								<option value="2">Two</option>
+								<option value="3">Three</option>
+							</select>
+						</div>
+						<div class="form-group col-md-7">
+							<input type="text" class="form-control form-control-sm" id="exampleInputEmail1">
+						</div>
+					</div>
+					<div class="form-group">
+						<button type="submit" class="btn btn-primary btn-sm float-right">Search</button>
+					</div>
+					<br><br><br>
+				</form>
+
+			</div><!-- /col -->
+
+			<div class="col-md-8 page-col right-col">
+				<h3 class="text-center">Results</h3>
+				<p class="text-center">Table View | <u>Card View</u></p>
+				<br>
+				<div class="card">
+					<div class="card-body">
+						<h5>BIN LADEN, Osama</h5>
+						<hr>
+						<p class="card-text">Location: Pakistan</p>
+						<p class="card-text">DOB: 10 Mar 1957</p>
+						<p class="card-text">POB: Saudi Arabia</p>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-body">
+						<h5>TRUMP, Donald</h5>
+						<hr>
+						<p class="card-text">Location: 'Murica</p>
+						<p class="card-text">Date of Birth: 10 Aug 1950</p>
+						<p class="card-text">Place of Birth: 'Murica</p>
+						<p class="card-text">Citizenship: 'Murica</p>
+						<p class="card-text">Passport Number: Don't need one</p>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-body">
+						<h5>MA, Alice</h5>
+						<hr>
+						<p class="card-text">Location: Boalt</p>
+						<p class="card-text">Date of Birth: 10 Sept 1950</p>
+						<p class="card-text">Citizenship: Northside</p>
+						<p class="card-text">Passport Number: 6A40D99662</p>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-body">
+						<h5>SMITH, John</h5>
+						<hr>
+						<p class="card-text">Location: Middle of Nowhere</p>
+						<p class="card-text">DOB: 19 Jul 1950</p>
+						<p class="card-text">Citizenship: American</p>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-body">
+						<h5>BIN LADEN, Osama</h5>
+						<hr>
+						<p class="card-text">Location: Pakistan</p>
+						<p class="card-text">DOB: 10 Mar 1957</p>
+						<p class="card-text">POB: Saudi Arabia</p>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-body">
+						<h5>TRUMP, Donald</h5>
+						<hr>
+						<p class="card-text">Location: 'Murica</p>
+						<p class="card-text">DOB: 10 Aug 1950</p>
+						<p class="card-text">POB: 'Murica</p>
+						<p class="card-text">Citizenship: 'Murica</p>
+					</div>
+				</div>
+				<div class="card">
+					<div class="card-body">
+						<h5>SMITH, John</h5>
+						<hr>
+						<p class="card-text">Location: Middle of Nowhere</p>
+						<p class="card-text">DOB: 19 Jul 1950</p>
+						<p class="card-text">Citizenship: American</p>
+					</div>
+				</div>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+				<p>Hello</p>
+			</div>
+
+		</div><!-- /row -->
+	</div><!-- /container-fluid -->
+</body>
+
+</html>

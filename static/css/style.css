@@ -1,0 +1,28 @@
+.card {
+	margin-bottom: 25px;
+}
+
+.page-col {
+	overflow-y: scroll;
+	height: 900px;
+	padding-top: 40px;
+	padding-right: 30px;
+	padding-left: 30px;
+}
+
+.left-col {
+
+}
+
+.right-col {
+	padding-left: 20px;
+}
+
+.container-fluid {
+	/*padding-left: 60px;
+	padding-right: 60px;*/
+}
+
+.filter-col {
+	background-color: #eeeeee;
+}
