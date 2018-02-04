@@ -9,6 +9,11 @@
 	border-bottom: 0px;
 }
 
+.left-card-col {
+	border-left: 1px solid #bbbbbb;
+	padding-left: 20px;
+}
+
 .page-col {
 	overflow-y: scroll;
 	height: 900px;
@@ -18,7 +23,7 @@
 }
 
 .left-col {
-
+	background-color: #eeeeee;
 }
 
 .right-col {
@@ -30,14 +35,36 @@
 	padding-right: 60px;*/
 }
 
-.filter-col {
-	background-color: #eeeeee;
-}
-
 .card-header {
 	background-color: #ffffff;
 }
 
 .search-select-dropdown {
 	/*width: 200%;*/
+}
+
+.col-header {
+
+}
+
+.search-button-group {
+	text-align: right;
+}
+
+.search-button {
+	display: inline-block;
+}
+
+.press-release-button {
+	width: 100%;
+}
+
+hr#results-line {
+	margin-bottom: 0;
+}
+
+small.card-sdn-type {
+	font-size: 12px;
+	color: #aaaaaa;
+	margin-left: 15px;
 }

@@ -1,6 +1,5 @@
 <html>
 <head>
-	<!-- Bootstrap Files -->
 	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
 	<link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
 	<link rel="stylesheet" href="../static/css/style.css"></link>
@@ -15,11 +14,11 @@
 	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
 		<div class="container-fluid">
 		  <a class="navbar-brand" href="#">OFACasaurus</a>
-		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
 		    <span class="navbar-toggler-icon"></span>
 		  </button>
 
-		  <div class="collapse navbar-collapse" id="navbarSupportedContent navbarColor02">
+		  <div class="collapse navbar-collapse" id="navbarColor02">
 		    <ul class="navbar-nav mr-auto">
 		      <li class="nav-item active">
 		        <a class="nav-link" href="#">Search <span class="sr-only">(current)</span></a>
@@ -28,32 +27,15 @@
 		        <a class="nav-link" href="#">About</a>
 		      </li>
 				</ul>
-				<form class="form-inline">
-			    <input class="form-control mr-sm-2" type="search" placeholder="Quick Search" aria-label="Search">
-			    <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-			  </form>
 		  </div>
 		</div>
 	</nav>
+
 	<div class="container-fluid">
 		<div class="row">
-			<div class="col-md-4 page-col left-col filter-col">
-				<h3>I'm Feeling Lucky</h3>
-				<br>
-				<form>
-					<div class="form-row">
-						<div class="form-group col-lg-10 col-md-6">
-					    <input type="text" class="form-control form-control-sm" id="feeling-lucky-field" placeholder="Search query">
-					    <small id="quicksearch-help" class="form-text text-muted">Search all database fields.</small>
-					  </div>
-						<div class="col-lg-2 col-md-2">
-							<button type="submit" class="btn btn-primary btn-sm float-right">Search</button>
-						</div>
-					</div><!-- /form-row -->
-				</form>
-
-				<br>
-				<h3>Advanced Search</h3> <!--<span class="badge badge-primary badge-pill">Beta</span>--></h3>
+			<div class="col-lg-4 col-md-12 page-col left-col">
+				<h3 class="col-header">Advanced Search</h3> <!--<span class="badge badge-primary badge-pill">Beta</span>--></h3>
+				<hr>
 				<form class="search-form">
 					<div class="form-row">
 						<div class="form-group col-md-7">
@@ -63,40 +45,45 @@
 						<div class="form-group col-md-5">
 							<label for="type-select">Designation Type</label>
 							<select class="custom-select form-control form-control-sm" id="type-select">
-								<option selected="">Individual</option>
-								<option value="1">Entity</option>
-								<option value="2">Aircraft</option>
-								<option value="3">Vessel</option>
+								<option selected="">Select type</option>
+								<option value="individual">Individual</option>
+								<option value="entity">Entity</option>
+								<option value="aircraft">Aircraft</option>
+								<option value="vessel">Vessel</option>
 							</select>
 						</div>
-					</div><!-- /form-row for name/designation type -->
-
-					<hr>
-<!--
-					<div class="input-group mb-3">
-					  <div class="input-group-prepend">
-					    <button class="btn btn-sm btn-outline-dark dropdown-toggle search-select-dropdown" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Select</button>
-					    <div class="dropdown-menu">
-					      <a class="dropdown-item">Action</a>
-					      <a class="dropdown-item">Another action</a>
-					      <a class="dropdown-item">Something else here</a>
-					    </div>
-					  </div>
-					  <input type="text" class="form-control form-control-sm" aria-label="Text input with dropdown button">
+					</div><!-- /form-row -->
+					<div class="search-rows">
+						<!-- Populated with Javascript -->
 					</div>
--->
-					<div class="form-group">
-						<button type="submit" class="btn btn-primary btn-sm float-right search-button">Search</button>
+					<div class="form-group search-button-group">
+						<button type="submit" class="btn btn-primary btn-sm search-button">Search</button>
 					</div>
-
-					<br><br><br>
 				</form>
 
-			</div><!-- /col -->
+				<br><br><br> <!-- TODO convert to margin -->
+				<h3 class="col-header">Press Releases</h3>
+				<hr>
+				<form>
+					<div class="form-row">
+						<div class="form-group col-lg-9 col-md-10">
+					    <input type="text" class="form-control form-control-sm" id="feeling-lucky-field" placeholder="Search query">
+					    <small id="quicksearch-help" class="form-text text-muted">Search all database fields.</small>
+					  </div>
+						<div class="col-lg-3 col-md-2 col-sm-12">
+							<button type="submit" class="btn btn-primary btn-sm float-right press-release-button">Search</button>
+						</div>
+					</div><!-- /form-row -->
+				</form>
 
-			<div class="col-md-8 page-col right-col">
-				<h3 class="text-center">Results</h3>
-				<br>
+			</div><!-- /left-col -->
+
+			<div class="col-lg-8 col-md-12 page-col right-col">
+				<h3 class="col-header text-center">Results</h3>
+				<hr id="results-line">
+				<div id="search-results">
+					<!-- Populated with Javscript -->
+				</div>
 			</div><!-- /col-md-8 -->
 
 		</div><!-- /row -->
@@ -107,15 +94,33 @@
 	<script id="card-template" type="text/template">
 		<div class="card">
 			<div class="card-header">
-				<a data-toggle="collapse" href="#card-body-{{=it.id}}">
-					{{=it.name}}
+				<a data-toggle="collapse" href="#card-body-{{=it.main.id}}">
+					{{=it.main.Name}}
 				</a>
+				<small class="card-sdn-type">({{=it.main.Type}})</small>
+
+				<div class="float-right" style="margin-left: 10px;">
+					{{=it.main.Program}}
+				</div>
 			</div>
-			<div class="collapse" id="card-body-{{=it.id}}">
-				<div class="card-body">
-					<p class="card-text">Location: Pakistan</p>
-					<p class="card-text">DOB: 10 Mar 1957</p>
-					<p class="card-text">POB: Saudi Arabia</p>
+			<div class="collapse" id="card-body-{{=it.main.id}}">
+				<div class="card-body row">
+					<div class="col-lg-6 col-md-6">
+						<div class="left-card-col">
+							{{ for (var c in it.categories) { }}
+								{{ for (var prop in it[it.categories[c]]) { }}
+									<!-- {{? it[it.categories[c]][prop] != null && it[it.categories[c]][prop].length != 0}} -->
+										<p>{{=prop}}: {{=it[it.categories[c]][prop]}}</p>
+									<!-- {{?}} -->
+								{{ } }}
+							{{ } }}
+						</div>
+					</div>
+					<div class="col-lg-6 col-md-6">
+						<!-- <p class="card-text">Location: Pakistan</p>
+						<p class="card-text">DOB: 10 Mar 1957</p>
+						<p class="card-text">POB: Saudi Arabia</p> -->
+					</div>
 				</div>
 			</div>
 		</div>
@@ -123,7 +128,7 @@
 
 	<script id="search-row-template" type="text/template">
 		<div id="search-row-{{=it.id}}" class="search-row form-row">
-			<div class="form-group col-md-5">
+			<div class="form-group col-lg-5 col-md-5">
 				<select id="search-row-{{=it.id}}-select" class="search-row-select custom-select form-control form-control-sm">
 					<option selected="">Select field</option>
 					{{~it.fields :value:index}} <!-- for loop over the 'fields' key -->
@@ -131,7 +136,7 @@
 					{{~}}
 				</select>
 			</div>
-			<div class="form-group col-md-7">
+			<div class="form-group col-lg-7 col-md-7">
 				<input type="text" id="search-row-{{=it.id}}-input" class="form-control form-control-sm">
 			</div>
 		</div>

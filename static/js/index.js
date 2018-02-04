@@ -1,49 +1,113 @@
+'use strict';
+
 $(document).ready(() => {
-	let card = doT.template(document.getElementById('card-template').innerHTML);
+		window.card = doT.template($('#card-template').html());
+		window.searchRow = doT.template($('#search-row-template').html());
 
-	$('.right-col').append(card({id: '1', name: 'BIN LADEN, Osama'}));
-	$('.right-col').append(card({id: '2', name: 'MA, Alice'}));
+		var id = 0;
 
-	let searchRow = doT.template(document.getElementById('search-row-template').innerHTML);
-	var id = 0;
+		let fields = ['Type', 'DOB', 'POB'];
+		$('.search-rows').append(searchRow({'id': id++, 'fields': fields}));
 
-	fields = ['Type', 'DOB', 'POB'];
-	$('.search-form').append(searchRow({'id': id++, 'fields': fields}));
-
-	$('.search-button').click((event) => {
-		event.preventDefault();
-		console.log(get_query_info());
-	});
-
-	$(document).on('change', '.search-row-select', event => {
-		console.log("Event fired!");
-
-		var needNewRow = true;
-		$.each($('.search-row-select'), (index, value) => {
-			if (value.value == 'Select field') {
-				console.log('Dont need new');
-				needNewRow = false;
-				return false;
-			}
+		$('.search-button').click((event) => {
+				event.preventDefault();
+				console.log(collect_query_info());
+				query(0);
 		});
 
-		if (needNewRow) {
-			$('.search-form').append(searchRow({'id': id++, 'fields': fields}));
-		}
-	});
+		$(document).on('change', '.search-row-select', event => {
+				console.log("Event fired!");
+
+				var needNewRow = true;
+				$.each($('.search-row-select'), (index, value) => {
+						if (value.value == 'Select field') {
+								console.log('Dont need new');
+								needNewRow = false;
+								return false;
+						}
+				});
+
+				if (needNewRow) {
+						$('.search-rows').append(searchRow({'id': id++, 'fields': fields}));
+				}
+		});
 });
 
-function get_query_info() {
-	let data = [];
+function append_card(data) {
+		console.log('appended');
+		$('#search-results').append(card(data));
+}
 
-	var i = 0;
-	while ($('#search-row-' + i)[0] != null) {
-		let select = $('#search-row-' + i + '-select').val();
-		let input = $('#search-row-' + i + '-input').val();
-		if (select != 'Select field') {
-			data.push({option: select, value: input});
+function collect_query_info() {
+		let data = [];
+
+		if ($('#name-input').val() !== null) {
+				data.push({
+					'sdn_name': $('#name-input').val()
+				});
 		}
-		i++;
-	}
-	return data;
+
+		if ($('#type-select').val() !== 'Select type') {
+				data.push({
+					'sdn_type': $('#type-select').val()
+				});
+		}
+
+		var i = 0;
+		while ($('#search-row-' + i)[0] != null) {
+				let select = $('#search-row-' + i + '-select').val();
+				let input = $('#search-row-' + i + '-input').val();
+				if (select != 'Select field') {
+						data.push({
+							select: input
+						});
+				}
+				i++;
+		}
+		return data;
+}
+
+function process_entry(res) {
+		let data = {};
+
+		let extract = (name, fields) => {
+			data[name] = {};
+			$.each(fields, (key, value) => {
+					if (res[key] != null && res[key].length != 0) {
+							let formatted_key = fields[key];
+							data[name][formatted_key] = res[key];
+					}
+			});
+		};
+
+		let main_fields = {'_id':'id', 'sdn_name':'Name', 'sdn_type':'Type', 'program':'Program'};
+		let personal_fields = {'nationality':'Nationality', 'dob':'Date of Birth', 'pob':'Place of Birth', 'gender':'Gender', 'title':'Title'};
+		let id_fields = {'passport':'Passport Number'};
+		let notes_fields = {'notes':'Notes', 'additional_sanctions_info':'Additional Sanctions Info'};
+		extract('main', main_fields);
+		extract('personal', personal_fields);
+		extract('identification', id_fields);
+		extract('notes', notes_fields);
+
+		data['categories'] = ['personal', 'identification', 'notes'];
+
+		return data;
+}
+
+function query(reqData) {
+		// make API call
+		let response = [{"_id":"5a73c4842f123a4e336d0d6e","ent_num":"12025","sdn_name":"MEJIA GUTIERREZ, Ignacio","sdn_type":"individual","program":"SDNTK","title":null,"call_sign":null,"vess_type":null,"tonnage":null,"grt":null,"vess_flag":null,"vess_owner":null,"remarks":"DOB 23 Apr 1946; POB Ziracuetrio, Michoacan, Mexico; nationality Mexico; citizen Mexico; C.U.R.P. MEGI460423HMNJTG04 (Mexico).","__v":0,"identification_number":[],"national_id_number":[],"aircraft_operator":[],"aircraft_model":[],"additional_sanctions_info":[],"citizen":["Mexico"],"registration_id":[],"email":[],"tax_id_no":[],"swift_bic":[],"website":[],"rfc":[],"nit":[],"passport":[],"pob":["Ziracuetrio, Michoacan, Mexico"],"dob":["23 Apr 1946"],"nationality":["Mexico"],"linked_to":[]},{"_id":"5a73c4842f123a4e336d0d73","ent_num":"12055","sdn_name":"ISLAMIC REVOLUTIONARY GUARD CORPS AIR FORCE","sdn_type":null,"program":"SDGT] [NPWMD] [IRGC] [IFSR","title":null,"call_sign":null,"vess_type":null,"tonnage":null,"grt":null,"vess_flag":null,"vess_owner":null,"remarks":"Additional Sanctions Information - Subject to Secondary Sanctions.","__v":0,"identification_number":[],"national_id_number":[],"aircraft_operator":[],"aircraft_model":[],"additional_sanctions_info":["Subject to Secondary Sanctions."],"citizen":[],"registration_id":[],"email":[],"tax_id_no":[],"swift_bic":[],"website":[],"rfc":[],"nit":[],"passport":[],"pob":[],"dob":[],"nationality":[],"linked_to":[]},{"_id":"5a73c4842f123a4e336d0d78","ent_num":"12060","sdn_name":"VAHIDI, Ahmad","sdn_type":"individual","program":"NPWMD] [IFSR","title":"Brigadier General","call_sign":null,"vess_type":null,"tonnage":null,"grt":null,"vess_flag":null,"vess_owner":null,"remarks":"DOB 1958; POB Shiraz, Iran; nationality Iran; Additional Sanctions Information - Subject to Secondary Sanctions; Brigadier General.","__v":0,"identification_number":[],"national_id_number":[],"aircraft_operator":[],"aircraft_model":[],"additional_sanctions_info":["Subject to Secondary Sanctions"],"citizen":[],"registration_id":[],"email":[],"tax_id_no":[],"swift_bic":[],"website":[],"rfc":[],"nit":[],"passport":[],"pob":["Shiraz, Iran"],"dob":["1958"],"nationality":["Iran"],"linked_to":[]}, {"_id":"5a73c4842f123a4e336d0d7d","ent_num":"12075","sdn_name":"OSTAIZA AMAY, Jefferson Omar","sdn_type":"individual","program":"SDNTK","title":null,"call_sign":null,"vess_type":null,"tonnage":null,"grt":null,"vess_flag":null,"vess_owner":null,"remarks":"DOB 16 Nov 1973; POB Santo Domingo, Ecuador; citizen Ecuador; Cedula No. 1712394947 (Ecuador); Passport 1712394947 (Ecuador).","cedula_no":"1712394947 (Ecuador)","__v":0,"identification_number":[],"national_id_number":[],"aircraft_operator":[],"aircraft_model":[],"additional_sanctions_info":[],"citizen":["Ecuador"],"registration_id":[],"email":[],"tax_id_no":[],"swift_bic":[],"website":[],"rfc":[],"nit":[],"passport":["1712394947 (Ecuador)."],"pob":["Santo Domingo, Ecuador"],"dob":["16 Nov 1973"],"nationality":[],"linked_to":[]},{"_id":"5a73c4842f123a4e336d0d82","ent_num":"12085","sdn_name":"AUTOTRANSPORTES JYM S.A. DE C.V.","sdn_type":null,"program":"SDNTK","title":null,"call_sign":null,"vess_type":null,"tonnage":null,"grt":null,"vess_flag":null,"vess_owner":null,"remarks":"R.F.C. AJY-960612-HPO (Mexico).","__v":0,"identification_number":[],"national_id_number":[],"aircraft_operator":[],"aircraft_model":[],"additional_sanctions_info":[],"citizen":[],"registration_id":[],"email":[],"tax_id_no":[],"swift_bic":[],"website":[],"rfc":["AJY-960612-HPO (Mexico)."],"nit":[],"passport":[],"pob":[],"dob":[],"nationality":[],"linked_to":[]},{"_id":"5a73c4842f123a4e336d0d87","ent_num":"12090","sdn_name":"CASTRO JARAMILLO, Monica Maria","sdn_type":"individual","program":"SDNT","title":null,"call_sign":null,"vess_type":null,"tonnage":null,"grt":null,"vess_flag":null,"vess_owner":null,"remarks":"DOB 27 Oct 1971; Cedula No. 43574795 (Colombia); Passport AK476053 (Colombia).","cedula_no":"43574795 (Colombia)","__v":0,"identification_number":[],"national_id_number":[],"aircraft_operator":[],"aircraft_model":[],"additional_sanctions_info":[],"citizen":[],"registration_id":[],"email":[],"tax_id_no":[],"swift_bic":[],"website":[],"rfc":[],"nit":[],"passport":["AK476053 (Colombia)."],"pob":[],"dob":["27 Oct 1971"],"nationality":[],"linked_to":[]}];
+
+		let result = [];
+		for (var i = 0; i < response.length; i++) {
+				result.push(process_entry(response[i]));
+		}
+		console.log(result);
+
+		$('#search-results').empty();
+
+		$.each(result, (index, value) => {
+				// pre processing
+				append_card(value);
+		});
 }
