@@ -4,7 +4,7 @@
 	<link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
 	<link rel="stylesheet" href="../static/css/style.css"></link>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+	<script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 	<script src="../static/js/doT.min.js" charset="utf-8"></script>
 	<script src="../static/js/index.js"></script>
@@ -80,6 +80,8 @@
 
 			<div class="col-lg-8 col-md-12 page-col right-col">
 				<h3 class="col-header text-center">Results</h3>
+				<a><small class="float-right" id="collapse-all"> Collapse</small></a> <a><small class="float-right" id="expand-all"> Expand</small></a>
+
 				<hr id="results-line">
 				<div id="search-results">
 					<!-- Populated with Javscript -->
@@ -103,7 +105,7 @@
 					{{=it.main.Program}}
 				</div>
 			</div>
-			<div class="collapse" id="card-body-{{=it.main.id}}">
+			<div class="collapse show" id="card-body-{{=it.main.id}}">
 				<div class="card-body row">
 					<div class="col-lg-6 col-md-6">
 						<div class="left-card-col">
@@ -131,9 +133,9 @@
 			<div class="form-group col-lg-5 col-md-5">
 				<select id="search-row-{{=it.id}}-select" class="search-row-select custom-select form-control form-control-sm">
 					<option selected="">Select field</option>
-					{{~it.fields :value:index}} <!-- for loop over the 'fields' key -->
-						<option value="{{=index}}">{{=value}}</option>
-					{{~}}
+					{{ for (var f in it.fields) { }} <!-- for loop over the 'fields' key -->
+						<option value="{{=f}}">{{=it.fields[f]}}</option>
+					{{ } }}
 				</select>
 			</div>
 			<div class="form-group col-lg-7 col-md-7">

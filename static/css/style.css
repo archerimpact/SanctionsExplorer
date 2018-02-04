@@ -1,3 +1,9 @@
+html, body {
+	margin: 0;
+	height: 100%;
+	overflow: hidden;
+}
+
 .card {
 	margin-bottom: 0px;
 	border-left: 0px;
