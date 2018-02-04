@@ -4,17 +4,19 @@ const express = require('express');
 const app = express();
 
 const csv = require('csv-parser');
-const fs = require('fs'); 
+const fs = require('fs');
 const mongoose = require('mongoose');
 
 mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
 
+app.use(express.static(__dirname + '/static'));
+app.use('/static', express.static(__dirname + '/static'));
 app.listen(8081, "localhost", function() {
     console.log("Server has started");
 });
 
 app.get('/', function(req, res) {
-    res.send('home');
+    res.sendFile(__dirname + '/views/index.html');
 });
 
 app.get('/search', function(req, res) {
@@ -47,11 +49,11 @@ app.get('/search', function(req, res) {
 });
 
 app.get('/view', function(req, res) {
-   res.send('view'); 
+   res.send('view');
 });
 
 const Entry = mongoose.model('Entry', {
-	ent_num:String, 
+	ent_num:String,
 	sdn_name:String,
 	sdn_type:String,
 	program:String,
@@ -217,5 +219,3 @@ function shipToDB(json_data) {
     }
 
 }
-
-
