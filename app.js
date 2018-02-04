@@ -22,15 +22,19 @@ app.get('/search', function(req, res) {
    var keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
    var search_query = {}
 
+
    if(req.query.id){
    	search_query["_id"] = req.query.id;
    }
 
-   for (var i; i<keywords.length; i++){
-   	if(req.query[keywords[i]]){
+   for (var i=0; i<keywords.length; i++){
+   	if(req.query[keywords[i]]!=null){
+   		console.log(keywords[i]);
    		search_query[keywords[i]] = req.query[keywords[i]]
    	}
    }
+
+   // console.log(search_query);
 
    Entry.find(search_query, function(err, result){
    	if(err){
