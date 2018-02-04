@@ -1,0 +1,43 @@
+.card {
+	margin-bottom: 0px;
+	border-left: 0px;
+	border-right: 0px;
+	border-top: 0px;
+}
+
+.card-header {
+	border-bottom: 0px;
+}
+
+.page-col {
+	overflow-y: scroll;
+	height: 900px;
+	padding-top: 40px;
+	padding-right: 30px;
+	padding-left: 30px;
+}
+
+.left-col {
+
+}
+
+.right-col {
+	padding-left: 20px;
+}
+
+.container-fluid {
+	/*padding-left: 60px;
+	padding-right: 60px;*/
+}
+
+.filter-col {
+	background-color: #eeeeee;
+}
+
+.card-header {
+	background-color: #ffffff;
+}
+
+.search-select-dropdown {
+	/*width: 200%;*/
+}
