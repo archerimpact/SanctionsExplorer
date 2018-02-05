@@ -82,6 +82,7 @@
 				<a><small class="float-right" id="collapse-all"> Collapse</small></a> <a><small class="float-right" id="expand-all"> Expand</small></a>
 
 				<hr id="results-line">
+				<div class="loader">Loading...</div>
 				<div id="search-results">
 					<!-- Populated with Javscript -->
 				</div>
@@ -110,17 +111,12 @@
 						<div class="left-card-col">
 							{{ for (var c in it.categories) { }}
 								{{ for (var prop in it[it.categories[c]]) { }}
-									<!-- {{? it[it.categories[c]][prop] != null && it[it.categories[c]][prop].length != 0}} -->
 										<p>{{=prop}}: {{=it[it.categories[c]][prop]}}</p>
-									<!-- {{?}} -->
 								{{ } }}
 							{{ } }}
 						</div>
 					</div>
 					<div class="col-lg-6 col-md-6">
-						<!-- <p class="card-text">Location: Pakistan</p>
-						<p class="card-text">DOB: 10 Mar 1957</p>
-						<p class="card-text">POB: Saudi Arabia</p> -->
 					</div>
 				</div>
 			</div>
