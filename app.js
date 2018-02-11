@@ -6,8 +6,9 @@ const app = express();
 const csv = require('csv-parser');
 const fs = require('fs');
 const mongoose = require('mongoose');
+const mongoosastic = require("mongoosastic")
 
-mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
+mongoose.connect('mongodb://localhost/ofacasaurus', {connectTimeoutMS:5000});
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
@@ -97,6 +98,7 @@ const Entry = mongoose.model('Entry', {
 	previous_aircraft_tail_number:String
 });
 
+Entry.plugin(mongoosastic)
 
 
 let loadData = () => {
