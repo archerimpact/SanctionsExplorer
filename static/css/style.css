@@ -1,6 +1,6 @@
 html, body {
 	margin: 0;
-	height: 100%;
+	/*height: 100%;*/
 	/*overflow: hidden;*/
 }
 
@@ -146,4 +146,24 @@ small.card-sdn-type {
 
 .search-error-alert {
 		margin-top: 20px;
+}
+
+
+@media print {
+	.nav {
+		display: none;
+	}
+
+	.left-col {
+		display: none;
+	}
+
+	.collapse {
+		display: block;
+	}
+
+	.page-col {
+		overflow-y: auto;
+		height: auto;
+	}
 }
