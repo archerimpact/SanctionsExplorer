@@ -11,7 +11,7 @@ mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-of
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
-app.listen(8081, "localhost", function() {
+app.listen(8080, "127.0.0.1", function() {
     console.log("Server has started");
 });
 
