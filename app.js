@@ -6,9 +6,10 @@ const app = express();
 const csv = require('csv-parser');
 const fs = require('fs');
 const mongoose = require('mongoose');
-const mongoosastic = require("mongoosastic")
+mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
 
-mongoose.connect('mongodb://localhost/ofacasaurus', {connectTimeoutMS:5000});
+const sqlite3 = require('sqlite3').verbose();
+let db = new sqlite3.Database('press_releases.db');
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
@@ -18,6 +19,15 @@ app.listen(8080, "127.0.0.1", function() {
 
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/views/index.html');
+});
+
+app.get('/press-release', function(req, res) {
+    let text = req.query.query;
+    console.log(text);
+    // TODO don't let them inject SQL lol
+    db.all('SELECT name,pr_date,link FROM press_releases WHERE content LIKE "%' + text + '%";', (err, rows) => {
+        res.json({'dates': rows});
+    });
 });
 
 app.get('/search', function(req, res) {
@@ -98,7 +108,7 @@ const Entry = mongoose.model('Entry', {
 	previous_aircraft_tail_number:String
 });
 
-Entry.plugin(mongoosastic)
+// Entry.plugin(mongoosastic)
 
 
 let loadData = () => {
