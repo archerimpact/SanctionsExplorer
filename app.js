@@ -21,6 +21,10 @@ app.get('/', function(req, res) {
     res.sendFile(__dirname + '/views/index.html');
 });
 
+app.get('/about', function(req, res) {
+    res.sendFile(__dirname + '/views/about.html');
+});
+
 app.get('/press-release', function(req, res) {
     let text = req.query.query;
     console.log(text);
