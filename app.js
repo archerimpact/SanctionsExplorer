@@ -108,6 +108,7 @@ const Entry = mongoose.model('Entry', {
 	previous_aircraft_tail_number:String
 });
 
+// Entry.plugin(mongoosastic)
 
 
 let loadData = () => {
