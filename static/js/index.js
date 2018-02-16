@@ -22,12 +22,27 @@ $(document).ready(() => {
 
 		$(document).on('change', '.search-row-select', event => {
 				var needNewRow = true;
+				var dupeSelections = false;
+				var currentSelections = [];
+
 				$.each($('.search-row-select'), (index, value) => {
 						if (value.value == empty_select) {
 								needNewRow = false;
-								return false;
+						}
+						else {
+								currentSelections.push(value.value);
 						}
 				});
+
+				if (new Set(currentSelections).size !== currentSelections.length) {
+						console.log('Duplicate filter detected');
+						$('.search-row-error-alert').html('<div class="alert alert-danger">Multiple of the same filter selected!</div>');
+				}
+				else {
+						$('.search-row-error-alert').empty();
+				}
+
+				console.log(currentSelections);
 
 				if (needNewRow) {
 						append_search_row(id, fields);
@@ -117,7 +132,7 @@ function search (event, url, params, display_func) {
 		})
 		.fail((e) => {
 				if (e.statusText != 'abort') {
-						$('#search-results').append('<p>There was an error. Please try again.</p>');
+						$('#search-results').append('<div class="alert alert-danger search-error-alert">There was an error. Please try again.</div>');
 				}
 		})
 		.always(() => {
@@ -148,13 +163,15 @@ function process_entry(res) {
 		let personal_fields = construct_fields(['nationality', 'dob', 'pob', 'gender', 'title']);
 		let id_fields = construct_fields(['passport', 'tax_id_no', 'website', 'email', 'phone']);
 		let notes_fields = construct_fields(['notes', 'additional_sanctions_info']);
+		let context_fields = construct_fields(['linked_to', 'press_releases']);
 		extract('main', main_fields);
 		extract('personal', personal_fields);
 		extract('identification', id_fields);
 		extract('notes', notes_fields);
+		extract('context', context_fields)
 
 		data['categories'] = ['personal', 'identification', 'notes'];
-
+		console.log(data);
 		return data;
 }
 
@@ -204,6 +221,7 @@ function construct_fields(fields) {
 				'email': 'Email',
 				'notes': 'Notes',
 				'additional_sanctions_info': 'Additional Sanctions Info',
+				'linked_to': 'Linked To',
 				'all fields': 'All fields',
 		};
 

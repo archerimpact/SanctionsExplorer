@@ -143,3 +143,7 @@ small.card-sdn-type {
     height: 5em;
   }
 }
+
+.search-error-alert {
+		margin-top: 20px;
+}

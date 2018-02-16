@@ -54,7 +54,10 @@
 						</div>
 					</div><!-- /form-row -->
 					<div class="search-rows">
-						<!-- Populated with Javascript -->
+						<!-- Populated by Javascript -->
+					</div>
+					<div class="search-row-error-alert">
+							<!-- Populated by Javascript if error -->
 					</div>
 					<div class="form-group search-button-group">
 						<button type="submit" class="btn btn-primary btn-sm search-button">Search</button>
@@ -117,6 +120,8 @@
 						</div>
 					</div>
 					<div class="col-lg-6 col-md-6">
+							<h5>Linked To:</h5>
+							{{=it.context['Linked To']}}
 					</div>
 				</div>
 			</div>
