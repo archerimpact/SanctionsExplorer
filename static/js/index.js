@@ -66,10 +66,10 @@ let display_search_results = (show) => show ? $('#search-results').show() : $('#
 let disable_search_buttons = (disable) => disable ? $('.btn-sm').addClass('disabled') : $('.btn-sm').removeClass('disabled');
 let update_results_header = (num) => num !== null ? $('#results-header').text('Results (' + num + ')') : $('#results-header').text('Results');
 let get_search_row_ids = () => $('.search-row').map((index, elem) => elem.id);
-let get_name_input = () => $('#name-input').val();
+let get_name_input = () => $('#name-input').val().trim();
 let get_type_select = () => $('#type-select').val();
 let get_row_select = (id) => $('#' + id + '-select').val();
-let get_row_input = (id) => $('#' + id + '-input').val();
+let get_row_input = (id) => $('#' + id + '-input').val().trim();
 let display_loading_bar = (show) => show ? $('.loader').show() : $('.loader').hide();
 const empty_type_field = 'Any type';
 const empty_select = 'Select field';
@@ -102,20 +102,33 @@ function collect_query_info() {
 				}
 		});
 
-		return query;
+		if (!$.isEmptyObject(query)) {
+				return query;
+		}
+		else {
+				return null;
+		}
 }
 
 
 function collect_pr_query() {
-		return {'query': $('#press-release-input').val()};
+		let input = $('#press-release-input').val().trim();
+		if (input === "") {
+				return null;
+		}
+		return {'query': input};
 }
 
 
-function search (event, url, params, display_func) {
+function search(event, url, params, display_func) {
 		event.preventDefault();
 
 		if (requesting != null) {
 				requesting.abort();
+		}
+
+		if (params === null) {
+				return;
 		}
 
 		let newReq = $.get(url, params);

@@ -51,16 +51,16 @@ app.get('/search', function(req, res) {
    	}
    }
 
-   // console.log(search_query);
-
-   Entry.find(search_query, function(err, result){
-   	if(err){
-   		res.status(400).end();
-   	}
-   	else{
-   		res.json(result);
-   	}
-   });
+   if (Object.keys(search_query).length !== 0) {
+     Entry.find(search_query, function(err, result){
+     	if(err){
+     		res.status(400).end();
+     	}
+     	else{
+     		res.json(result);
+     	}
+     });
+   }
 });
 
 app.get('/view', function(req, res) {
