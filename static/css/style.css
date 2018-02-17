@@ -1,6 +1,6 @@
 html, body {
 	margin: 0;
-	/*height: 100%;*/
+	height: 100%;
 	/*overflow: hidden;*/
 }
 
@@ -22,7 +22,7 @@ html, body {
 
 .page-col {
 	overflow-y: scroll;
-	height: 900px;
+	height: 95%;
 	padding-top: 40px;
 	padding-right: 30px;
 	padding-left: 30px;
@@ -36,21 +36,8 @@ html, body {
 	padding-left: 20px;
 }
 
-.container-fluid {
-	/*padding-left: 60px;
-	padding-right: 60px;*/
-}
-
 .card-header {
 	background-color: #ffffff;
-}
-
-.search-select-dropdown {
-	/*width: 200%;*/
-}
-
-.col-header {
-
 }
 
 .search-button-group {
@@ -79,6 +66,20 @@ small.card-sdn-type {
 	margin-top: 100px;
 }
 
+@media print {
+	.nav {
+		display: none;
+	}
+
+	.left-col {
+		display: none;
+	}
+
+	.page-col {
+		overflow-y: auto;
+		height: auto;
+	}
+}
 
 /* Loader */
 .loader {
@@ -146,24 +147,4 @@ small.card-sdn-type {
 
 .search-error-alert {
 		margin-top: 20px;
-}
-
-
-@media print {
-	.nav {
-		display: none;
-	}
-
-	.left-col {
-		display: none;
-	}
-
-	.collapse {
-		display: block;
-	}
-
-	.page-col {
-		overflow-y: auto;
-		height: auto;
-	}
 }

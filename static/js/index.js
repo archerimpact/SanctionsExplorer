@@ -121,6 +121,8 @@ function search (event, url, params, display_func) {
 		let newReq = $.get(url, params);
 		requesting = newReq;
 
+		$('.print-view-filters').text(JSON.stringify(params));
+
 		disable_search_buttons(true);
 		display_loading_bar(true);
 		update_results_header(null);
@@ -171,7 +173,6 @@ function process_entry(res) {
 		extract('context', context_fields)
 
 		data['categories'] = ['personal', 'identification', 'notes'];
-		console.log(data);
 		return data;
 }
 
