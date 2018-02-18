@@ -1,0 +1,69 @@
+<html>
+<head>
+	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
+	<link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
+	<link rel="stylesheet" href="../static/css/style.css"></link>
+	<link rel="stylesheet" href="../static/css/about.css"></link>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+	<script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+	<script src="../static/js/doT.min.js" charset="utf-8"></script>
+	<script src="../static/js/about.js"></script>
+</head>
+
+<body>
+	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+		<div class="container-fluid">
+		  <a class="navbar-brand" href="#">OFACasaurus</a>
+		  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
+		    <span class="navbar-toggler-icon"></span>
+		  </button>
+
+		  <div class="collapse navbar-collapse" id="navbarColor02">
+		    <ul class="navbar-nav mr-auto">
+		      <li class="nav-item">
+		        <a class="nav-link" href="/">Search <span class="sr-only">(current)</span></a>
+		      </li>
+		      <li class="nav-item active">
+		        <a class="nav-link" href="">About</a>
+		      </li>
+				</ul>
+		  </div>
+		</div>
+	</nav>
+
+	<div class="container-fluid">
+		<div class="about-row row">
+			<div class="col-lg-3" style="background-color:#aaa;">
+				<p>this col</p>
+			</div>
+			<div class="col-lg-9">
+				<h1>About OFACasaurus</h1>
+
+				<p>OFACasaurus is a...</p>
+
+				<hr>
+				<h1>Frequently Asked Questions</h1>
+				<div class="faq-list">
+					<!-- Populated by Javascript -->
+				</div>
+
+		</div>
+	</div>
+
+	<script id="faq-card-template" type="text/template">
+		<div class="card">
+			<div class="card-header">
+				<a data-toggle="collapse" href="#card-body-{{=it.id}}">
+					{{=it.question}}
+				</a>
+			</div>
+			<div class="collapse hide" id="card-body-{{=it.id}}">
+				<div class="card-body faq-card-body">
+					{{=it.answer}}
+				</div>
+			</div>
+		</div>
+	</script>
+</body>
+</html>
