@@ -6,7 +6,8 @@ const app = express();
 const csv = require('csv-parser');
 const fs = require('fs');
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
+//mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
+mongoose.connect('mongodb://localhost/ofacasaurus');
 
 const sqlite3 = require('sqlite3').verbose();
 let db = new sqlite3.Database('press_releases.db');
@@ -112,7 +113,7 @@ const Entry = mongoose.model('Entry', {
 	previous_aircraft_tail_number:String
 });
 
-// Entry.plugin(mongoosastic)
+Entry.plugin(mongoosastic)
 
 
 let loadData = () => {
@@ -215,7 +216,7 @@ let loadData = () => {
         });
 }
 
-// loadData();
+loadData();
 
 
 function shipToDB(json_data) {
@@ -231,6 +232,9 @@ function shipToDB(json_data) {
     		if(err){
     			console.log(err)
     		}
+		entry.on('es-indexed', function(err, res){
+			console.log("We indexed a document");
+		});
     	});
     }
 
