@@ -23,12 +23,27 @@ $(document).ready(() => {
 
 		$(document).on('change', '.search-row-select', event => {
 				var needNewRow = true;
+				var dupeSelections = false;
+				var currentSelections = [];
+
 				$.each($('.search-row-select'), (index, value) => {
 						if (value.value == empty_select) {
 								needNewRow = false;
-								return false;
+						}
+						else {
+								currentSelections.push(value.value);
 						}
 				});
+
+				if (new Set(currentSelections).size !== currentSelections.length) {
+						console.log('Duplicate filter detected');
+						$('.search-row-error-alert').html('<div class="alert alert-danger">Multiple of the same filter selected!</div>');
+				}
+				else {
+						$('.search-row-error-alert').empty();
+				}
+
+				console.log(currentSelections);
 
 				if (needNewRow) {
 						append_search_row(id, fields);
@@ -52,10 +67,10 @@ let display_search_results = (show) => show ? $('#search-results').show() : $('#
 let disable_search_buttons = (disable) => disable ? $('.btn-sm').addClass('disabled') : $('.btn-sm').removeClass('disabled');
 let update_results_header = (num) => num !== null ? $('#results-header').text('Results (' + num + ')') : $('#results-header').text('Results');
 let get_search_row_ids = () => $('.search-row').map((index, elem) => elem.id);
-let get_name_input = () => $('#name-input').val();
+let get_name_input = () => $('#name-input').val().trim();
 let get_type_select = () => $('#type-select').val();
 let get_row_select = (id) => $('#' + id + '-select').val();
-let get_row_input = (id) => $('#' + id + '-input').val();
+let get_row_input = (id) => $('#' + id + '-input').val().trim();
 let display_loading_bar = (show) => show ? $('.loader').show() : $('.loader').hide();
 const empty_type_field = 'Any type';
 const empty_select = 'Select field';
@@ -88,24 +103,39 @@ function collect_query_info() {
 				}
 		});
 
-		return query;
+		if (!$.isEmptyObject(query)) {
+				return query;
+		}
+		else {
+				return null;
+		}
 }
 
 
 function collect_pr_query() {
-		return {'query': $('#press-release-input').val()};
+		let input = $('#press-release-input').val().trim();
+		if (input === "") {
+				return null;
+		}
+		return {'query': input};
 }
 
 
-function search (event, url, params, display_func) {
+function search(event, url, params, display_func) {
 		event.preventDefault();
 
 		if (requesting != null) {
 				requesting.abort();
 		}
 
+		if (params === null) {
+				return;
+		}
+
 		let newReq = $.get(url, params);
 		requesting = newReq;
+
+		$('.print-view-filters').text(JSON.stringify(params));
 
 		disable_search_buttons(true);
 		display_loading_bar(true);
@@ -118,7 +148,7 @@ function search (event, url, params, display_func) {
 		})
 		.fail((e) => {
 				if (e.statusText != 'abort') {
-						$('#search-results').append('<p>There was an error. Please try again.</p>');
+						$('#search-results').append('<div class="alert alert-danger search-error-alert">There was an error. Please try again.</div>');
 				}
 		})
 		.always(() => {
@@ -149,13 +179,14 @@ function process_entry(res) {
 		let personal_fields = construct_fields(['nationality', 'dob', 'pob', 'gender', 'title']);
 		let id_fields = construct_fields(['passport', 'tax_id_no', 'website', 'email', 'phone']);
 		let notes_fields = construct_fields(['notes', 'additional_sanctions_info']);
+		let context_fields = construct_fields(['linked_to', 'press_releases']);
 		extract('main', main_fields);
 		extract('personal', personal_fields);
 		extract('identification', id_fields);
 		extract('notes', notes_fields);
+		extract('context', context_fields)
 
 		data['categories'] = ['personal', 'identification', 'notes'];
-
 		return data;
 }
 
@@ -205,6 +236,7 @@ function construct_fields(fields) {
 				'email': 'Email',
 				'notes': 'Notes',
 				'additional_sanctions_info': 'Additional Sanctions Info',
+				'linked_to': 'Linked To',
 				'all fields': 'All fields',
 		};
 

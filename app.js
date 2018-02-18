@@ -6,7 +6,8 @@ const app = express();
 const csv = require('csv-parser');
 const fs = require('fs');
 const mongoose = require('mongoose');
-mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
+//mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
+mongoose.connect('mongodb://localhost/ofacasaurus');
 
 const sqlite3 = require('sqlite3').verbose();
 let db = new sqlite3.Database('press_releases.db');
@@ -19,6 +20,10 @@ app.listen(8080, "127.0.0.1", function() {
 
 app.get('/', function(req, res) {
     res.sendFile(__dirname + '/views/index.html');
+});
+
+app.get('/about', function(req, res) {
+    res.sendFile(__dirname + '/views/about.html');
 });
 
 app.get('/press-release', function(req, res) {
@@ -47,16 +52,16 @@ app.get('/search', function(req, res) {
    	}
    }
 
-   // console.log(search_query);
-
-   Entry.find(search_query, function(err, result){
-   	if(err){
-   		res.status(400).end();
-   	}
-   	else{
-   		res.json(result);
-   	}
-   });
+   if (Object.keys(search_query).length !== 0) {
+     Entry.find(search_query, function(err, result){
+     	if(err){
+     		res.status(400).end();
+     	}
+     	else{
+     		res.json(result);
+     	}
+     });
+   }
 });
 
 app.get('/view', function(req, res) {
@@ -108,7 +113,7 @@ const Entry = mongoose.model('Entry', {
 	previous_aircraft_tail_number:String
 });
 
-// Entry.plugin(mongoosastic)
+Entry.plugin(mongoosastic)
 
 
 let loadData = () => {
@@ -211,7 +216,7 @@ let loadData = () => {
         });
 }
 
-// loadData();
+loadData();
 
 
 function shipToDB(json_data) {
@@ -227,6 +232,9 @@ function shipToDB(json_data) {
     		if(err){
     			console.log(err)
     		}
+		entry.on('es-indexed', function(err, res){
+			console.log("We indexed a document");
+		});
     	});
     }
 
