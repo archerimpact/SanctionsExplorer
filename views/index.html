@@ -43,7 +43,7 @@
 							<input type="text" class="form-control form-control-sm" id="name-input">
 						</div>
 						<div class="form-group col-md-5">
-							<label for="type-select">Designation Type</label>
+							<label for="type-select">Type</label>
 							<select class="custom-select form-control form-control-sm" id="type-select">
 								<option selected="">Any type</option>
 								<option value="individual">Individual</option>
@@ -68,11 +68,11 @@
 				<hr>
 				<form>
 					<div class="form-row">
-						<div class="form-group col-lg-9 col-md-10">
+						<div class="form-group col-lg-9 col-md-12">
 					    <input type="text" class="form-control form-control-sm" id="press-release-input" placeholder="Search query">
 					    <small id="quicksearch-help" class="form-text text-muted">Search all database fields.</small>
 					  </div>
-						<div class="col-lg-3 col-md-2 col-sm-12">
+						<div class="col-lg-3 col-md-12">
 							<button type="submit" class="btn btn-primary btn-sm float-right" id="press-release-button">Search</button>
 						</div>
 					</div><!-- /form-row -->
@@ -114,16 +114,49 @@
 				<div class="card-body row">
 					<div class="col-lg-6 col-md-6">
 						<div class="left-card-col">
-							{{ for (var c in it.categories) { }}
-								{{ for (var prop in it[it.categories[c]]) { }}
-										<p>{{=prop}}: {{=it[it.categories[c]][prop]}}</p>
-								{{ } }}
+
+							{{ for (var category in it.categories) { }}
+									{{ for (var key in it[it.categories[category]]) { }}
+											{{? (Array.isArray(it[it.categories[category]][key]) && it[it.categories[category]][key].length > 1) }}
+													<h5 class="card-detail-header">{{=key}}:</h5>
+													<ul>
+															{{ for (var item in it[it.categories[category]][key]) { }}
+																	<li class="card-detail-info">{{=it[it.categories[category]][key][item]}}</li>
+															{{ } }}
+													</ul>
+											{{??}}
+													<h5 class="card-detail-header">{{=key}}: <small class="card-detail-info">{{=it[it.categories[category]][key]}}</small></h5>
+											{{?}}
+									{{ } }}
 							{{ } }}
+
 						</div>
 					</div>
 					<div class="col-lg-6 col-md-6">
-							<h5>Linked To:</h5>
-							{{=it.context['Linked To']}}
+
+						{{? it.context['Linked To'] }}
+							<h5 class="card-detail-header">Linked To:</h5>
+							<ul>
+							{{ for (var i in it.context['Linked To']) { }}
+									<li class="card-detail-info">{{=it.context['Linked To'][i]}}</li>
+							{{ } }}
+							</ul>
+						{{?}}
+
+						{{? it.context['Press Releases'] }}
+							<h5 class="card-detail-header">Press Releases:</h5>
+							<ul>
+							{{ for (var i in it.context['Press Releases']) { }}
+									<li class="card-detail-info">
+										({{=it.context['Press Releases'][i].date}})
+										<a href="{{=it.context['Press Releases'][i].url}}">
+											{{=it.context['Press Releases'][i].name}}
+										</a>
+									</li>
+							{{ } }}
+							</ul>
+						{{?}}
+
 					</div>
 				</div>
 			</div>
