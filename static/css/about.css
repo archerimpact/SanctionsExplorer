@@ -1,12 +1,29 @@
 .about-row {
-		padding-top: 30px;
+	padding-top: 0;
 }
 
-h3.question {
+.about-right-col {
+	padding: 2em;
+}
 
+.about-footer {
+	margin-top: 7em;
+}
+
+.about-right-col > .about-header ~ .about-header {
+	padding-top: 2em;
+}
+
+hr.page-divider {
+	margin-top: 2em;
+	margin-bottom: 2em;
+}
+
+hr.feature-divider {
+	width: 50%;
 }
 
 .faq-card-body {
-		padding-top: 0;
-		padding-bottom: 0;
+	padding-top: 0;
+	padding-bottom: 0;
 }
