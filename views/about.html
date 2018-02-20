@@ -34,18 +34,42 @@
 
 	<div class="container-fluid">
 		<div class="about-row row">
-			<div class="col-lg-3" style="background-color:#aaa;">
-				<p>this col</p>
+			<div class="col-lg-3 about-left-col" style="background-color:#aaa;">
+				<!-- Should we put something here or just keep it for aesthetic? -->
 			</div>
-			<div class="col-lg-9">
-				<h1>About OFACasaurus</h1>
+			<div class="col-lg-9 about-right-col">
+				<h1 class="about-header">About OFACasaurus</h1>
+				<p>OFACasaurus reimagines the <a href="https://sanctionssearch.ofac.treas.gov">OFAC SDN List website</a>, a list of individuals, entities, and vehicles that are sanctioned by the Treasury Department.  This list is notoriously difficult to search yet plays a crucial role in foreign investigations.  We've redesigned the experience of searching the database, providing access to all of the same data with a more seamless interface and additional features to streamline the investigative process.</p>
 
-				<p>OFACasaurus is a...</p>
+				<p>OFACasaurus was created by <a href="https://archerimpact.com">Archer</a> (a Berkeley-based nonprofit using tech to improve human rights and human security) in collaboration with <a href="https://c4ads.org">C4ADS</a> (a nonprofit data-driven think tank in D.C.).</p>
 
-				<hr>
-				<h1>Frequently Asked Questions</h1>
+				<h1 class="about-header">Features</h1>
+
+				<h5 class="text-center">Better search capabilities</h5>
+				<p>Unsure how a name transliterates?  Are multiple similar spellings available?  With fuzzy/inexact matching, items that might have previously gone unfound will no longer slip through the cracks.  Additionally, there are more filters available to allow for searching by other categories, so it's easier to find what you're looking for.</p>
+				<hr class="feature-divider">
+
+				<h5 class="text-center">Press release scraping</h5>
+				<p>The Treasury <a href="https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/OFAC-Recent-Actions.aspx">releases additional context</a> when they update the list.  These releases are indexed &amp; searchable via the OFACasaurus platform.  These press releases can even be used to search for entities who were on the SDN list at one point but were removed, since their identifying information will have been released in a press release.</p>
+				<hr class="feature-divider">
+
+				<h5 class="text-center">Bulk searching</h5>
+				<p>Rather than manually searching dozens of names, simply upload a text file containing identifying information.  We'll generate a PDF report that includes data on every entity listed in the document.</p>
+				<hr class="feature-divider">
+
+				<h5 class="text-center">Printable reports</h5>
+				<p>Even regular search queries can be printed -- simply run the print keyboard shortcut (control + P on Windows; command + P on Mac) and all of the cards on your screen will be printed.  Expand the entities of interest and their details will be included in the printout!</p>
+				<hr class="feature-divider">
+
+				<p>There are plenty of other ways that OFACasaurus stands out from the Treasury's website, including an interface that's modern, updated, and requires fewer clicks to navigate.  If you'd like to see a feature added or report a bug, please email ofacasaurus@archerimpact.com.</p>
+
+				<h1 class="about-header">Frequently Asked Questions</h1>
 				<div class="faq-list">
 					<!-- Populated by Javascript -->
+				</div>
+
+				<div class="about-footer">
+					<p class="text-right">Made by <a href="https://archerimpact.com">Archer</a> in collaboration with <a href="https://c4ads.org">C4ADS</a>.</p>
 				</div>
 
 		</div>
