@@ -1,6 +1,9 @@
 'use strict';
 
 $(document).ready(() => {
+		// Set heights of divs to ensure proper scrolling behavior
+		$('.page-col').innerHeight($(window).height() - $('nav').outerHeight() - 1);
+
 		window.card = get_card_template();
 		window.pr_card = get_pr_card_template();
 		window.searchRow = get_search_row_template();
