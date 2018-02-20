@@ -6,6 +6,8 @@ const app = express();
 const csv = require('csv-parser');
 const fs = require('fs');
 const mongoose = require('mongoose');
+const mongoosastic = require('mongoosastic');
+const sleep = require('sleep');
 //mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
 mongoose.connect('mongodb://localhost/ofacasaurus');
 
@@ -14,7 +16,7 @@ let db = new sqlite3.Database('press_releases.db');
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
-app.listen(8081, "localhost", function() {
+app.listen(8080, "127.0.0.1", function() {
     console.log("Server has started");
 });
 
@@ -68,7 +70,7 @@ app.get('/view', function(req, res) {
    res.send('view');
 });
 
-const Entry = mongoose.model('Entry', {
+const entrySchema = mongoose.Schema({
 	ent_num:String,
 	sdn_name:String,
 	sdn_type:String,
@@ -113,7 +115,8 @@ const Entry = mongoose.model('Entry', {
 	previous_aircraft_tail_number:String
 });
 
-Entry.plugin(mongoosastic)
+entrySchema.plugin(mongoosastic);
+let Entry = mongoose.model('Entry', entrySchema);
 
 
 let loadData = () => {
@@ -218,6 +221,7 @@ let loadData = () => {
 
 loadData();
 
+var j =0;
 
 function shipToDB(json_data) {
 	// NOTE: mongo times out when trying to save all documents at once
@@ -226,14 +230,18 @@ function shipToDB(json_data) {
     console.log(json_data[450]);
     console.log(Object.keys(json_data).length);
 
-    for(var i = 0; i< json_data.length; i++){
+    for(var i =6000; i< json_data.length; i++){
     	const entry = new Entry(json_data[i])
+	//sleep.msleep();
+	console.log("Doing doc "+i);
     	entry.save(function(err, data){
+		//console.log("Saving");
     		if(err){
     			console.log(err)
     		}
 		entry.on('es-indexed', function(err, res){
-			console.log("We indexed a document");
+			console.log("We indexed "+j);
+			j++;
 		});
     	});
     }
