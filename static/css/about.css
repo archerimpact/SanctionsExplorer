@@ -14,13 +14,8 @@
 	padding-top: 2em;
 }
 
-hr.page-divider {
-	margin-top: 2em;
-	margin-bottom: 2em;
-}
-
-hr.feature-divider {
-	width: 50%;
+.about-left-col {
+	background-color: #eeeeee;
 }
 
 .faq-card-body {

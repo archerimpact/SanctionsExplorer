@@ -25,7 +25,7 @@ html, body {
 
 
 /*********** Results Column ***********/
-hr#results-line {
+hr.no-bottom-margin {
 	margin-bottom: 0;
 }
 
