@@ -8,7 +8,7 @@ const fs = require('fs');
 const mongoose = require('mongoose');
 const mongoosastic = require('mongoosastic');
 const sleep = require('sleep');
-//mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
+// mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
 mongoose.connect('mongodb://localhost/ofacasaurus');
 
 const sqlite3 = require('sqlite3').verbose();
@@ -21,11 +21,19 @@ app.listen(8080, "127.0.0.1", function() {
 });
 
 app.get('/', function(req, res) {
-    res.sendFile(__dirname + '/views/index.html');
+    res.sendFile(__dirname + '/views/sdn.html');
+});
+
+app.get('/sdn', function(req, res) {
+    res.sendFile(__dirname + '/views/sdn.html');
 });
 
 app.get('/about', function(req, res) {
     res.sendFile(__dirname + '/views/about.html');
+});
+
+app.get('/press-releases', function(req, res) {
+    res.sendFile(__dirname + '/views/press-releases.html');
 });
 
 app.get('/press-release', function(req, res) {

@@ -7,7 +7,7 @@ html, body {
 
 .page-col {
 	overflow-y: scroll;
-	height: 95%;
+	height: 90%;		/* should be overwritten by Javascript */
 	padding-top: 3em;
 	padding-right: 2em;
 	padding-left: 2em;
@@ -21,10 +21,6 @@ html, body {
 
 .search-button-group {
 	text-align: right;
-}
-
-#press-release-header {
-	margin-top: 4em;
 }
 
 
@@ -72,6 +68,7 @@ small.card-sdn-type {
 h5.card-detail-header {
 	font-size: 14px;
 	margin-top: 1em;
+	letter-spacing: 1px;
 }
 
 .card-detail-info {

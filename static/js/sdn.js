@@ -1,19 +1,11 @@
 'use strict';
 
 $(document).ready(() => {
-		let addr = 'http://35.197.20.41:80';
-		window.card = get_card_template();
-		window.pr_card = get_pr_card_template();
-		window.searchRow = get_search_row_template();
-
-		window.requesting = null;
-
-		$('#press-release-button').click(event => {
-				search(event, addr + '/press-release', collect_pr_query(), display_pr_query);
-		});
+		window.card = get_template('#card-template');
+		window.searchRow = get_template('#search-row-template');
 
 		$('.search-button').click(event => {
-				search(event, addr + '/search', collect_query_info(), display_query);
+				search(event, addr + '/search', collect_query_info(), display_query, '#search-results');
 		});
 
 		var id = 0;
@@ -50,28 +42,16 @@ $(document).ready(() => {
 						id++;
 				}
 		});
-
-		$('#collapse-all').click(() => $('.card .collapse').collapse('hide'));
-		$('#expand-all').click(() => $('.card .collapse').collapse('show'));
 });
 
-
-let get_card_template = () => doT.template($('#card-template').html());
-let get_pr_card_template = () => doT.template($('#pr-card-template').html());
-let get_search_row_template = () => doT.template($('#search-row-template').html());
 let append_search_row = (id, fields) => $('.search-rows').append(searchRow({'id': id, 'fields': fields}));
 let generate_card = (data) => window.card(data);
-let generate_pr_card = (data) => window.pr_card(data);
-let clear_search_results = () => $('#search-results').empty();
-let display_search_results = (show) => show ? $('#search-results').show() : $('#search-results').hide();
-let disable_search_buttons = (disable) => disable ? $('.btn-sm').addClass('disabled') : $('.btn-sm').removeClass('disabled');
-let update_results_header = (num) => num !== null ? $('#results-header').text('Results (' + num + ')') : $('#results-header').text('Results');
 let get_search_row_ids = () => $('.search-row').map((index, elem) => elem.id);
 let get_name_input = () => $('#name-input').val().trim();
 let get_type_select = () => $('#type-select').val();
 let get_row_select = (id) => $('#' + id + '-select').val();
 let get_row_input = (id) => $('#' + id + '-input').val().trim();
-let display_loading_bar = (show) => show ? $('.loader').show() : $('.loader').hide();
+let append_to_results = (elem) => $('#search-results').append(elem);
 const empty_type_field = 'Any type';
 const empty_select = 'Select field';
 
@@ -109,54 +89,6 @@ function collect_query_info() {
 		else {
 				return null;
 		}
-}
-
-
-function collect_pr_query() {
-		let input = $('#press-release-input').val().trim();
-		if (input === "") {
-				return null;
-		}
-		return {'query': input};
-}
-
-
-function search(event, url, params, display_func) {
-		event.preventDefault();
-
-		if (requesting != null) {
-				requesting.abort();
-		}
-
-		if (params === null) {
-				return;
-		}
-
-		let newReq = $.get(url, params);
-		requesting = newReq;
-
-		$('.print-view-filters').text(JSON.stringify(params));
-
-		disable_search_buttons(true);
-		display_loading_bar(true);
-		update_results_header(null);
-		clear_search_results();
-
-		newReq.done(data => {
-				clear_search_results();
-				display_func(data);
-		})
-		.fail((e) => {
-				if (e.statusText != 'abort') {
-						$('#search-results').append('<div class="alert alert-danger search-error-alert">There was an error. Please try again.</div>');
-				}
-		})
-		.always(() => {
-				display_loading_bar(false);
-				display_search_results(true);
-				disable_search_buttons(false);
-				requesting = null;
-		});
 }
 
 
@@ -203,18 +135,9 @@ function display_query(res) {
 				e.innerHTML = generate_card(value);
 				c.appendChild(e);
 		});
-		$('#search-results').append(c);			// TODO remove this DOM reference
+		append_to_results(c);
 
 		update_results_header(res.length);
-}
-
-
-function display_pr_query(data) {
-		$.each(data.dates, (index, value) => {
-				$('#search-results').append(generate_pr_card(value));
-		});
-
-		update_results_header(data.dates.length);
 }
 
 
