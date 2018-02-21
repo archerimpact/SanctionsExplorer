@@ -66,6 +66,64 @@ app.get('/search', function(req, res) {
    }
 });
 
+app.get('/elasticsearch', function(req, res) {
+   // res.send('search');
+   var keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
+   var search_query = {bool:{should:[]}}
+
+   if(req.query.size){
+   	search_query.size = req.query.size;
+   }
+
+   for (var i=0; i<keywords.length; i++){
+		if(query[keywords[i]]!=null){
+			console.log(keywords[i]);
+			var subquery = {match:{}}
+			subquery[keywords[i]] = {}
+			var sbq = {}
+			sbq.query = query[keywords[i]]
+			sbq.fuzziness = "AUTO"
+			subquery[keywords[i]] = sbq
+			search_query.bool.should.push(subquery)
+
+		}
+	}
+
+   if (Object.keys(search_query).length !== 0) {
+     Entry.search(search_query, function(err, results){
+     	if(err){
+     		res.status(400).end();
+     	}
+     	else{
+     		res.json(results.hits.hits);
+     	}
+     });
+   }
+});
+
+app.get('/elasticsearch/all', function(req, res){
+	var keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
+	if(req.query.query){
+		var search_query = {}
+		search_query.multi_match = {}
+		search_query.multi_match.query = req.query.query;
+		search_query.fields = keywords;
+
+		Entry.search(search_query, function(err, results){
+			if(err){
+				res.status(400).end();
+			}
+			else{
+				res.json(results.hits.hits);
+			}
+		})
+
+	}
+	else{
+		res.status(400).send("No parameter provided for search");
+	}
+})
+
 app.get('/view', function(req, res) {
    res.send('view');
 });
@@ -219,9 +277,22 @@ let loadData = () => {
         });
 }
 
-loadData();
+// loadData();
 
 var j =0;
+
+// Entry.search({query_string:
+// 	{
+// 		query:{
+// 			fuzzy:{
+// 				sdn_name:"arocarribean airlines"
+// 			}
+// 		}
+// 	}
+// 	}, function(err, results){
+// 		console.log(results);
+// });
+
 
 function shipToDB(json_data) {
 	// NOTE: mongo times out when trying to save all documents at once
@@ -247,3 +318,4 @@ function shipToDB(json_data) {
     }
 
 }
+
