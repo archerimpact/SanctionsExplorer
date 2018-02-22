@@ -46,6 +46,7 @@ function search(event, url, params, display_func, divToUse) {
 		clear_search_results();
 
 		newReq.done(data => {
+                                console.log(data);
 				clear_search_results();
 				display_func(data);
 		})

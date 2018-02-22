@@ -171,16 +171,17 @@ function search_ES(query, model, res) {
     // if (Object.keys(search_query).length !== 0) {
         console.log(query);
         model.esSearch(query, (err, results) => {
-            console.log(results);
+//            console.log(results);
             if (err) {
                 res.status(400).end();
             }
             else {
                 let response = [];
                 for (var i in results.hits.hits) {
+                    console.log(results.hits.hits[i]['_source']['sdn_name'] + ': ' + results.hits.hits[i]['_score']);
                     response.push(results.hits.hits[i]['_source']);
                 }
-                console.log(response);
+//                console.log(response);
                 res.json(response);
             }
         });
