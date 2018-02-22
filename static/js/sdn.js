@@ -5,7 +5,7 @@ $(document).ready(() => {
 		window.searchRow = get_template('#search-row-template');
 
 		$('.search-button').click(event => {
-				search(event, addr + '/search', collect_query_info(), display_query, '#search-results');
+				search(event, addr + '/elasticsearch', collect_query_info(), display_query, '#search-results');
 		});
 
 		var id = 0;

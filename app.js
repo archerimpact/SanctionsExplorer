@@ -77,13 +77,16 @@ app.get('/search', function(req, res) {
 app.get('/elasticsearch', function(req, res) {
    // res.send('search');
    var keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
-   var es_query = {size:3}
-   var search_query = {bool:{should:[]}}
+   var es_query = {size:3, from:0}
+   var search_query = {bool:{must:[]}}
    //console.log(req.query);
 
    if(req.query.size){
 	es_query.size = req.query.size
    }
+   if(req.query.from){
+	es_query.from = req.query.from
+  }
    
    
    console.log(search_query);
@@ -93,12 +96,13 @@ app.get('/elasticsearch', function(req, res) {
 			var subquery = {match:{}}
 			//subquery.match[keywords[i]] = {}
 			var sbq = {}
-			sbq.query = req.query[keywords[i]]
-			sbq.fuzziness = "AUTO"
-			subquery.match[keywords[i]] = sbq
+			sbq[keywords[i]] = {}
+			sbq[keywords[i]].query = req.query[keywords[i]]
+			sbq[keywords[i]].fuzziness = "AUTO"
+			subquery.match = sbq
 			console.log(sbq);
-			//console.log(subquery);
-			search_query.bool.should.push(subquery)
+			console.log(subquery);
+			search_query.bool.must.push(subquery)
 
 		}
 	}
