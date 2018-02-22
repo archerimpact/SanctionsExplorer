@@ -77,29 +77,39 @@ app.get('/search', function(req, res) {
 app.get('/elasticsearch', function(req, res) {
    // res.send('search');
    var keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
+   var es_query = {size:3}
    var search_query = {bool:{should:[]}}
+   //console.log(req.query);
 
    if(req.query.size){
-   	search_query.size = req.query.size;
+	es_query.size = req.query.size
    }
-
+   
+   
+   console.log(search_query);
    for (var i=0; i<keywords.length; i++){
-		if(query[keywords[i]]!=null){
+		if(req.query[keywords[i]]!=null){
 			console.log(keywords[i]);
 			var subquery = {match:{}}
-			subquery[keywords[i]] = {}
+			//subquery.match[keywords[i]] = {}
 			var sbq = {}
-			sbq.query = query[keywords[i]]
+			sbq.query = req.query[keywords[i]]
 			sbq.fuzziness = "AUTO"
-			subquery[keywords[i]] = sbq
+			subquery.match[keywords[i]] = sbq
+			console.log(sbq);
+			//console.log(subquery);
 			search_query.bool.should.push(subquery)
 
 		}
 	}
-
+//	console.log(search_query);
+//	console.log(search_query.bool.should);
+	es_query.query = search_query;
+//	console.log(es_query);
    if (Object.keys(search_query).length !== 0) {
-     Entry.search(search_query, function(err, results){
-     	if(err){
+     Entry.esSearch(es_query, function(err, results){
+     	console.log(results);
+	if(err){
      		res.status(400).end();
      	}
      	else{
@@ -118,6 +128,8 @@ app.get('/elasticsearch/all', function(req, res){
 		search_query.fields = keywords;
 
 		Entry.search(search_query, function(err, results){
+			console.log(results);
+
 			if(err){
 				res.status(400).end();
 			}
