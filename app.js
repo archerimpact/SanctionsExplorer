@@ -54,8 +54,11 @@ app.get('/search/press-releases', function(req, res) {
             'match': {
                 'content': text,
             }
-        }
+        },
+        size: 300,
     }
+
+    
 
     search_ES(query, PR, res);
 });
@@ -166,7 +169,8 @@ app.get('/view', function(req, res) {
 
 function search_ES(query, model, res) {
     // if (Object.keys(search_query).length !== 0) {
-        Entry.esSearch(query, (err, results) => {
+        console.log(query);
+        model.esSearch(query, (err, results) => {
             console.log(results);
             if (err) {
                 res.status(400).end();
