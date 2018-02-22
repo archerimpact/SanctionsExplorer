@@ -36,7 +36,7 @@ app.get('/press-releases', function(req, res) {
     res.sendFile(__dirname + '/views/press-releases.html');
 });
 
-app.get('/press-release', function(req, res) {
+app.get('/search/press-release-sqlite', function(req, res) {
     let text = req.query.query;
     console.log(text);
     // TODO don't let them inject SQL lol
@@ -44,6 +44,23 @@ app.get('/press-release', function(req, res) {
         res.json({'dates': rows});
     });
 });
+
+app.get('/search/press-releases', function(req, res) {
+    let text = req.query.query;
+    console.log(text);
+
+    let query = {
+        'query': {
+            'match': {
+                'content': text,
+            }
+        }
+    }
+
+    search_ES(query, PR, res);
+});
+
+
 
 app.get('/search', function(req, res) {
    // res.send('search');
@@ -114,22 +131,7 @@ app.get('/elasticsearch', function(req, res) {
 
     es_query.query = search_query;
 
-    if (Object.keys(search_query).length !== 0) {
-        Entry.esSearch(es_query, (err, results) => {
-            console.log(results);
-            if (err) {
-                res.status(400).end();
-            }
-            else {
-                let response = [];
-                for (var i in results.hits.hits) {
-                    response.push(results.hits.hits[i]['_source']);
-                }
-                console.log(response);
-                res.json(response);
-            }
-        });
-    }
+    search_ES(es_query, Entry, res);
 });
 
 app.get('/elasticsearch/all', function(req, res){
@@ -160,3 +162,81 @@ app.get('/elasticsearch/all', function(req, res){
 app.get('/view', function(req, res) {
     res.send('view');
 });
+
+
+function search_ES(query, model, res) {
+    // if (Object.keys(search_query).length !== 0) {
+        Entry.esSearch(query, (err, results) => {
+            console.log(results);
+            if (err) {
+                res.status(400).end();
+            }
+            else {
+                let response = [];
+                for (var i in results.hits.hits) {
+                    response.push(results.hits.hits[i]['_source']);
+                }
+                console.log(response);
+                res.json(response);
+            }
+        });
+    // }
+}
+
+const entrySchema = mongoose.Schema({
+    ent_num:String,
+    sdn_name:String,
+    sdn_type:String,
+    program:String,
+    title:String,
+    call_sign:String,
+    vess_type:String,
+    tonnage:String,
+    grt:String,
+    vess_flag:String,
+    vess_owner:String,
+    remarks:String,
+    linked_to:[String],
+    nationality:[String],
+    dob:[String],
+    aka:String,
+    pob:[String],
+    passport:[String],
+    nit:[String],
+    cedula_no:String,
+    ssn:String,
+    dni:String,
+    rfc:[String],
+    website:[String],
+    vessel_registration_number:String,
+    gender:String,
+    swift_bic:[String],
+    tax_id_no:[String],
+    email:[String],
+    phone:String,
+    registration_id:[String],
+    company_number:String,
+    aircraft_construction_number:String,
+    citizen:[String],
+    additional_sanctions_info:[String],
+    aircraft_manufacture_date:String,
+    aircraft_model:[String],
+    aircraft_operator:[String],
+    position:String,
+    national_id_number:[String],
+    identification_number:[String],
+    previous_aircraft_tail_number:String
+});
+
+const prSchema = mongoose.Schema({
+    title:String,
+    link:String,
+    date:String,
+    content:String
+});
+
+entrySchema.plugin(mongoosastic);
+prSchema.plugin(mongoosastic);
+
+let Entry = mongoose.model('Entry', entrySchema);
+let PR = mongoose.model('PR', prSchema);
