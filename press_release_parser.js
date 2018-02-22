@@ -3,6 +3,8 @@
 const fs = require('fs');
 const mongoose = require('mongoose');
 const mongoosastic = require('mongoosastic');
+const async = require('async');
+mongoose.connect('mongodb://localhost/press-releases');
 
 const prSchema = mongoose.Schema({
 	title:String,
@@ -22,12 +24,15 @@ fs.readFile('press_release_json.txt', 'utf8', (err, data) => {
 
 function shipToDB(json_data) {
 	console.log("# keys: " + Object.keys(json_data).length);
+        let prs = [];
 
 	for (var i = 0; i < json_data.length; i++) {
 		console.log('Shipping document ' + i);
+		prs.push(new PR(json_data[i]));
+	}
 
-		const pr = new PR(json_data[i]);
-		pr.save((err, data) => {
+        async.eachLimit(prs, 1, function(pr, callback) {
+                pr.save((err, data) => {
 			if (err) {
 				console.log('Saving error for ' + i + ': ' + err);
 			}
@@ -40,5 +45,5 @@ function shipToDB(json_data) {
 				console.log('Document ' + i + ' indexed');
 			})
 		});
-	}
+	});
 }
