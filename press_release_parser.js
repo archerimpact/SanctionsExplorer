@@ -17,6 +17,15 @@ prSchema.plugin(mongoosastic);
 
 let PR = mongoose.model('PR', prSchema);
 
+let stream = PR.synchronize();
+var count = 0;
+
+stream.on('data', (err, doc) => count++);
+stream.on('close', () => console.log('Indexed ' + count + ' document'));
+stream.on('error', (err) => console.log(err));
+
+
+
 fs.readFile('press_release_json.txt', 'utf8', (err, data) => {
 	let json = JSON.parse(data);
 	shipToDB(json);
@@ -24,26 +33,12 @@ fs.readFile('press_release_json.txt', 'utf8', (err, data) => {
 
 function shipToDB(json_data) {
 	console.log("# keys: " + Object.keys(json_data).length);
-        let prs = [];
 
 	for (var i = 0; i < json_data.length; i++) {
 		console.log('Shipping document ' + i);
-		prs.push(new PR(json_data[i]));
-	}
-
-        async.eachLimit(prs, 1, function(pr, callback) {
-                pr.save((err, data) => {
-			if (err) {
-				console.log('Saving error for ' + i + ': ' + err);
-			}
-			console.log('Document ' + i + ' successfully saved');
-			
-			pr.on('es-indexed', (indexErr, res) => {
-				if (indexErr) {
-					console.log('Indexing error: ' + indexErr);
-				}
-				console.log('Document ' + i + ' indexed');
-			})
-		});
-	});
+                let newPR = new PR(json_data[i]);
+                newPR.save((err) => {
+                    if (err) { console.log(err) }
+                });
+        }
 }
