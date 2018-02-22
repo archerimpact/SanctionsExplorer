@@ -76,15 +76,21 @@ app.get('/search', function(req, res) {
 
 app.get('/elasticsearch', function(req, res) {
     const keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
+    const fuzziness = {"program": "0", "passport": "0", "cedula_no":"0"}
 
     var es_query = {size: 300, from: 0};
     var search_query = {bool:{must:[]}};
 
     let create_match_phrase = (field, query_str) => {
         let json = { 'match': {} };
+        var fuzz_setting = "AUTO";
+        if (fuzziness[field] != null) {
+            console.log('custom fuzz of ' + fuzziness[field]);
+            fuzz_setting = fuzziness[field];
+        }
         json.match[field] = {
             'query': query_str,
-            'fuzziness': 'AUTO'
+            'fuzziness': fuzz_setting,
         };
         return json;
     };
