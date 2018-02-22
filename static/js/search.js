@@ -2,7 +2,9 @@
 
 $(document).ready(() => {
 		// Set heights of divs to ensure proper scrolling behavior
-		$('.page-col').innerHeight($(window).height() - $('nav').outerHeight() - 1);
+		let resize_col = () => $('.page-col').innerHeight($(window).height() - $('nav').outerHeight() - 1);
+		resize_col();
+		$(window).on('resize', resize_col);
 		$('#collapse-all').click(() => $('.card .collapse').collapse('hide'));
 		$('#expand-all').click(() => $('.card .collapse').collapse('show'));
 
