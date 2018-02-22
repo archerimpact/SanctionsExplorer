@@ -77,7 +77,7 @@ app.get('/search', function(req, res) {
 app.get('/elasticsearch', function(req, res) {
     // res.send('search');
     var keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
-    var es_query = {size: 3, from: 0};
+    var es_query = {size: 300, from: 0};
     var search_query = {bool:{must:[]}};
 
     let create_match_phrase = (field, query_str) => {
@@ -107,10 +107,10 @@ app.get('/elasticsearch', function(req, res) {
 			// sbq[keywords[i]] = {}
 			// sbq[keywords[i]].query = req.query[keywords[i]]
 			// sbq[keywords[i]].fuzziness = "AUTO"
-            let match_phrase = create_match_phrase(keywords[i], req.query(keywords[i]))
+            let match_phrase = create_match_phrase(keywords[i], req.query[keywords[i]])
 			// subquery.match = sbq
-			console.log(sbq);
-			console.log(subquery);
+//			console.log(sbq);
+//			console.log(subquery);
 			search_query.bool.must.push(match_phrase)
 		}
 	}
@@ -125,8 +125,12 @@ app.get('/elasticsearch', function(req, res) {
      		res.status(400).end();
      	}
      	else{
-            console.log(results.hits.hits);
-     		res.json(results.hits.hits);
+		let response = [];
+		for (var i in results.hits.hits) {
+			response.push(results.hits.hits[i]['_source']);
+		}
+		console.log(response);
+     		res.json(response);
      	}
      });
    }

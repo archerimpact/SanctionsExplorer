@@ -107,7 +107,7 @@ function process_entry(res) {
 			});
 		};
 
-		let main_fields = construct_fields(['_id', 'sdn_name', 'sdn_type', 'program']);
+		let main_fields = construct_fields(['ent_num', 'sdn_name', 'sdn_type', 'program']);
 		let personal_fields = construct_fields(['nationality', 'dob', 'pob', 'gender', 'title']);
 		let id_fields = construct_fields(['passport', 'tax_id_no', 'website', 'email', 'phone']);
 		let notes_fields = construct_fields(['notes', 'additional_sanctions_info']);
@@ -143,7 +143,7 @@ function display_query(res) {
 
 function construct_fields(fields) {
 		let api_to_ui = {
-				'_id': 'id',
+				'ent_num': 'id',
 				'sdn_name': 'Name',
 				'sdn_type': 'Type',
 				'program': 'Program',
