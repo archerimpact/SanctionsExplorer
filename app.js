@@ -52,58 +52,66 @@ app.get('/search', function(req, res) {
 
 
    if(req.query.id){
-   	search_query["_id"] = req.query.id;
+       search_query["_id"] = req.query.id;
    }
 
-   for (var i=0; i<keywords.length; i++){
-   	if(req.query[keywords[i]]!=null){
-   		console.log(keywords[i]);
-   		search_query[keywords[i]] = req.query[keywords[i]]
-   	}
+    for (var i=0; i<keywords.length; i++){
+        if(req.query[keywords[i]]!=null){
+            console.log(keywords[i]);
+            search_query[keywords[i]] = req.query[keywords[i]]
+        }
    }
 
-   if (Object.keys(search_query).length !== 0) {
-     Entry.find(search_query, function(err, result){
-     	if(err){
-     		res.status(400).end();
-     	}
-     	else{
-     		res.json(result);
-     	}
-     });
-   }
+    if (Object.keys(search_query).length !== 0) {
+        Entry.find(search_query, function(err, result){
+         	if (err) {
+                res.status(400).end();
+         	}
+         	else {
+         		res.json(result);
+         	}
+        });
+    }
 });
 
 app.get('/elasticsearch', function(req, res) {
-   // res.send('search');
-   var keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
-   var es_query = {size:3, from:0}
-   var search_query = {bool:{must:[]}}
-   //console.log(req.query);
+    // res.send('search');
+    var keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
+    var es_query = {size: 3, from: 0};
+    var search_query = {bool:{must:[]}};
 
-   if(req.query.size){
-	es_query.size = req.query.size
-   }
-   if(req.query.from){
-	es_query.from = req.query.from
-  }
-   
-   
+    let create_match_phrase = (field, query_str) => {
+        let json = { 'match': {} };
+        json.match[field] = {
+            'query': query_str,
+            'fuzziness': 'AUTO'
+        };
+        return json;
+    };
+
+    if (req.query.size) {
+        es_query.size = req.query.size
+    }
+
+    if(req.query.from){
+        es_query.from = req.query.from
+    }
+
+
    console.log(search_query);
-   for (var i=0; i<keywords.length; i++){
-		if(req.query[keywords[i]]!=null){
-			console.log(keywords[i]);
-			var subquery = {match:{}}
-			//subquery.match[keywords[i]] = {}
-			var sbq = {}
-			sbq[keywords[i]] = {}
-			sbq[keywords[i]].query = req.query[keywords[i]]
-			sbq[keywords[i]].fuzziness = "AUTO"
-			subquery.match = sbq
+   for (var i = 0; i < keywords.length; i++) {
+		if (req.query[keywords[i]] != null) {
+			// console.log(keywords[i]);
+			// var subquery = {match:{}}
+			// var sbq = {}
+			// sbq[keywords[i]] = {}
+			// sbq[keywords[i]].query = req.query[keywords[i]]
+			// sbq[keywords[i]].fuzziness = "AUTO"
+            let match_phrase = create_match_phrase(keywords[i], req.query(keywords[i]))
+			// subquery.match = sbq
 			console.log(sbq);
 			console.log(subquery);
-			search_query.bool.must.push(subquery)
-
+			search_query.bool.must.push(match_phrase)
 		}
 	}
 //	console.log(search_query);
@@ -117,6 +125,7 @@ app.get('/elasticsearch', function(req, res) {
      		res.status(400).end();
      	}
      	else{
+            console.log(results.hits.hits);
      		res.json(results.hits.hits);
      	}
      });
@@ -342,4 +351,3 @@ function shipToDB(json_data) {
     }
 
 }
-
