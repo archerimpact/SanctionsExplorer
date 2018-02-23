@@ -1,47 +1,54 @@
 'use strict';
 
 $(document).ready(() => {
-		window.card = get_template('#card-template');
-		window.searchRow = get_template('#search-row-template');
+    window.card = get_template('#card-template');
+    window.searchRow = get_template('#search-row-template');
 
-		$('.search-button').click(event => {
-				search(event, addr + '/elasticsearch', collect_query_info(), display_query, '#search-results');
-		});
+    $('.search-button').click(event => {
+        search(event, addr + '/elasticsearch', collect_query_info(), display_query, '#search-results');
+    });
 
-		var id = 0;
-		let fields = construct_fields(['nationality', 'pob', 'dob', 'passport', 'all fields']);
-		append_search_row(id, fields);
-		id++;
+    $('.next-page').click(event => {
+        window.lastQuery.from += window.lastQuery.size;
+        search(event, addr + '/elasticsearch', window.lastQuery, display_query, '#search-results', true);
+    });
 
-		$(document).on('change', '.search-row-select', event => {
-				var needNewRow = true;
-				var dupeSelections = false;
-				var currentSelections = [];
+    var id = 0;
+    let fields = construct_fields(['nationality', 'pob', 'dob', 'passport', 'all fields']);
+    append_search_row(id, fields);
+    id++;
 
-				$.each($('.search-row-select'), (index, value) => {
-						if (value.value == empty_select) {
-								needNewRow = false;
-						}
-						else {
-								currentSelections.push(value.value);
-						}
-				});
+    $(document).on('change', '.search-row-select', event => {
+        var needNewRow = true;
+        var dupeSelections = false;
+        var currentSelections = [];
 
-				if (new Set(currentSelections).size !== currentSelections.length) {
-						console.log('Duplicate filter detected');
-						$('.search-row-error-alert').html('<div class="alert alert-danger">Multiple of the same filter selected!</div>');
-				}
-				else {
-						$('.search-row-error-alert').empty();
-				}
+        $.each($('.search-row-select'), (index, value) => {
+            if (value.value == empty_select) {
+                needNewRow = false;
+            }
+            else {
+                currentSelections.push(value.value);
+            }
+        });
 
-				console.log(currentSelections);
+        if (new Set(currentSelections).size !== currentSelections.length) {
+            console.log('Duplicate filter detected');
+            $('.search-row-error-alert').html('<div class="alert alert-danger">Multiple of the same filter selected!</div>');
+        }
+        else {
+            $('.search-row-error-alert').empty();
+        }
 
-				if (needNewRow) {
-						append_search_row(id, fields);
-						id++;
-				}
-		});
+        console.log(currentSelections);
+
+        if (needNewRow) {
+            append_search_row(id, fields);
+            id++;
+        }
+    });
+
+
 });
 
 let append_search_row = (id, fields) => $('.search-rows').append(searchRow({'id': id, 'fields': fields}));
@@ -65,117 +72,122 @@ const empty_select = 'Select field';
 
 
 function collect_query_info() {
-		let query = {};
+    let query = {};
 
-		let name = get_name_input();
-		if (name !== null && name !== "") {
-				query['sdn_name'] = name;
-		}
+    let name = get_name_input();
+    if (name !== null && name !== "") {
+        query['sdn_name'] = name;
+    }
 
-		let type = get_type_select()
-		if (type !== empty_type_field) {
-				query['sdn_type'] = type;
-		}
+    let type = get_type_select()
+    if (type !== empty_type_field) {
+        query['sdn_type'] = type;
+    }
 
-        let program = get_program_select()
-		if (program !== empty_program_field) {
-				query['program'] = program;
-		}
+    let program = get_program_select()
+    if (program !== empty_program_field) {
+        query['program'] = program;
+    }
 
-		$.each(get_search_row_ids(), (index, row_id) => {
-				let select = get_row_select(row_id);
-				let input = get_row_input(row_id);
-				if (select != empty_select && input !== null && input !== "") {
-					query[select] = input;
-				}
-		});
+    $.each(get_search_row_ids(), (index, row_id) => {
+        let select = get_row_select(row_id);
+        let input = get_row_input(row_id);
+        if (select != empty_select && input !== null && input !== "") {
+            query[select] = input;
+        }
+    });
 
-		if (!$.isEmptyObject(query)) {
-				return query;
-		}
-		else {
-				return null;
-		}
+    query.size = 50;
+    query.from = 0;
+
+    window.lastQuery = query;
+
+    if (!$.isEmptyObject(query)) {
+        return query;
+    }
+    else {
+        return null;
+    }
 }
 
 
 function process_entry(res) {
-		let data = {};
+    let data = {};
 
-		let extract = (name, fields) => {
-			data[name] = {};
-			$.each(fields, (key, value) => {
-					if (res[key] != null && res[key].length != 0) {
-							let formatted_key = fields[key];
-							data[name][formatted_key] = res[key];
-					} else if (res[key] == null && fields[key] == 'Type') {		// TODO hacky solution to display entity types. Fix in DB.  We can't search for entities either.
-							data[name]['Type'] = 'entity';
-					}
-			});
-		};
+    let extract = (name, fields) => {
+        data[name] = {};
+        $.each(fields, (key, value) => {
+            if (res[key] != null && res[key].length != 0) {
+                let formatted_key = fields[key];
+                data[name][formatted_key] = res[key];
+            } else if (res[key] == null && fields[key] == 'Type') {        // TODO hacky solution to display entity types. Fix in DB.  We can't search for entities either.
+                data[name]['Type'] = 'entity';
+            }
+        });
+    };
 
-		let main_fields = construct_fields(['ent_num', 'sdn_name', 'sdn_type', 'program']);
-		let personal_fields = construct_fields(['nationality', 'dob', 'pob', 'gender', 'title']);
-		let id_fields = construct_fields(['passport', 'tax_id_no', 'website', 'email', 'phone']);
-		let notes_fields = construct_fields(['notes', 'additional_sanctions_info']);
-		let context_fields = construct_fields(['linked_to', 'press_releases']);
-		extract('main', main_fields);
-		extract('personal', personal_fields);
-		extract('identification', id_fields);
-		extract('notes', notes_fields);
-		extract('context', context_fields)
+    let main_fields = construct_fields(['ent_num', 'sdn_name', 'sdn_type', 'program']);
+    let personal_fields = construct_fields(['nationality', 'dob', 'pob', 'gender', 'title']);
+    let id_fields = construct_fields(['passport', 'tax_id_no', 'website', 'email', 'phone']);
+    let notes_fields = construct_fields(['notes', 'additional_sanctions_info']);
+    let context_fields = construct_fields(['linked_to', 'press_releases']);
+    extract('main', main_fields);
+    extract('personal', personal_fields);
+    extract('identification', id_fields);
+    extract('notes', notes_fields);
+    extract('context', context_fields)
 
-		data['categories'] = ['personal', 'identification', 'notes'];
-		return data;
+    data['categories'] = ['personal', 'identification', 'notes'];
+    return data;
 }
 
 
 function display_query(res) {
-		let result = [];
-		for (var i = 0; i < res.length; i++) {
-				result.push(process_entry(res[i]));
-		}
+    let result = [];
+    for (var i = 0; i < res.length; i++) {
+        result.push(process_entry(res[i]));
+    }
 
-		let c = document.createDocumentFragment();
-		$.each(result, (index, value) => {
-				let e = document.createElement("div");
-				e.innerHTML = generate_card(value);
-				c.appendChild(e);
-		});
-		append_to_results(c);
+    let c = document.createDocumentFragment();
+    $.each(result, (index, value) => {
+        let e = document.createElement("div");
+        e.innerHTML = generate_card(value);
+        c.appendChild(e);
+    });
+    append_to_results(c);
 
-		update_results_header(res.length);
+    update_results_header(res.length);
 }
 
 
 function construct_fields(fields) {
-		let api_to_ui = {
-				'ent_num': 'id',
-				'sdn_name': 'Name',
-				'sdn_type': 'Type',
-				'program': 'Program',
-				'nationality': 'Nationality',
-				'dob': 'Date of Birth',
-				'pob': 'Place of Birth',
-				'gender': 'Gender',
-				'title': 'Title',
-				'passport': 'Passport Number',
-				'tax_id_no': 'Tax ID Number',
-				'website': 'Website',
-				'phone': 'Phone',
-				'email': 'Email',
-				'notes': 'Notes',
-				'additional_sanctions_info': 'Additional Sanctions Info',
-				'linked_to': 'Linked To',
-				'all fields': 'All fields',
-		};
+    let api_to_ui = {
+        'ent_num': 'id',
+        'sdn_name': 'Name',
+        'sdn_type': 'Type',
+        'program': 'Program',
+        'nationality': 'Nationality',
+        'dob': 'Date of Birth',
+        'pob': 'Place of Birth',
+        'gender': 'Gender',
+        'title': 'Title',
+        'passport': 'Passport Number',
+        'tax_id_no': 'Tax ID Number',
+        'website': 'Website',
+        'phone': 'Phone',
+        'email': 'Email',
+        'notes': 'Notes',
+        'additional_sanctions_info': 'Additional Sanctions Info',
+        'linked_to': 'Linked To',
+        'all fields': 'All fields',
+    };
 
-		let retval = {};
-		for (var f in fields) {
-				let fieldname = fields[f]
-				if (fieldname in api_to_ui) {
-						retval[fieldname] = api_to_ui[fieldname];
-				}
-		}
-		return retval;
+    let retval = {};
+    for (var f in fields) {
+        let fieldname = fields[f]
+        if (fieldname in api_to_ui) {
+            retval[fieldname] = api_to_ui[fieldname];
+        }
+    }
+    return retval;
 }

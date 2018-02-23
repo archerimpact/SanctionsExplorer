@@ -1,26 +1,26 @@
 /*********** Page Layout ***********/
 html, body {
-	margin: 0;
-	height: 100%;
-	/*overflow: hidden;*/
+    margin: 0;
+    height: 100%;
+    /*overflow: hidden;*/
 }
 
 .page-col {
-	overflow-y: scroll;
-	height: 90%;		/* should be overwritten by Javascript */
-	padding-top: 3em;
-	padding-right: 2em;
-	padding-left: 2em;
+    overflow-y: scroll;
+    height: 90%;        /* should be overwritten by Javascript */
+    padding-top: 3em;
+    padding-right: 2em;
+    padding-left: 2em;
 }
 
 
 /*********** Filter Column ***********/
 .left-col {
-	background-color: #eeeeee;
+    background-color: #eeeeee;
 }
 
 .search-button-group {
-	text-align: right;
+    text-align: right;
 }
 
 #more-filters-header {
@@ -32,79 +32,83 @@ html, body {
 
 /*********** Results Column ***********/
 hr.no-bottom-margin {
-	margin-bottom: 0;
+    margin-bottom: 0;
 }
 
 .search-error-alert {
-		margin-top: 1em;
+    margin-top: 1em;
+}
+
+.right-col {
+    padding-bottom: 8em;
 }
 
 
 /*********** Cards ***********/
 .card {
-	margin-bottom: 0;
-	border-left: 0;
-	border-right: 0;
-	border-top: 0;
+    margin-bottom: 0;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
 }
 
 .card-header {
-	border: 0;
+    border: 0;
 }
 
 .left-card-col {
-	border-left: 1px solid #bbbbbb;
-	padding-left: 1em;
+    border-left: 1px solid #bbbbbb;
+    padding-left: 1em;
 }
 
 .card-header {
-	background-color: #ffffff;
+    background-color: #ffffff;
 }
 
 .card-body {
-	padding-top: 0;
+    padding-top: 0;
 }
 
 small.card-sdn-type {
-	font-size: 12px;
-	color: #aaaaaa;
-	margin-left: 1em;
+    font-size: 12px;
+    color: #aaaaaa;
+    margin-left: 1em;
 }
 
 h5.card-detail-header {
-	font-size: 14px;
-	margin-top: 1em;
-	letter-spacing: 1px;
+    font-size: 14px;
+    margin-top: 1em;
+    letter-spacing: 1px;
 }
 
 .card-detail-info {
-	font-size: 14px;
-	text-transform: none;
-	letter-spacing: 1px;
-	color: #919aa1;
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: 1px;
+    color: #919aa1;
 }
 
 
 /*********** Print Formatting ***********/
 @media print {
-	.nav {
-		display: none;
-	}
+    .nav {
+        display: none;
+    }
 
-	.left-col {
-		display: none;
-	}
+    .left-col {
+        display: none;
+    }
 
-	.page-col {
-		overflow-y: auto;
-		height: auto;
-	}
+    .page-col {
+        overflow-y: auto;
+        height: auto;
+    }
 }
 
 
 /*********** Loading Bar ***********/
 .loader {
-	display: none;   /* keep hidden */
+    display: none;   /* keep hidden */
 }
 .loader,
 .loader:before,

@@ -1,16 +1,16 @@
 'use strict';
 
 $(document).ready(() => {
-		// Set heights of divs to ensure proper scrolling behavior
-		let resize_col = () => $('.page-col').innerHeight($(window).height() - $('nav').outerHeight() - 1);
-		resize_col();
-		$(window).on('resize', resize_col);
-		$('#collapse-all').click(() => $('.card .collapse').collapse('hide'));
-		$('#expand-all').click(() => $('.card .collapse').collapse('show'));
+    // Set heights of divs to ensure proper scrolling behavior
+    let resize_col = () => $('.page-col').innerHeight($(window).height() - $('nav').outerHeight() - 1);
+    resize_col();
+    $(window).on('resize', resize_col);
 
-		window.addr = 'http://35.197.20.41:80';
-		//window.addr = "http://localhost:8080";
-		window.requesting = null;
+    $('#collapse-all').click(() => $('.card .collapse').collapse('hide'));
+    $('#expand-all').click(() => $('.card .collapse').collapse('show'));
+
+    window.addr = 'http://35.197.20.41:80';
+    window.requesting = null;
 });
 
 
@@ -24,41 +24,45 @@ let update_filters_for_print = (data) => $('.print-view-filters').text(JSON.stri
 const error_alert = '<div class="alert alert-danger search-error-alert">There was an error. Please try again.</div>';
 
 
-function search(event, url, params, display_func, divToUse) {
-		event.preventDefault();
+function search(event, url, params, display_func, divToUse, append) {
+    event.preventDefault();
 
-		if (requesting != null) {
-				window.requesting.abort();
-		}
+    if (requesting != null) {
+        window.requesting.abort();
+    }
 
-		if (params === null) {
-				return;
-		}
+    if (params === null) {
+        return;
+    }
 
-		let newReq = $.get(url, params);
-		window.requesting = newReq;
+    let newReq = $.get(url, params);
+    window.requesting = newReq;
 
-		update_filters_for_print(params);
+    update_filters_for_print(params);
 
-		disable_search_buttons(true);
-		display_loading_bar(true);
-		update_results_header(null);
-		clear_search_results();
+    disable_search_buttons(true);
+    display_loading_bar(true);
+    if (!append) {
+        update_results_header(null);
+        clear_search_results();
+    }
 
-		newReq.done(data => {
-                                console.log(data);
-				clear_search_results();
-				display_func(data);
-		})
-		.fail((e) => {
-				if (e.statusText != 'abort') {
-						$(divToUse).append(error_alert);
-				}
-		})
-		.always(() => {
-				display_loading_bar(false);
-				display_search_results(true);
-				disable_search_buttons(false);
-				window.requesting = null;
-		});
+    newReq.done(data => {
+        console.log(data);
+        if (!append) {
+            clear_search_results();
+        }
+        display_func(data);
+    })
+    .fail((e) => {
+        if (e.statusText != 'abort') {
+            $(divToUse).append(error_alert);
+        }
+    })
+    .always(() => {
+        display_loading_bar(false);
+        display_search_results(true);
+        disable_search_buttons(false);
+        window.requesting = null;
+    });
 }
