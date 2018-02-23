@@ -23,6 +23,12 @@ html, body {
 	text-align: right;
 }
 
+#more-filters-header {
+    padding-top: 3em;
+    padding-bottom: 0.5em;
+    padding-left: 5px;    /* match form row below */
+}
+
 
 /*********** Results Column ***********/
 hr.no-bottom-margin {

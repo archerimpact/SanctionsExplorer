@@ -2,48 +2,33 @@
 
 const express = require('express');
 const app = express();
-
-const csv = require('csv-parser');
-const fs = require('fs');
 const mongoose = require('mongoose');
 const mongoosastic = require('mongoosastic');
-const sleep = require('sleep');
-// mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
-mongoose.connect('mongodb://localhost/ofacasaurus');
-
-const sqlite3 = require('sqlite3').verbose();
-let db = new sqlite3.Database('press_releases.db');
+// mongoose.connect('mongodb://localhost/ofacasaurus');
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
-app.listen(8080, "127.0.0.1", function() {
+
+app.listen(8080, "127.0.0.1", () => {
     console.log("Server has started");
 });
 
-app.get('/', function(req, res) {
+app.get('/', (req, res) => {
     res.sendFile(__dirname + '/views/sdn.html');
 });
 
-app.get('/sdn', function(req, res) {
+app.get('/sdn', (req, res) => {
     res.sendFile(__dirname + '/views/sdn.html');
 });
 
-app.get('/about', function(req, res) {
+app.get('/about', (req, res) => {
     res.sendFile(__dirname + '/views/about.html');
 });
 
-app.get('/press-releases', function(req, res) {
+app.get('/press-releases', (req, res) => {
     res.sendFile(__dirname + '/views/press-releases.html');
 });
 
-app.get('/search/press-release-sqlite', function(req, res) {
-    let text = req.query.query;
-    console.log(text);
-    // TODO don't let them inject SQL lol
-    db.all('SELECT name,pr_date,link FROM press_releases WHERE content LIKE "%' + text + '%";', (err, rows) => {
-        res.json({'dates': rows});
-    });
-});
 
 app.get('/search/press-releases', function(req, res) {
     let text = req.query.query;
@@ -58,45 +43,13 @@ app.get('/search/press-releases', function(req, res) {
         size: 300,
     }
 
-    
-
     search_ES(query, PR, res);
 });
 
 
-
-app.get('/search', function(req, res) {
-   // res.send('search');
-   var keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
-   var search_query = {}
-
-
-   if(req.query.id){
-       search_query["_id"] = req.query.id;
-   }
-
-    for (var i=0; i<keywords.length; i++){
-        if(req.query[keywords[i]]!=null){
-            console.log(keywords[i]);
-            search_query[keywords[i]] = req.query[keywords[i]]
-        }
-   }
-
-    if (Object.keys(search_query).length !== 0) {
-        Entry.find(search_query, function(err, result){
-             if (err) {
-                res.status(400).end();
-             }
-             else {
-                 res.json(result);
-             }
-        });
-    }
-});
-
-app.get('/elasticsearch', function(req, res) {
-    const keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
-    const fuzziness = {"program": "0", "passport": "0", "cedula_no":"0"}
+app.get('/search/sdn', function(req, res) {
+    const keywords = ["id", "ent_num", "sdn_name", "sdn_type", "program", "title", "call_sign", "vess_type", "tonnage", "grt", "vess_flag", "vess_owner", "remarks", "linked_to", "nationality", "dob", "aka", "pob", "passport", "nit", "cedula_no", "ssn", "dni", "rfc", "website", "vessel_registration_number", "gender", "swift_bic", "tax_id_no", "email", "phone", "registration_id", "company_number", "aircraft_construction_number", "citizen", "additional_sanctions_info", "aircraft_manufacture_date", "aircraft_model", "aircraft_operator", "position", "national_id_number", "identification_number", "previous_aircraft_tail_number"];
+    const fuzziness = {"program": "0", "passport": "0", "cedula_no": "0", "dob": "0"};
 
     var es_query = {size: 300, from: 0};
     var search_query = {bool:{must:[]}};
@@ -123,8 +76,6 @@ app.get('/elasticsearch', function(req, res) {
         es_query.from = req.query.from
     }
 
-
-   console.log(search_query);
    for (var i = 0; i < keywords.length; i++) {
         if (req.query[keywords[i]] != null) {
             let match_phrase = create_match_phrase(keywords[i], req.query[keywords[i]])
@@ -133,7 +84,6 @@ app.get('/elasticsearch', function(req, res) {
     }
 
     es_query.query = search_query;
-
     search_ES(es_query, Entry, res);
 });
 
@@ -162,13 +112,9 @@ app.get('/elasticsearch/all', function(req, res){
     }
 })
 
-app.get('/view', function(req, res) {
-    res.send('view');
-});
-
 
 function search_ES(query, model, res) {
-    // if (Object.keys(search_query).length !== 0) {
+    if (Object.keys(query['query']).length !== 0) {
         console.log(query);
         model.esSearch(query, (err, results) => {
 //            console.log(results);
@@ -185,7 +131,7 @@ function search_ES(query, model, res) {
                 res.json(response);
             }
         });
-    // }
+    }
 }
 
 const entrySchema = mongoose.Schema({
@@ -245,3 +191,49 @@ prSchema.plugin(mongoosastic);
 
 let Entry = mongoose.model('Entry', entrySchema);
 let PR = mongoose.model('PR', prSchema);
+
+
+/*
+ ******* LEGACY SEARCH FUNCTIONS *******
+
+const sqlite3 = require('sqlite3').verbose();
+let db = new sqlite3.Database('press_releases.db');
+mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
+
+app.get('/search/press-release-sqlite', function(req, res) {
+    let text = req.query.query;
+    console.log(text);
+    // TODO don't let them inject SQL lol
+    db.all('SELECT name,pr_date,link FROM press_releases WHERE content LIKE "%' + text + '%";', (err, rows) => {
+        res.json({'dates': rows});
+    });
+});
+
+app.get('/search/sdn-mongo', function(req, res) {
+   // res.send('search');
+   var keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
+   var search_query = {}
+
+   if(req.query.id){
+       search_query["_id"] = req.query.id;
+   }
+
+    for (var i=0; i<keywords.length; i++){
+        if(req.query[keywords[i]]!=null){
+            console.log(keywords[i]);
+            search_query[keywords[i]] = req.query[keywords[i]]
+        }
+   }
+
+    if (Object.keys(search_query).length !== 0) {
+        Entry.find(search_query, function(err, result){
+             if (err) {
+                res.status(400).end();
+             }
+             else {
+                 res.json(result);
+             }
+        });
+    }
+});
+*/

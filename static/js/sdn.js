@@ -9,7 +9,7 @@ $(document).ready(() => {
 		});
 
 		var id = 0;
-		let fields = construct_fields(['program', 'nationality', 'pob', 'dob', 'passport', 'all fields']);
+		let fields = construct_fields(['nationality', 'pob', 'dob', 'passport', 'all fields']);
 		append_search_row(id, fields);
 		id++;
 
@@ -49,10 +49,12 @@ let generate_card = (data) => window.card(data);
 let get_search_row_ids = () => $('.search-row').map((index, elem) => elem.id);
 let get_name_input = () => $('#name-input').val().trim();
 let get_type_select = () => $('#type-select').val();
+let get_program_select = () => $('#program-select').val();
 let get_row_select = (id) => $('#' + id + '-select').val();
 let get_row_input = (id) => $('#' + id + '-input').val().trim();
 let append_to_results = (elem) => $('#search-results').append(elem);
-const empty_type_field = 'Any type';
+const empty_type_field = 'All types';
+const empty_program_field = 'All programs';
 const empty_select = 'Select field';
 
 
@@ -73,6 +75,11 @@ function collect_query_info() {
 		let type = get_type_select()
 		if (type !== empty_type_field) {
 				query['sdn_type'] = type;
+		}
+
+        let program = get_program_select()
+		if (program !== empty_program_field) {
+				query['program'] = program;
 		}
 
 		$.each(get_search_row_ids(), (index, row_id) => {
