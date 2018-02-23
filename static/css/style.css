@@ -43,6 +43,12 @@ hr.no-bottom-margin {
     padding-bottom: 8em;
 }
 
+.next-page {
+    display: none;
+    margin-top: 2em;
+    width: 100%;
+}
+
 
 /*********** Cards ***********/
 .card {

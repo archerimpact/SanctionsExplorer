@@ -21,15 +21,26 @@ let disable_search_buttons = (disable) => disable ? $('.btn-sm').addClass('disab
 let update_results_header = (num) => {
     if (num !== null) {
         $('#results-header').text('Results (' + num + ')')
-        if (num > 50 && $('#too-many-results').length === 0) {
-            $('#search-results').prepend('<div class="alert alert-warning search-error-alert d-print-none" id="too-many-results">Your search returned a lot of results. Try adding additional filters to narrow it down.</div>');
+        if (num > 50) {
+            if ($('#too-many-results').length === 0) {
+                $('#search-results').prepend('<div class="alert alert-warning search-error-alert d-print-none" id="too-many-results">Your search returned a lot of results. Try adding additional filters to narrow it down.</div>');
+            }
+
+            if (window.lastQuery.from + window.lastQuery.size >= num) {
+                $('.next-page').hide();
+            }
+            else {
+                $('.next-page').show();
+            }
         }
     }
     else {
         $('#results-header').text('Results');
+        $('.next-page').hide();
     }
 }
 let display_loading_bar = (show) => show ? $('.loader').show() : $('.loader').hide();
+let change_next_page_text = (text) => $('.next-page').text(text);
 let update_filters_for_print = (data) => $('.print-view-filters').text(JSON.stringify(data));
 const error_alert = '<div class="alert alert-danger search-error-alert">There was an error. Please try again.</div>';
 
@@ -50,16 +61,17 @@ function search(event, url, params, display_func, divToUse, append) {
 
     update_filters_for_print(params);
 
-    disable_search_buttons(true);
-    display_loading_bar(true);
+    change_next_page_text('Loading...');
+
+    // disable_search_buttons(true);
     if (!append) {
+        display_loading_bar(true);
         update_results_header(null);
         clear_search_results();
     }
 
     newReq.done(data => {
         console.log(data);
-        console.log('-----');
         if (!append) {
             clear_search_results();
         }
@@ -73,7 +85,8 @@ function search(event, url, params, display_func, divToUse, append) {
     .always(() => {
         display_loading_bar(false);
         display_search_results(true);
-        disable_search_buttons(false);
+        change_next_page_text('Next Page')
+        // disable_search_buttons(false);
         window.requesting = null;
     });
 }
