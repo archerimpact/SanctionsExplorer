@@ -18,7 +18,17 @@ let get_template = (idstr) => $(idstr).html() ? doT.template($(idstr).html()) : 
 let clear_search_results = () => $('#search-results').empty();
 let display_search_results = (show) => show ? $('#search-results').show() : $('#search-results').hide();
 let disable_search_buttons = (disable) => disable ? $('.btn-sm').addClass('disabled') : $('.btn-sm').removeClass('disabled');
-let update_results_header = (num) => num !== null ? $('#results-header').text('Results (' + num + ')') : $('#results-header').text('Results');
+let update_results_header = (num) => {
+    if (num !== null) {
+        $('#results-header').text('Results (' + num + ')')
+        if (num > 50 && $('#too-many-results').length === 0) {
+            $('#search-results').prepend('<div class="alert alert-warning search-error-alert d-print-none" id="too-many-results">Your search returned a lot of results. Try adding additional filters to narrow it down.</div>');
+        }
+    }
+    else {
+        $('#results-header').text('Results');
+    }
+}
 let display_loading_bar = (show) => show ? $('.loader').show() : $('.loader').hide();
 let update_filters_for_print = (data) => $('.print-view-filters').text(JSON.stringify(data));
 const error_alert = '<div class="alert alert-danger search-error-alert">There was an error. Please try again.</div>';
@@ -49,6 +59,7 @@ function search(event, url, params, display_func, divToUse, append) {
 
     newReq.done(data => {
         console.log(data);
+        console.log('-----');
         if (!append) {
             clear_search_results();
         }

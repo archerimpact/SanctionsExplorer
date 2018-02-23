@@ -5,12 +5,12 @@ $(document).ready(() => {
     window.searchRow = get_template('#search-row-template');
 
     $('.search-button').click(event => {
-        search(event, addr + '/elasticsearch', collect_query_info(), display_query, '#search-results');
+        search(event, addr + '/search/sdn', collect_query_info(), display_query, '#search-results');
     });
 
     $('.next-page').click(event => {
         window.lastQuery.from += window.lastQuery.size;
-        search(event, addr + '/elasticsearch', window.lastQuery, display_query, '#search-results', true);
+        search(event, addr + '/search/sdn', window.lastQuery, display_query, '#search-results', true);
     });
 
     var id = 0;
@@ -143,9 +143,10 @@ function process_entry(res) {
 
 
 function display_query(res) {
+    let data = res.response;
     let result = [];
-    for (var i = 0; i < res.length; i++) {
-        result.push(process_entry(res[i]));
+    for (var i = 0; i < data.length; i++) {
+        result.push(process_entry(data[i]));
     }
 
     let c = document.createDocumentFragment();
@@ -155,8 +156,7 @@ function display_query(res) {
         c.appendChild(e);
     });
     append_to_results(c);
-
-    update_results_header(res.length);
+    update_results_header(res['num_results']);
 }
 
 

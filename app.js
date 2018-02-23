@@ -127,8 +127,9 @@ function search_ES(query, model, res) {
                     console.log(results.hits.hits[i]['_source']['sdn_name'] + ': ' + results.hits.hits[i]['_score']);
                     response.push(results.hits.hits[i]['_source']);
                 }
-//                console.log(response);
-                res.json(response);
+
+                console.log(JSON.stringify(results.hits));
+                res.json({'response': response, 'num_results': results.hits.total});
             }
         });
     }
