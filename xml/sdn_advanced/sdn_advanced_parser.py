@@ -166,7 +166,6 @@ class List:
 
 class LocPart:
 	def __init__(self, xml):
-		"""not getting comment part for now, maybe later? text holds the address or country or whatever"""
 		self.is_primary = xml.get("Primary")
 		self.text = xml_approx_find(xml, "Value").text
 
@@ -293,14 +292,13 @@ class Location:
 		else:
 			return None
 
-
 	def __init__(self, xml):
 		"""we can evaluate ID, comment, country, and location parts on instantiation. 
 		feature_versions reference a person associated with this place so evaluation will have to be deferred
 		similarly with IDRegDocumentReferences as those have not been parsed yet
 		locpartvaluetype is always main and locpartstatus is always unknown so we do not parse these"""
 		self.id = xml.get('ID')
-		self.comment = None # usually empty, not currently getting, get later
+		# self.comment = self.parse_comment(xml), this is always empty, not going to get. 
 		self.country = self.parse_country(xml) # country object, lol assumes it exists, will break everything if it doesn't
 		self.location_parts = self.parse_location_parts(xml) # list of (locparttype objs, locpart objs)
 		self.feature_version_ids = self.parse_feature_version_ids(xml) # list of feature versions ids that must be evaluated later
@@ -320,6 +318,13 @@ class Location:
 
 
 class IDRegDocument:
+	def parse_comment(self, xml):
+		elem = xml_approx_find(xml, "Comment")
+		if elem is not None and elem.text is not None:
+			return elem.text
+		else:
+			return elem
+
 	def parse_id_num(self, xml):
 		id_num = xml_approx_find(xml, "IDRegistrationNo")
 		if id_num is not None:
@@ -378,7 +383,7 @@ class IDRegDocument:
 	def __init__(self, xml):
 		"""defer parsing of IdentityID, FeatureVersionReference, DocumentedName, 
 		ProfileRelationship, documentMentions because these are not parse yet"""
-		self.comment = None # not currently getting comments, maybe later
+		self.comment = self.parse_comment(xml)
 		self.id = xml.get('ID')
 		self.type = id_reg_doc_types[xml.get('IDRegDocTypeID')]
 		self.identityID = xml.get('IdentityID')
@@ -430,7 +435,9 @@ class Feature:
 		version_details = xml_approx_findall(version_xml, "VersionDetail")
 		if version_details is not None:
 			for v in version_details:
-				ret.append( (v.get("DetailReferenceID"), v.text) )		# TODO change the 0th item in the tuple to get out of the mapping once created
+				dr_id = v.get("DetailReferenceID")
+				if dr_id is not None:
+					ret.append( (detail_references[v.get("DetailReferenceID")], v.text) )		# TODO change the 0th item in the tuple to get out of the mapping once created
 		return ret
 
 	def parse_locations(self, version_xml):
@@ -466,6 +473,14 @@ class Feature:
 
 
 class Alias:
+	def parse_comment(self, xml):
+		elem = xml_approx_find(xml, "Comment")
+		if elem is not None and elem.text is not None:
+			print(elem.text)
+			return elem.text
+		else:
+			return elem
+
 	def parse_date_period(self, xml):
 		elem = xml_approx_find(xml, "DatePeriod")
 		if elem is not None:
@@ -492,7 +507,7 @@ class Alias:
 		return ret 
 
 	def __init__(self, xml, name_part_groups_dict):
-		self.comment = None # Not currently getting
+		# self.comment = This field is never used in this part 
 		self.fixed_ref = xml.get("FixedRef")
 		self.alias_type = alias_types[xml.get("AliasTypeID")].text
 		self.is_primary = xml.get("Primary")
@@ -502,7 +517,7 @@ class Alias:
 
 	def __str__(self):
 		d = dict()
-		d['comment'] = self.comment
+		# d['comment'] = self.comment
 		d['alias_type'] = self.alias_type
 		d['is_primary'] = self.is_primary
 		d['is_low_quality'] = self.is_low_quality
@@ -513,7 +528,12 @@ class Alias:
 
 class Identity:
 	## Contains information related to name parts
-
+	def parse_comment(self, xml):
+		elem = xml_approx_find(xml, "Comment")
+		if elem is not None and elem.text is not None:
+			return elem.text
+		else:
+			return elem
 
 	def parse_name_part_groups(self, identity_xml):
 		ret = {}
@@ -535,7 +555,7 @@ class Identity:
 		self.id = xml.get("ID")
 		self.primary = xml.get("Primary")
 		self.false = xml.get("False") # not sure what this is actually
-		self.comment = None # Not currently getting
+		# self.comment = self.parse_comment(xml) This field is never used here
 		self.name_part_groups = self.parse_name_part_groups(xml) # mapping from ID : NamePartTypeID
 		self.aliases = self.parse_aliases(xml, self.name_part_groups) 
 		self.id_reg_doc_ids = None
@@ -545,7 +565,7 @@ class Identity:
 		d = dict()
 		d['id'] = self.id
 		d['primary'] = self.primary
-		d['comment'] = self.comment
+		# d['comment'] = self.comment
 		d['aliases'] = list_to_json_list(self.aliases)
 		# TODO ID REG DOCS? It's already in profile??
 		return json.dumps(d)
@@ -611,9 +631,18 @@ class ProfileLink:
 			if p.fixed_ref == p_id:
 				return p
 
+	def parse_comment(self, xml):
+		elem = xml_approx_find(xml, "Comment")
+		if elem is not None and elem.text is not None:
+			print(elem.text)
+			return elem.text
+		else:
+			return elem
+
 	def __init__(self, xml):
 		## comment, date period and idregdocument are currently not used so not grabbing them.
 		## stored in the from_profile so only storing information about the to profile
+		# self.comment = self.parse_comment(xml) One entry has a comment here
 		self.id = xml.get("ID")
 		self.to_profile_id = xml.get("To-ProfileID")
 		self.to_profile = self.lookup_profile(self.to_profile_id)
@@ -662,9 +691,9 @@ class DistinctParty:
 	## Each distinct party has one profile and one identity obj
 	def __init__(self, xml):
 		self.party_comment = self.parse_comment(xml) # should get, has remarks
-		self.profile_comment = None # not currently getting, doesn't appear to be used
 		self.fixed_ref = xml.get("FixedRef")   
 		self.profile = xml_approx_find(xml, "Profile")
+		# self.profile_comment = self.parse_comment(self.profile) This field is never used
 		self.party_sub_type = party_sub_types[self.profile.get("PartySubTypeID")].text # read subtypeid from profile and fetch value
 		self.identity = Identity(xml_approx_find(self.profile, "Identity"))
 		self.features =  self.parse_features(self.profile)
