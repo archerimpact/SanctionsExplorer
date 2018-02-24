@@ -1,5 +1,6 @@
 from lxml import etree
-
+import ast
+import json
 
 xml_namespace = {"ofac" : "{http://www.un.org/sanctions/1.0}"}
 i = 0
@@ -14,6 +15,13 @@ i = 0
 ## Sanctions Entries
 ## Sanctions Entry Links (currently unused, so will not parse)
 
+
+def to_ast(lst):
+	if lst is not None:
+		return [ast.literal_eval(str(i)) for i in lst]
+	else:
+		return []
+
 ## Defining Classes
 class Date:
 	def __init__(self, date_xml):
@@ -22,7 +30,7 @@ class Date:
 		self.day = date_xml[2].text
 
 	def __str__(self):
-		return str(self.year) + str(self.month) + str(self.day)
+		return str(self.year) + '-' + str(self.month) + '-' + str(self.day)
 
 class DateBoundary:
 	def parse_date(self, xml, tag):
@@ -39,6 +47,16 @@ class DateBoundary:
 		self.month_fixed = xml.get("MonthFixed")
 		self.day_fixed = xml.get("DayFixed")
 		self.is_approximate = xml.get("Approximate")
+
+	def __str__(self):
+		d = dict()
+		d['date_from'] = str(self.date_from)
+		d['date_to'] = str(self.date_to)
+		d['year_fixed'] = self.year_fixed
+		d['month_fixed'] = self.month_fixed
+		d['day_fixed'] = self.day_fixed
+		d['is_approximate'] = self.is_approximate
+		return json.dumps(d)
 
 # class Duration:
 # 	## Not currently in use by the xml so may add this later if they do start using it
@@ -65,6 +83,15 @@ class DatePeriod:
 		self.duration_minimum = None # a Duration Object, not currently used in xml
 		self.duration_maximum =  None # a Duration Object, not currently used in xml
 
+	def __str__(self):
+		d = dict()
+		d['year_fixed'] = self.year_fixed
+		d['month_fixed'] = self.month_fixed
+		d['day_fixed'] = self.day_fixed
+		d['start'] = ast.literal_eval(str(self.start))
+		d['end'] = ast.literal_eval(str(self.end))
+		return json.dumps(d)
+
 class AliasType:
 	def __init__(self, alias_type_xml):
 		"""text holds the type of alias (f.k.a, a.k.a, etc)"""
@@ -89,6 +116,9 @@ class Country:
 		self.id = country_xml.get('ID')
 		self.iso2 = country_xml.get('ISO2')
 		self.text = country_xml.text
+
+	def __str__(self):
+		return self.text
 
 class DetailReference:
 	def __init__(self, detail_xml):
@@ -125,6 +155,9 @@ class IDRegDocType:
 		self.id = doc_type_xml.get('ID')
 		self.text = doc_type_xml.text
 
+	def __str__(self):
+		return self.text
+
 class LegalBasis:
 	def __init__(self, legal_basis_xml):
 		"""the legal basis for an action. short_ref is currently always equal to text, 
@@ -145,12 +178,18 @@ class LocPart:
 		self.is_primary = xml.get("Primary")
 		self.text = xml_approx_find(xml, "Value").text
 
+	def __str__(self):
+		return self.text
+
 class LocPartType:
 	def __init__(self, loc_part_xml):
 		"""text holds what part of the location this is, 
 		example values include region, city, Address1, etc"""
 		self.id = loc_part_xml.get('ID')
 		self.text = loc_part_xml.text
+
+	def __str__(self):
+		return self.text
 
 class NamePartType:
 	def __init__(self, name_part_xml):
@@ -166,6 +205,9 @@ class PartySubType:
 		self.id = party_subtype_xml.get('ID')
 		self.type = self.party_lookup[party_subtype_xml.get('PartyTypeID')]
 		self.text = party_subtype_xml.text
+
+	def __str__(self):
+		return self.text
 
 class PartyType:
 	def __init__(self, xml):
@@ -250,6 +292,7 @@ class Location:
 		else:
 			return None
 
+
 	def __init__(self, xml):
 		"""we can evaluate ID, comment, country, and location parts on instantiation. 
 		feature_versions reference a person associated with this place so evaluation will have to be deferred
@@ -261,6 +304,18 @@ class Location:
 		self.location_parts = self.parse_location_parts(xml) # list of (locparttype objs, locpart objs)
 		self.feature_version_ids = self.parse_feature_version_ids(xml) # list of feature versions ids that must be evaluated later
 		self.id_reg_doc_ids =  self.parse_reg_doc_ids(xml) # list of reg_doc_ids that must be evaluated later
+
+	def __str__(self):
+		d = dict()
+		# d['comment'] = 
+		d['country'] = str(self.country)
+		loc_dict = dict()
+		if self.location_parts is not None:
+			for t in self.location_parts:
+				loc_dict[str(t[0])] = str(t[1])
+
+		d['location_parts'] = loc_dict
+		return json.dumps(d)
 
 
 class IDRegDocument:
@@ -341,6 +396,20 @@ class IDRegDocument:
 		# self.profile_relationship_ids = self.parse_relationship_ids(xml)
 		# self.profile_relationships = []
 
+	def __str__(self):
+		d = dict()
+		# d['comment'] 
+		d['type'] = str(self.type)
+		d['identity'] = self.identity
+		d['issued_by'] = self.issued_by
+		d['issued_in'] = self.issued_in
+		d['validity'] = self.validity
+		d['issuing_authority'] = self.issuing_authority
+		d['id_number'] = self.id_number
+		# if self.relevant_dates is not None:
+			# d['relevant_dates'] = [ast.literal_eval(str(d)) for d in self.relevant_dates]
+		return str(d)
+
 
 class VersionDetail:
 	def __init__(self, xml):
@@ -381,7 +450,18 @@ class Feature:
 		self.relevant_dates = self.parse_dates(self.feature_version)
 		self.feature_locations = self.parse_locations(self.feature_version)
 		self.details = self.parse_details(self.feature_version)
-		self.reliability = None
+		self.reliability = None		# TODO
+
+	def __str__(self):
+		d = dict()
+		d['comment'] = self.comment
+		d['feature_type'] = self.feature_type
+		if self.relevant_dates is not None:
+			d['relevant_dates'] = [ast.literal_eval(str(d)) for d in self.relevant_dates]
+		if self.feature_locations is not None:
+			d['feature_locations'] = [ast.literal_eval(str(l)) for l in self.feature_locations]
+		d['details'] = self.details
+		return json.dumps(d)
 
 
 class Alias:
@@ -405,7 +485,7 @@ class Alias:
 			## TODO: this
 			if value is not None:
 				group_id = value.get("NamePartGroupID")
-				language = scripts[value.get("ScriptID")]
+				language = scripts[value.get("ScriptID")].text
 				np_type = name_part_groups_dict[group_id]
 				name = value.text
 				ret.append( (name, np_type, language) )
@@ -417,11 +497,21 @@ class Alias:
 	def __init__(self, xml, name_part_groups_dict):
 		self.comment = None # Not currently getting
 		self.fixed_ref = xml.get("FixedRef")
-		self.alias_type = alias_types[xml.get("AliasTypeID")]
+		self.alias_type = alias_types[xml.get("AliasTypeID")].text
 		self.is_primary = xml.get("Primary")
 		self.is_low_quality = xml.get("LowQuality")
 		self.documented_name = self.parse_documented_names(xml, name_part_groups_dict) # A list of (nameparttype, namepart) tups
 		self.date_period = self.parse_date_period(xml)
+
+	def __str__(self):
+		d = dict()
+		d['comment'] = self.comment
+		d['alias_type'] = self.alias_type
+		d['is_primary'] = self.is_primary
+		d['is_low_quality'] = self.is_low_quality
+		d['documented_name'] = self.documented_name
+		d['date_period'] = self.date_period
+		return str(d)
 
 
 class Identity:
@@ -453,6 +543,15 @@ class Identity:
 		self.aliases = self.parse_aliases(xml, self.name_part_groups) 
 		self.id_reg_doc_ids = None
 		self.id_reg_docs = []
+
+	def __str__(self):
+		d = dict()
+		d['id'] = self.id
+		d['primary'] = self.primary
+		d['comment'] = self.comment
+		d['aliases'] = [ast.literal_eval(str(a)) for a in self.aliases]
+		# TODO ID REG DOCS
+		return str(d)
 
 class SanctionEntry:
 	def parse_entry_events(self, sanction_entry_xml):
@@ -495,6 +594,19 @@ class SanctionEntry:
 		self.list = lists[xml.get("ListID")].text
 		self.entry_events = self.parse_entry_events(xml)
 		self.sanctions_measures = self.parse_sanctions_measures(xml)
+
+	def __str__(self):
+		d = dict()
+		d['list'] = self.list
+
+		events = []
+
+		for e in self.entry_events:
+			events.append([str(i) for i in e])
+
+		d['entry_events'] = events
+		d['sanctions_measures'] = self.sanctions_measures
+		return str(d)
 
 class ProfileLink:
 	def lookup_profile(self, p_id):
@@ -548,7 +660,7 @@ class DistinctParty:
 		self.profile_comment = None # not currently getting, doesn't appear to be used
 		self.fixed_ref = xml.get("FixedRef")   
 		self.profile = xml_approx_find(xml, "Profile")
-		self.party_sub_type = party_sub_types[self.profile.get("PartySubTypeID")] # read subtypeid from profile and fetch value
+		self.party_sub_type = party_sub_types[self.profile.get("PartySubTypeID")].text # read subtypeid from profile and fetch value
 		self.identity = Identity(xml_approx_find(self.profile, "Identity"))
 		self.features =  self.parse_features(self.profile)
 		self.sanctions_entry_reference_ids = self.parse_sanctions_entry_ids(self.profile)
@@ -556,6 +668,24 @@ class DistinctParty:
 		self.external_references = None # not currently used by the file
 		self.linked_profiles = []
 		self.documents = []
+
+	def __str__(self):
+		d = dict()
+		d['identity'] = ast.literal_eval(str(self.identity))
+		# d['party_comment'] = self.party_comment
+		d['fixed_ref'] = self.fixed_ref
+		d['party_sub_type'] = str(self.party_sub_type)
+		if self.features is not None:
+			d['features'] = [json.loads(str(f)) for f in self.features]
+
+		if self.sanctions_entries is not None:
+			d['sanctions_entries'] = [ast.literal_eval(str(s)) for s in self.sanctions_entries]
+		
+		if self.documents is not None:
+			d['documents'] = [ast.literal_eval(str(d)) for d in self.documents]
+		d['linked_profiles'] = self.linked_profiles
+		return str(d)
+
 
 
 ## Defining lookup lists
@@ -677,9 +807,12 @@ def add_sanctions_entries(sanction_xml):
 	for sanction in sanction_xml:
 		obj = SanctionEntry(sanction)
 		pid = obj.profile_id
-		for dp in list(distinct_parties.values()):
-			if dp.fixed_ref == pid:
-				dp.sanctions_entries.append(obj)
+		dp = distinct_parties[pid] 
+		dp.sanctions_entries.append(obj)
+
+		# for dp in list(distinct_parties.values()):
+		# 	if dp.fixed_ref == pid:
+		# 		dp.sanctions_entries.append(obj)
 
 if __name__ == '__main__':
 	## First parse the file and get root
@@ -695,3 +828,5 @@ if __name__ == '__main__':
 	b = list(distinct_parties.values())[0]
 	add_profile_links(root[5])
 	add_sanctions_entries(root[6])
+
+	print([str(x) for x in list(distinct_parties.values())])
