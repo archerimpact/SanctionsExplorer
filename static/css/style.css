@@ -1,93 +1,120 @@
+/*********** Page Layout ***********/
 html, body {
-	margin: 0;
-	height: 100%;
-	/*overflow: hidden;*/
-}
-
-.card {
-	margin-bottom: 0;
-	border-left: 0;
-	border-right: 0;
-	border-top: 0;
-}
-
-.card-header {
-	border-bottom: 0;
-}
-
-.left-card-col {
-	border-left: 1px solid #bbbbbb;
-	padding-left: 20px;
+    margin: 0;
+    height: 100%;
+    /*overflow: hidden;*/
 }
 
 .page-col {
-	overflow-y: scroll;
-	height: 95%;
-	padding-top: 40px;
-	padding-right: 30px;
-	padding-left: 30px;
+    overflow-y: scroll;
+    height: 90%;        /* should be overwritten by Javascript */
+    padding-top: 3em;
+    padding-right: 2em;
+    padding-left: 2em;
 }
 
+
+/*********** Filter Column ***********/
 .left-col {
-	background-color: #eeeeee;
-}
-
-.right-col {
-	padding-left: 20px;
-}
-
-.card-header {
-	background-color: #ffffff;
+    background-color: #eeeeee;
 }
 
 .search-button-group {
-	text-align: right;
+    text-align: right;
 }
 
-.search-button {
-	display: inline-block;
+#more-filters-header {
+    padding-top: 3em;
+    padding-bottom: 0.5em;
+    padding-left: 5px;    /* match form row below */
 }
 
-.press-release-button {
-	width: 100%;
-}
 
-hr#results-line {
-	margin-bottom: 0;
-}
-
-small.card-sdn-type {
-	font-size: 12px;
-	color: #aaaaaa;
-	margin-left: 15px;
-}
-
-#press-release-header {
-	margin-top: 100px;
+/*********** Results Column ***********/
+hr.no-bottom-margin {
+    margin-bottom: 0;
 }
 
 .search-error-alert {
-		margin-top: 20px;
+    margin-top: 1em;
 }
 
+.right-col {
+    padding-bottom: 8em;
+}
+
+.next-page {
+    display: none;
+    margin-top: 2em;
+    width: 100%;
+}
+
+
+/*********** Cards ***********/
+.card {
+    margin-bottom: 0;
+    border-left: 0;
+    border-right: 0;
+    border-top: 0;
+}
+
+.card-header {
+    border: 0;
+}
+
+.left-card-col {
+    border-left: 1px solid #bbbbbb;
+    padding-left: 1em;
+}
+
+.card-header {
+    background-color: #ffffff;
+}
+
+.card-body {
+    padding-top: 0;
+}
+
+small.card-sdn-type {
+    font-size: 12px;
+    color: #aaaaaa;
+    margin-left: 1em;
+}
+
+h5.card-detail-header {
+    font-size: 14px;
+    margin-top: 1em;
+    letter-spacing: 1px;
+}
+
+.card-detail-info {
+    font-size: 14px;
+    text-transform: none;
+    letter-spacing: 1px;
+    color: #919aa1;
+}
+
+
+/*********** Print Formatting ***********/
 @media print {
-	.nav {
-		display: none;
-	}
+    .nav {
+        display: none;
+    }
 
-	.left-col {
-		display: none;
-	}
+    .left-col {
+        display: none;
+    }
 
-	.page-col {
-		overflow-y: auto;
-		height: auto;
-	}
+    .page-col {
+        overflow-y: auto;
+        height: auto;
+    }
 }
 
-/* Loader */
+
+/*********** Loading Bar ***********/
 .loader {
-	display: none;   /* keep hidden */
+    display: none;   /* keep hidden */
 }
 .loader,
 .loader:before,
