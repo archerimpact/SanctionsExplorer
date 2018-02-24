@@ -1,14 +1,13 @@
 import os
 from openpyxl import load_workbook
-from openpyxl import Workbook
 import requests
-
-wb = load_workbook(filename='sdn.xlsx')
-ws = wb[wb.get_sheet_names()[0]]
 
 url = "localhost:9200/prs/_search"
 headers = {'Content-Type: application/json'}
-data = {"query": { "match": {"content": {"query": "", "fuzziness": "AUTO"}
+data = {"query": { "match": {"content": {"query": "", "fuzziness": "AUTO"}}}}
+
+wb = load_workbook(filename='sdn.xlsx')
+ws = wb[wb.get_sheet_names()[0]]
 
 for row in ws.rows:
 	val = row[1].value
