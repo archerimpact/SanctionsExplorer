@@ -18,7 +18,7 @@ i = 0
 
 def to_ast(lst):
 	if lst is not None:
-		return [ast.literal_eval(str(i)) for i in lst]
+		return [json.loads(str(i)) for i in lst]
 	else:
 		return []
 
@@ -88,8 +88,8 @@ class DatePeriod:
 		d['year_fixed'] = self.year_fixed
 		d['month_fixed'] = self.month_fixed
 		d['day_fixed'] = self.day_fixed
-		d['start'] = ast.literal_eval(str(self.start))
-		d['end'] = ast.literal_eval(str(self.end))
+		d['start'] = json.loads(str(self.start))
+		d['end'] = json.loads(str(self.end))
 		return json.dumps(d)
 
 class AliasType:
@@ -407,8 +407,8 @@ class IDRegDocument:
 		d['issuing_authority'] = self.issuing_authority
 		d['id_number'] = self.id_number
 		# if self.relevant_dates is not None:
-			# d['relevant_dates'] = [ast.literal_eval(str(d)) for d in self.relevant_dates]
-		return str(d)
+			# d['relevant_dates'] = [json.loads(str(d)) for d in self.relevant_dates]
+		return json.dumps(d)
 
 
 class VersionDetail:
@@ -457,9 +457,9 @@ class Feature:
 		d['comment'] = self.comment
 		d['feature_type'] = self.feature_type
 		if self.relevant_dates is not None:
-			d['relevant_dates'] = [ast.literal_eval(str(d)) for d in self.relevant_dates]
+			d['relevant_dates'] = [json.loads(str(d)) for d in self.relevant_dates]
 		if self.feature_locations is not None:
-			d['feature_locations'] = [ast.literal_eval(str(l)) for l in self.feature_locations]
+			d['feature_locations'] = [json.loads(str(l)) for l in self.feature_locations]
 		d['details'] = self.details
 		return json.dumps(d)
 
@@ -511,7 +511,7 @@ class Alias:
 		d['is_low_quality'] = self.is_low_quality
 		d['documented_name'] = self.documented_name
 		d['date_period'] = self.date_period
-		return str(d)
+		return json.dumps(d)
 
 
 class Identity:
@@ -549,9 +549,9 @@ class Identity:
 		d['id'] = self.id
 		d['primary'] = self.primary
 		d['comment'] = self.comment
-		d['aliases'] = [ast.literal_eval(str(a)) for a in self.aliases]
+		d['aliases'] = [json.loads(str(a)) for a in self.aliases]
 		# TODO ID REG DOCS
-		return str(d)
+		return json.dumps(d)
 
 class SanctionEntry:
 	def parse_entry_events(self, sanction_entry_xml):
@@ -606,7 +606,7 @@ class SanctionEntry:
 
 		d['entry_events'] = events
 		d['sanctions_measures'] = self.sanctions_measures
-		return str(d)
+		return json.dumps(d)
 
 class ProfileLink:
 	def lookup_profile(self, p_id):
@@ -671,7 +671,7 @@ class DistinctParty:
 
 	def __str__(self):
 		d = dict()
-		d['identity'] = ast.literal_eval(str(self.identity))
+		d['identity'] = json.loads(str(self.identity))
 		# d['party_comment'] = self.party_comment
 		d['fixed_ref'] = self.fixed_ref
 		d['party_sub_type'] = str(self.party_sub_type)
@@ -679,12 +679,12 @@ class DistinctParty:
 			d['features'] = [json.loads(str(f)) for f in self.features]
 
 		if self.sanctions_entries is not None:
-			d['sanctions_entries'] = [ast.literal_eval(str(s)) for s in self.sanctions_entries]
+			d['sanctions_entries'] = [json.loads(str(s)) for s in self.sanctions_entries]
 		
 		if self.documents is not None:
-			d['documents'] = [ast.literal_eval(str(d)) for d in self.documents]
-		d['linked_profiles'] = self.linked_profiles
-		return str(d)
+			d['documents'] = [json.loads(str(d)) for d in self.documents]
+		# d['linked_profiles'] = self.linked_profiles
+		return json.dumps(d)
 
 
 
@@ -829,4 +829,4 @@ if __name__ == '__main__':
 	add_profile_links(root[5])
 	add_sanctions_entries(root[6])
 
-	print([str(x) for x in list(distinct_parties.values())])
+	# print([str(x) for x in list(distinct_parties.values())])
