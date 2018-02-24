@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 import requests
 
 url = "localhost:9200/prs/_search"
-headers = {'Content-Type: application/json'}
+headers = {'Content-Type': 'application/json'}
 data = {"query": { "match": {"content": {"query": "", "fuzziness": "AUTO"}}}}
 
 wb = load_workbook(filename='sdn.xlsx')
