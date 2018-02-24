@@ -1,5 +1,4 @@
 from lxml import etree
-import ast
 import json
 
 xml_namespace = {"ofac" : "{http://www.un.org/sanctions/1.0}"}
@@ -14,13 +13,6 @@ i = 0
 ## Profile Relationships
 ## Sanctions Entries
 ## Sanctions Entry Links (currently unused, so will not parse)
-
-
-def to_ast(lst):
-	if lst is not None:
-		return [json.loads(str(i)) for i in lst]
-	else:
-		return []
 
 ## Defining Classes
 class Date:
@@ -221,11 +213,17 @@ class RelationQuality:
 		self.id = xml.get('ID')
 		self.text = xml.text
 
+	def __str__(self):
+		return self.text
+
 class RelationType:
 	def __init__(self, xml):
 		"""text is associate of, family member of, etc)"""
 		self.id = xml.get('ID')
 		self.text = xml.text
+
+	def __str__(self):
+		return self.text
 
 class Reliability:
 	def __init__(self, xml):
@@ -256,6 +254,9 @@ class Validity:
 		"""text holds valid or fradulent"""
 		self.id = xml.get('ID')
 		self.text = xml.text
+
+	def __str__(self):
+		return self.text
 
 class Location:
 	def parse_location_parts(self, xml):
@@ -327,7 +328,7 @@ class IDRegDocument:
 			return None
 
 	def parse_attribute(self, attribute_name, xml, python_list_name):
-		attr = xml.get('attribute_name')
+		attr = xml.get(attribute_name)
 		if attr is None:
 			return None
 		else:
@@ -401,13 +402,12 @@ class IDRegDocument:
 		# d['comment'] 
 		d['type'] = str(self.type)
 		d['identity'] = self.identity
-		d['issued_by'] = self.issued_by
-		d['issued_in'] = self.issued_in
-		d['validity'] = self.validity
-		d['issuing_authority'] = self.issuing_authority
+		d['issued_by'] = str(self.issued_by)
+		d['issued_in'] = str(self.issued_in)
+		d['validity'] = str(self.validity)
+		d['issuing_authority'] = str(self.issuing_authority)
 		d['id_number'] = self.id_number
-		# if self.relevant_dates is not None:
-			# d['relevant_dates'] = [json.loads(str(d)) for d in self.relevant_dates]
+		d['relevant_dates'] = list_to_json_list(self.relevant_dates)
 		return json.dumps(d)
 
 
@@ -430,9 +430,7 @@ class Feature:
 		version_details = xml_approx_findall(version_xml, "VersionDetail")
 		if version_details is not None:
 			for v in version_details:
-				text = v.text
-				if text is not None:
-					ret.append(text)
+				ret.append( (v.get("DetailReferenceID"), v.text) )		# TODO change the 0th item in the tuple to get out of the mapping once created
 		return ret
 
 	def parse_locations(self, version_xml):
@@ -443,6 +441,10 @@ class Feature:
 		else:
 			return None
 
+	def parse_reliability(self, version_xml):
+		r = version_xml.get("ReliabilityID")
+		return reliabilities[r].text if r is not None else None
+
 	def __init__(self, feature_xml):
 		self.feature_version = xml_approx_find(feature_xml, "FeatureVersion")
 		self.comment = xml_approx_find(self.feature_version, "Comment").text # should get
@@ -450,17 +452,16 @@ class Feature:
 		self.relevant_dates = self.parse_dates(self.feature_version)
 		self.feature_locations = self.parse_locations(self.feature_version)
 		self.details = self.parse_details(self.feature_version)
-		self.reliability = None		# TODO
+		self.reliability = self.parse_reliability(self.feature_version)
 
 	def __str__(self):
 		d = dict()
 		d['comment'] = self.comment
 		d['feature_type'] = self.feature_type
-		if self.relevant_dates is not None:
-			d['relevant_dates'] = [json.loads(str(d)) for d in self.relevant_dates]
-		if self.feature_locations is not None:
-			d['feature_locations'] = [json.loads(str(l)) for l in self.feature_locations]
+		d['relevant_dates'] = list_to_json_list(self.relevant_dates)
+		d['feature_locations'] = list_to_json_list(self.feature_locations)
 		d['details'] = self.details
+		d['reliability'] = self.reliability
 		return json.dumps(d)
 
 
@@ -478,21 +479,17 @@ class Alias:
 		if len(elems) > 1:
 			print ("more than one documented name per alias", self.fixed_ref)
 
-		elem = elems[0]
-		parts = xml_approx_findall(elem, "DocumentedNamePart")
-		for p in parts:
-			value = xml_approx_find(p, "NamePartValue")
-			## TODO: this
-			if value is not None:
-				group_id = value.get("NamePartGroupID")
-				language = scripts[value.get("ScriptID")].text
-				np_type = name_part_groups_dict[group_id]
-				name = value.text
-				ret.append( (name, np_type, language) )
+		for elem in elems:
+			parts = xml_approx_findall(elem, "DocumentedNamePart")
+			for p in parts:
+				value = xml_approx_find(p, "NamePartValue")
+				if value is not None:
+					group_id = value.get("NamePartGroupID")
+					language = scripts[value.get("ScriptID")].text
+					np_type = name_part_groups_dict[group_id]
+					name = value.text
+					ret.append( (name, np_type, language) )
 		return ret 
-
-
-
 
 	def __init__(self, xml, name_part_groups_dict):
 		self.comment = None # Not currently getting
@@ -549,8 +546,8 @@ class Identity:
 		d['id'] = self.id
 		d['primary'] = self.primary
 		d['comment'] = self.comment
-		d['aliases'] = [json.loads(str(a)) for a in self.aliases]
-		# TODO ID REG DOCS
+		d['aliases'] = list_to_json_list(self.aliases)
+		# TODO ID REG DOCS? It's already in profile??
 		return json.dumps(d)
 
 class SanctionEntry:
@@ -629,6 +626,14 @@ class ProfileLink:
 	def get_owner_id(self, xml):
 		return xml.get("From-ProfileID")
 
+	def __str__(self):
+		d = dict()
+		d['to'] = str(self.to_profile_id)
+		d['relation_type'] = str(self.relation_type)
+		d['relation_quality'] = str(self.relation_quality)
+		d['is_former'] = self.is_former
+		return json.dumps(d)
+
 class DistinctParty:
 	def parse_comment(self, xml):
 		elem = xml_approx_find(xml, "Comment")
@@ -675,17 +680,11 @@ class DistinctParty:
 		# d['party_comment'] = self.party_comment
 		d['fixed_ref'] = self.fixed_ref
 		d['party_sub_type'] = str(self.party_sub_type)
-		if self.features is not None:
-			d['features'] = [json.loads(str(f)) for f in self.features]
-
-		if self.sanctions_entries is not None:
-			d['sanctions_entries'] = [json.loads(str(s)) for s in self.sanctions_entries]
-		
-		if self.documents is not None:
-			d['documents'] = [json.loads(str(d)) for d in self.documents]
-		# d['linked_profiles'] = self.linked_profiles
+		d['features'] = list_to_json_list(self.features)
+		d['sanctions_entries'] = list_to_json_list(self.sanctions_entries)	
+		d['documents'] = list_to_json_list(self.documents)
+		d['linked_profiles'] = list_to_json_list(self.linked_profiles)
 		return json.dumps(d)
-
 
 
 ## Defining lookup lists
@@ -813,6 +812,16 @@ def add_sanctions_entries(sanction_xml):
 		# for dp in list(distinct_parties.values()):
 		# 	if dp.fixed_ref == pid:
 		# 		dp.sanctions_entries.append(obj)
+
+
+def list_to_json_list(lst):
+	"""
+	Used for __str__ methods.
+	"""
+	if lst is not None:
+		return [json.loads(str(l)) for l in lst]
+	else:
+		return None
 
 if __name__ == '__main__':
 	## First parse the file and get root
