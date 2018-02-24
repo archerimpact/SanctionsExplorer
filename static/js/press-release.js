@@ -6,6 +6,11 @@ $(document).ready(() => {
     $('#press-release-button').click(event => {
         search(event, addr + '/search/press-releases', collect_pr_query(), display_pr_query, '#search-results');
     });
+
+    $('.next-page').click(event => {
+        window.lastQuery.from += window.lastQuery.size;
+        search(event, addr + '/search/press-releases', window.lastQuery, display_pr_query, '#search-results', true);
+    });
 });
 
 let generate_pr_card = (data) => window.pr_card(data);
@@ -21,7 +26,10 @@ function collect_pr_query() {
     if (input === "") {
         return null;
     }
-    return {'query': input};
+
+    let query = {'query': input};
+    window.lastQuery = query;
+    return query;
 }
 
 function display_pr_query(res) {
