@@ -4,6 +4,9 @@ import json
 xml_namespace = {"ofac" : "{http://www.un.org/sanctions/1.0}"}
 i = 0
 
+# Notes
+# in __str__, only wrap the values that explicitly need to be converted to strings with str().  This is done to make it easier to tell which items are not being explicitly converted to strings in case of JSON serializability issues. 
+
 ## We know the main sections are: 
 ## Date of Issue
 ## Reference Value Sets
@@ -119,6 +122,9 @@ class DetailReference:
 		self.id = detail_xml.get('ID')
 		self.text = detail_xml.text
 
+	def __str__(self):
+		return self.text
+
 class DetailType:
 	def __init__(self, detail_xml):
 		"""text holds what type of detail it is, possible values are 
@@ -139,6 +145,9 @@ class IDRegDocDateType:
 		possible values are issue date and expiration date"""
 		self.id = date_type_xml.get('ID')
 		self.text = date_type_xml.text
+
+	def __str__(self):
+		return self.text
 
 class IDRegDocType:
 	def __init__(self, doc_type_xml):
@@ -259,17 +268,15 @@ class Validity:
 
 class Location:
 	def parse_location_parts(self, xml):
-		ret = []
+		retdict = dict()
 		parts = xml_approx_findall(xml, "LocationPart")
 		if parts is not None:
 			for p in parts:
 				type_id = p.get("LocPartTypeID")
 				type_obj = loc_part_types[type_id]
 				loc_part_obj = LocPart(xml_approx_find(p, "LocationPartValue"))
-				ret.append( (type_obj, loc_part_obj) )
-			return ret
-		else:
-			return None
+				retdict[str(type_obj)] = str(loc_part_obj)
+		return retdict
 
 	def parse_feature_version_ids(self, xml):
 		elems = xml_approx_findall(xml, "FeatureVersionReference")
@@ -304,16 +311,24 @@ class Location:
 		self.feature_version_ids = self.parse_feature_version_ids(xml) # list of feature versions ids that must be evaluated later
 		self.id_reg_doc_ids =  self.parse_reg_doc_ids(xml) # list of reg_doc_ids that must be evaluated later
 
+
 	def __str__(self):
 		d = dict()
-		# d['comment'] = 
-		d['country'] = str(self.country)
-		loc_dict = dict()
-		if self.location_parts is not None:
-			for t in self.location_parts:
-				loc_dict[str(t[0])] = str(t[1])
+		# d['comment'] = None for now
 
-		d['location_parts'] = loc_dict
+		# Checks that there are not conflicting country entries in this location
+		if (self.country is not None) and (self.country != 'None') and (str(self.location_parts.get('COUNTRY')) != 'None'):
+			print('ERROR: ' + str(self.country) + ' and ' + self.location_parts.get('COUNTRY') + ' are listed as countries for the same location.')
+
+		if str(self.country) != 'None':
+			d['COUNTRY'] = str(self.country)
+
+		for entry in self.location_parts:
+			if entry == 'Unknown':
+				d['COUNTRY'] = self.location_parts[entry]
+			else:
+				d[entry] = self.location_parts[entry]
+
 		return json.dumps(d)
 
 
@@ -344,10 +359,10 @@ class IDRegDocument:
 		dates = xml_approx_findall(xml, "DocumentDate")
 		if dates is not None:
 			for d in dates:
-				date_type = id_reg_doc_date_types[d.get("IDRegDocDateTypeID")]
+				date_type = id_reg_doc_date_types[d.get("IDRegDocDateTypeID")].text
 				date_period = xml_approx_find(d, "DatePeriod")
 				date_period_obj = DatePeriod(date_period)
-				ret.append((date_type, date_period_obj))
+				ret.append((date_type, json.loads(str(date_period_obj))))	# TODO kinda messy to serialize here but whatever?
 			return ret
 		else:
 			return None
@@ -406,13 +421,13 @@ class IDRegDocument:
 		d = dict()
 		# d['comment'] 
 		d['type'] = str(self.type)
-		d['identity'] = self.identity
+		# d['identity'] = self.identity     	# not necessary since each IDRegDoc obj is owned by an identity
 		d['issued_by'] = str(self.issued_by)
-		d['issued_in'] = str(self.issued_in)
+		d['issiued_in'] = str(self.issued_in)
 		d['validity'] = str(self.validity)
 		d['issuing_authority'] = str(self.issuing_authority)
 		d['id_number'] = self.id_number
-		d['relevant_dates'] = list_to_json_list(self.relevant_dates)
+		d['relevant_dates'] = self.relevant_dates
 		return json.dumps(d)
 
 
@@ -437,7 +452,7 @@ class Feature:
 			for v in version_details:
 				dr_id = v.get("DetailReferenceID")
 				if dr_id is not None:
-					ret.append( (detail_references[v.get("DetailReferenceID")], v.text) )		# TODO change the 0th item in the tuple to get out of the mapping once created
+					ret.append( (detail_references[v.get("DetailReferenceID")].text, v.text) )		# TODO change the 0th item in the tuple to get out of the mapping once created
 		return ret
 
 	def parse_locations(self, version_xml):
@@ -631,6 +646,7 @@ class ProfileLink:
 			if p.fixed_ref == p_id:
 				return p
 
+
 	def parse_comment(self, xml):
 		elem = xml_approx_find(xml, "Comment")
 		if elem is not None and elem.text is not None:
@@ -645,7 +661,7 @@ class ProfileLink:
 		# self.comment = self.parse_comment(xml) One entry has a comment here
 		self.id = xml.get("ID")
 		self.to_profile_id = xml.get("To-ProfileID")
-		self.to_profile = self.lookup_profile(self.to_profile_id)
+		self.to_profile_name = self.lookup_profile(self.to_profile_id)
 		self.relation_type = relation_types[xml.get("RelationTypeID")]
 		self.relation_quality = relation_qualities[xml.get("RelationQualityID")]
 		self.is_former = xml.get("Former")
@@ -657,7 +673,8 @@ class ProfileLink:
 
 	def __str__(self):
 		d = dict()
-		d['to'] = str(self.to_profile_id)
+		d['to_id'] = str(self.to_profile_id)
+		# d['to_name'] = str(self.to_profile_name)		# TODO make sure this gets the name of the profile
 		d['relation_type'] = str(self.relation_type)
 		d['relation_quality'] = str(self.relation_quality)
 		d['is_former'] = self.is_former
