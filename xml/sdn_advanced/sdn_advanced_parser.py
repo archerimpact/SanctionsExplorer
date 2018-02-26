@@ -37,7 +37,6 @@ def days_span_month(from_date, to_date):
 ## Defining Classes
 class Date:
 
-	# disgustingly hacky way to do this.
 	def __init__(self, date_xml, y=None):
 		if y is None:
 			self.year = date_xml[0].text
@@ -85,7 +84,7 @@ class DateBoundary:
 		   	return Date(None, y=from_date.year)
 
 		else:
-			print("ERROR: This should never run.")
+			print('ERROR: DateBoundary was not condensable: ' + str(from_date) + ', ' + str(to_date))
 			return None
 
 
@@ -95,7 +94,7 @@ class DateBoundary:
 		self.year_fixed = xml.get("YearFixed")
 		self.month_fixed = xml.get("MonthFixed")
 		self.day_fixed = xml.get("DayFixed")
-		self.is_approximate = xml.get("Approximate")
+		self.is_approximate = xml.get("Approximate")		# We sacrifice this data for schema simplicity.  Sorry.  TODO (eventually) add an is_approximate field to the Date object itself, and prepend date str with '~'
 
 		self.condensed_date = self.condense_boundary(self.date_from, self.date_to)
 
@@ -106,10 +105,7 @@ class DateBoundary:
 			# print(str(self.date_from) + ' to ' + str(self.date_to) + ' condensed to ' + str(self.condense_boundary(self.date_from, self.date_to)))
 
 	def __str__(self):
-		d = dict()
-		d['date'] = str(self.condensed_date)
-		d['is_approximate'] = self.is_approximate
-		return json.dumps(d)
+		return str(self.condensed_date)
 
 
 # class Duration:
@@ -438,14 +434,16 @@ class IDRegDocument:
 			return python_list_name[attr]
 
 	def parse_dates(self, xml):
-		ret = []
+		ret = dict()
 		dates = xml_approx_findall(xml, "DocumentDate")
 		if dates is not None:
 			for d in dates:
 				date_type = id_reg_doc_date_types[d.get("IDRegDocDateTypeID")].text
 				date_period = xml_approx_find(d, "DatePeriod")
 				date_period_obj = DatePeriod(date_period)
-				ret.append((date_type, str(date_period_obj)))	# TODO kinda messy to serialize here but whatever?
+				if date_type in ret:
+					print("ERROR: " + str(ret))
+				ret[date_type] = str(date_period_obj)
 		return ret
 
 	def parse_feature_version_ids(self, xml):
@@ -597,6 +595,7 @@ class Alias:
 
 		for elem in elems:
 			parts = xml_approx_findall(elem, "DocumentedNamePart")
+			one_name = dict()
 			for p in parts:
 				value = xml_approx_find(p, "NamePartValue")
 				if value is not None:
@@ -604,7 +603,8 @@ class Alias:
 					language = scripts[value.get("ScriptID")].text
 					np_type = name_part_groups_dict[group_id]
 					name = value.text
-					ret.append( (name, np_type, language) )
+					one_name[np_type] = [name, language]
+			ret.append(one_name)
 		return ret 
 
 	def __init__(self, xml, name_part_groups_dict):
