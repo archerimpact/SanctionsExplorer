@@ -423,7 +423,7 @@ class IDRegDocument:
 		d['type'] = str(self.type)
 		# d['identity'] = self.identity     	# not necessary since each IDRegDoc obj is owned by an identity
 		d['issued_by'] = str(self.issued_by)
-		d['issiued_in'] = str(self.issued_in)
+		d['issued_in'] = str(self.issued_in)
 		d['validity'] = str(self.validity)
 		d['issuing_authority'] = str(self.issuing_authority)
 		d['id_number'] = self.id_number
@@ -446,14 +446,19 @@ class Feature:
 			return None
 
 	def parse_details(self, version_xml):
-		ret = []
 		version_details = xml_approx_findall(version_xml, "VersionDetail")
 		if version_details is not None:
 			for v in version_details:
-				dr_id = v.get("DetailReferenceID")
-				if dr_id is not None:
-					ret.append( (detail_references[v.get("DetailReferenceID")].text, v.text) )		# TODO change the 0th item in the tuple to get out of the mapping once created
-		return ret
+				if v.text is None:
+					det_ref_id = v.get("DetailReferenceID")
+					if det_ref_id is not None:
+						return str(detail_references[v.get("DetailReferenceID")].text)
+				else:
+					return v.text
+		else:
+			#print('VD string was None')		# TODO make sure we're actually getting everything?
+			pass
+
 
 	def parse_locations(self, version_xml):
 		ret = []
@@ -585,6 +590,7 @@ class Identity:
 		# TODO ID REG DOCS? It's already in profile??
 		return json.dumps(d)
 
+
 class SanctionEntry:
 	def parse_entry_events(self, sanction_entry_xml):
 		ret = []
@@ -598,7 +604,8 @@ class SanctionEntry:
 					comment = None
 				date = Date(xml_approx_find(event, "Date"))
 				legal_basis = legal_bases[event.get("LegalBasisID")].text
-				ret.append( (date, comment, legal_basis) )
+				# ret.append( (date, comment, legal_basis) )		comment is always null.
+				ret.append( (date, legal_basis) )
 			return ret
 		else:
 			return None
@@ -614,10 +621,14 @@ class SanctionEntry:
 					comment = c.text
 				else:
 					comment = None
-				ret.append( (sanctions_type, comment) )
-			return ret
-		else:
-			return None
+
+				if sanctions_type != 'Block':		# currently, sanctions block doesn't contain anything but a date.
+					ret.append(comment)
+				
+				if sanctions_type == 'Block' and comment is not None:
+					print('FUTURE_WARNING: Sanctions Block now contains a comment (' + comment + ')')
+
+		return ret
 
 
 	def __init__(self, xml):
@@ -637,7 +648,7 @@ class SanctionEntry:
 			events.append([str(i) for i in e])
 
 		d['entry_events'] = events
-		d['sanctions_measures'] = self.sanctions_measures
+		d['program'] = self.sanctions_measures
 		return json.dumps(d)
 
 class ProfileLink:
@@ -684,9 +695,9 @@ class DistinctParty:
 	def parse_comment(self, xml):
 		elem = xml_approx_find(xml, "Comment")
 		if elem is not None and elem.text is not None:
-			return elem.text
+			return [x.strip() for x in list(filter(None, elem.text.split(';')))]		# they use ;-separated comments.  filter to remove emtpy string, strip whitespaces on either side.  is this what Pythonic means?
 		else:
-			return elem
+			return None
 
 	def add_link(self, link_obj):
 		self.linked_profiles.append(link_obj)
@@ -723,7 +734,7 @@ class DistinctParty:
 	def __str__(self):
 		d = dict()
 		d['identity'] = json.loads(str(self.identity))
-		# d['party_comment'] = self.party_comment
+		d['party_comment'] = self.party_comment
 		d['fixed_ref'] = self.fixed_ref
 		d['party_sub_type'] = str(self.party_sub_type)
 		d['features'] = list_to_json_list(self.features)
@@ -879,9 +890,9 @@ if __name__ == '__main__':
 	make_location_list(root[2])
 	make_id_doc_list(root[3])
 	make_distinct_party_list(root[4])
-	resolve_documents_to_parties()
+	# resolve_documents_to_parties()
 	b = list(distinct_parties.values())[0]
-	add_profile_links(root[5])
-	add_sanctions_entries(root[6])
+	# add_profile_links(root[5])
+	# add_sanctions_entries(root[6])
 
 	# print([str(x) for x in list(distinct_parties.values())])
