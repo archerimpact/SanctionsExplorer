@@ -26,6 +26,7 @@ for row in ws.rows:
 				new_ws.cell(row=rownum, column=1).value = val
 				new_ws.cell(row=rownum, column=2).value = entry["link"]
 				print(entry["link"])
+				rownum += 1
 		else:
 			print("error")
 
