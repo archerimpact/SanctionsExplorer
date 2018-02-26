@@ -283,14 +283,14 @@ class Location:
 		if elems is not None:
 			return [e.get("FeatureVersionID") for e in elems]
 		else:
-			return None
+			return []
 
 	def parse_reg_doc_ids(self, xml):
 		elems = xml_approx_findall(xml, "IDRegDocumentReference")
 		if elems is not None:
 			return [e.get("IDRegDocumentID") for e in elems]
 		else:
-			return None
+			return []
 
 	def parse_country(self, xml):
 		country_id = xml_approx_find(xml, "LocationCountry")
@@ -363,16 +363,14 @@ class IDRegDocument:
 				date_period = xml_approx_find(d, "DatePeriod")
 				date_period_obj = DatePeriod(date_period)
 				ret.append((date_type, json.loads(str(date_period_obj))))	# TODO kinda messy to serialize here but whatever?
-			return ret
-		else:
-			return None
+		return ret
 
 	def parse_feature_version_ids(self, xml):
 		elems = xml_approx_findall(xml, "FeatureVersionReference")
 		if elems is not None:
 			return [e.get("FeatureVersionID") for e in elems]
 		else:
-			return None
+			return []
 
 	def parse_issuing_auth(self, xml):
 		auth = xml_approx_find(xml, "IssuingAuthority")
@@ -386,14 +384,14 @@ class IDRegDocument:
 		if elems is not None:
 			return [e.get("DocumentedNameID") for e in elems]
 		else:
-			return None
+			return []
 
 	def parse_relationship_ids(self, xml):
 		elems = xml_approx_findall(xml, "ProfileRelationshipReference")
 		if elems is not None:
 			return [e.get("ProfileRelationshipID") for e in elems]
 		else:
-			return None
+			return []
 
 	def __init__(self, xml):
 		"""defer parsing of IdentityID, FeatureVersionReference, DocumentedName, 
@@ -443,7 +441,7 @@ class Feature:
 		if dates is not None:
 			return [DatePeriod(d) for d in dates]
 		else:
-			return None
+			return []
 
 	def parse_details(self, version_xml):
 		version_details = xml_approx_findall(version_xml, "VersionDetail")
@@ -466,7 +464,7 @@ class Feature:
 		if locs is not None:
 			return [locations[l.get("LocationID")] for l in locs]
 		else:
-			return None
+			return []
 
 	def parse_reliability(self, version_xml):
 		r = version_xml.get("ReliabilityID")
@@ -569,7 +567,7 @@ class Identity:
 		if elems is not None:
 			return [Alias(e, name_part_groups) for e in elems]
 		else:
-			return None
+			return []
 
 	def __init__(self, xml):
 		self.id = xml.get("ID")
@@ -606,9 +604,8 @@ class SanctionEntry:
 				legal_basis = legal_bases[event.get("LegalBasisID")].text
 				# ret.append( (date, comment, legal_basis) )		comment is always null.
 				ret.append( (date, legal_basis) )
-			return ret
-		else:
-			return None
+		return ret
+
 
 	def parse_sanctions_measures(self, sanction_entry_xml):
 		ret = []
@@ -671,11 +668,13 @@ class ProfileLink:
 		## stored in the from_profile so only storing information about the to profile
 		# self.comment = self.parse_comment(xml) One entry has a comment here
 		self.id = xml.get("ID")
+		self.from_profile_id = xml.get("From-ProfileID")
 		self.to_profile_id = xml.get("To-ProfileID")
 		self.to_profile_name = self.lookup_profile(self.to_profile_id)
 		self.relation_type = relation_types[xml.get("RelationTypeID")]
 		self.relation_quality = relation_qualities[xml.get("RelationQualityID")]
 		self.is_former = xml.get("Former")
+		self.is_reverse = None
 		# self.sanctions_entry_id = xml.get("SanctionsEntryID")
 		# self.sanctions_entry = None # deferred
 
@@ -707,14 +706,14 @@ class DistinctParty:
 		if elems is not None:
 			return [Feature(e) for e in elems]
 		else:
-			return None
+			return []
 
 	def parse_sanctions_entry_ids(self, xml):
 		elems = xml_approx_findall(xml, "SanctionsEntryReference")
 		if elems is not None:
 			return [e.get("SanctionsEntryID") for e in elems]
 		else:
-			return None
+			return []
 
 	## Each distinct party has one profile and one identity obj
 	def __init__(self, xml):
@@ -848,8 +847,16 @@ def make_distinct_party_list(party_xml):
 def add_profile_links(link_xml):
 	for l in link_xml:
 		obj = ProfileLink(l)
+		obj.is_reverse = False
+
+		obj2 = ProfileLink(l)
+		obj2.is_reverse = True
+
 		distinct_p = distinct_parties[obj.get_owner_id(l)]
 		distinct_p.add_link(obj)
+
+		reverse_p = distinct_parties[obj2.to_profile_id]
+		reverse_p.add_link(obj2)
 
 def resolve_documents_to_parties():
 	for id_doc in list(id_docs.values()):
@@ -890,9 +897,9 @@ if __name__ == '__main__':
 	make_location_list(root[2])
 	make_id_doc_list(root[3])
 	make_distinct_party_list(root[4])
-	# resolve_documents_to_parties()
+	resolve_documents_to_parties()
 	b = list(distinct_parties.values())[0]
-	# add_profile_links(root[5])
-	# add_sanctions_entries(root[6])
+	add_profile_links(root[5])
+	add_sanctions_entries(root[6])
 
 	# print([str(x) for x in list(distinct_parties.values())])
