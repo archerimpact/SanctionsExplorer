@@ -2,7 +2,6 @@ from lxml import etree
 import json
 
 xml_namespace = {"ofac" : "{http://www.un.org/sanctions/1.0}"}
-i = 0
 
 # Notes
 # in __str__, only wrap the values that explicitly need to be converted to strings with str().  This is done to make it easier to tell which items are not being explicitly converted to strings in case of JSON serializability issues. 
@@ -17,15 +16,56 @@ i = 0
 ## Sanctions Entries
 ## Sanctions Entry Links (currently unused, so will not parse)
 
+
+def years_match(from_date, to_date):
+	return from_date.year == to_date.year
+
+def months_match(from_date, to_date):
+	return from_date.month == to_date.month
+
+def months_span_year(from_date, to_date):
+	return from_date.month == '1' and to_date.month == '12'
+
+def days_span_month(from_date, to_date):
+	from_starts = from_date.day == '1'
+	to_ends = to_date.day == '31' or to_date.day == '30'	# crude, but works for now.  TODO make a proper mapping of month -> num_days
+	feb = to_date.month == '2' and (to_date.day == '28' or to_date.day == '29')
+
+	return from_starts and (to_ends or feb)
+
+
 ## Defining Classes
 class Date:
-	def __init__(self, date_xml):
-		self.year = date_xml[0].text
-		self.month = date_xml[1].text
-		self.day = date_xml[2].text
+
+	# disgustingly hacky way to do this.
+	def __init__(self, date_xml, y=None):
+		if y is None:
+			self.year = date_xml[0].text
+			self.month = date_xml[1].text
+			self.day = date_xml[2].text
+		else:
+			self.year = str(y)
+			self.month = None
+			self.day = None
+
 
 	def __str__(self):
-		return str(self.year) + '-' + str(self.month) + '-' + str(self.day)
+		ret = ""
+		if self.year is not None:
+			ret += (self.year)
+
+			if self.month is not None:
+				ret += ('-' + self.month)
+			
+				if self.day is not None:
+					ret += ('-' + self.day)
+				else:
+					print('ERROR: There was a year and month without a day.')
+		else:
+			print('ERROR: There was no year.')
+
+		return ret
+
 
 class DateBoundary:
 	def parse_date(self, xml, tag):
@@ -35,6 +75,20 @@ class DateBoundary:
 		else:
 			return None
 
+	# under the current XML structure, we are guaranteed a condensable DateBoundary.
+	def condense_boundary(self, from_date, to_date):
+		if str(from_date) == str(to_date):
+			return from_date
+
+		elif years_match(from_date, to_date) and months_span_year(from_date, to_date) and days_span_month(from_date, to_date):
+		   	# these dates span one year, so we will use the year they span
+		   	return Date(None, y=from_date.year)
+
+		else:
+			print("ERROR: This should never run.")
+			return None
+
+
 	def __init__(self, xml):
 		self.date_from = self.parse_date(xml, "From")
 		self.date_to = self.parse_date(xml, "To")
@@ -43,15 +97,20 @@ class DateBoundary:
 		self.day_fixed = xml.get("DayFixed")
 		self.is_approximate = xml.get("Approximate")
 
+		self.condensed_date = self.condense_boundary(self.date_from, self.date_to)
+
+		if self.year_fixed != 'false' or self.month_fixed != 'false' or self.day_fixed != 'false':
+			print('FUTURE_WARNING: OFAC is beginning to use year_/month_/day_fixed fields.')
+
+		# if str(self.date_from) != str(self.date_to):
+			# print(str(self.date_from) + ' to ' + str(self.date_to) + ' condensed to ' + str(self.condense_boundary(self.date_from, self.date_to)))
+
 	def __str__(self):
 		d = dict()
-		d['date_from'] = str(self.date_from)
-		d['date_to'] = str(self.date_to)
-		d['year_fixed'] = self.year_fixed
-		d['month_fixed'] = self.month_fixed
-		d['day_fixed'] = self.day_fixed
+		d['date'] = str(self.condensed_date)
 		d['is_approximate'] = self.is_approximate
 		return json.dumps(d)
+
 
 # class Duration:
 # 	## Not currently in use by the xml so may add this later if they do start using it
@@ -69,23 +128,47 @@ class DatePeriod:
 		else:
 			return None
 
+	def condense_and_stringify(self, from_boundary, to_boundary):
+		if str(from_boundary) == str(to_boundary):
+			return str(from_boundary)
+
+		elif years_match(from_boundary, to_boundary) and months_span_year(from_boundary, to_boundary) and days_span_month(from_boundary, to_boundary):
+		   	# these dates span one year, so we will use the year they span
+		   	return str(from_boundary.year)
+
+		elif years_match(from_boundary, to_boundary) and months_match(from_boundary, to_boundary) and days_span_month(from_boundary, to_boundary):
+		   	# these dates span one month, so we will use the year they span
+		   	return str(from_boundary.year)
+
+		elif (not years_match(from_boundary, to_boundary)) and months_span_year(from_boundary, to_boundary) and days_span_month(from_boundary, to_boundary):
+		   	# these dates span some number of years
+		   	return str(from_boundary.year) + ' to ' + str(to_boundary.year)
+
+		elif from_boundary.year is not None and to_boundary.year is not None and \
+			 from_boundary.month is None and to_boundary.month is None and \
+			 from_boundary.day is None and to_boundary.day is None:
+			# these dates also span some number of years (the underlying objects were constructed with only a year)
+			return str(from_boundary.year) + ' to ' + str(to_boundary.year)
+
+		else:
+			print('WARNING: A DatePeriod did not condense nicely: ' + str(from_boundary) + ' to ' + str(to_boundary))
+			return str(from_boundary) + ' to ' + str(to_boundary)
+
+
 	def __init__(self, xml):
 		self.year_fixed = xml.get("YearFixed")
 		self.month_fixed = xml.get("MonthFixed")
 		self.day_fixed = xml.get("DayFixed")
-		self.start = self.parse_date_boundary(xml, "Start") # a DateBoundary Object
-		self.end = self.parse_date_boundary(xml, "End") # a DateBoundary Object
-		self.duration_minimum = None # a Duration Object, not currently used in xml
-		self.duration_maximum =  None # a Duration Object, not currently used in xml
+		self.start_boundary = self.parse_date_boundary(xml, "Start") 	# a DateBoundary Object
+		self.end_boundary   = self.parse_date_boundary(xml, "End") 		# a DateBoundary Object
+		#self.duration_minimum = None 			# a Duration Object, not currently used in xml
+		#self.duration_maximum =  None 			# a Duration Object, not currently used in xml
+
+		if self.year_fixed != 'false' or self.month_fixed != 'false' or self.day_fixed != 'false':
+			print('FUTURE_WARNING: OFAC is beginning to use year_/month_/day_fixed fields.')
 
 	def __str__(self):
-		d = dict()
-		d['year_fixed'] = self.year_fixed
-		d['month_fixed'] = self.month_fixed
-		d['day_fixed'] = self.day_fixed
-		d['start'] = json.loads(str(self.start))
-		d['end'] = json.loads(str(self.end))
-		return json.dumps(d)
+		return self.condense_and_stringify(self.start_boundary.condensed_date, self.end_boundary.condensed_date)
 
 class AliasType:
 	def __init__(self, alias_type_xml):
@@ -318,7 +401,7 @@ class Location:
 
 		# Checks that there are not conflicting country entries in this location
 		if (self.country is not None) and (self.country != 'None') and (str(self.location_parts.get('COUNTRY')) != 'None'):
-			print('ERROR: ' + str(self.country) + ' and ' + self.location_parts.get('COUNTRY') + ' are listed as countries for the same location.')
+			print('WARNING: ' + str(self.country) + ' and ' + self.location_parts.get('COUNTRY') + ' are listed as countries for the same location.')
 
 		if str(self.country) != 'None':
 			d['COUNTRY'] = str(self.country)
@@ -362,7 +445,7 @@ class IDRegDocument:
 				date_type = id_reg_doc_date_types[d.get("IDRegDocDateTypeID")].text
 				date_period = xml_approx_find(d, "DatePeriod")
 				date_period_obj = DatePeriod(date_period)
-				ret.append((date_type, json.loads(str(date_period_obj))))	# TODO kinda messy to serialize here but whatever?
+				ret.append((date_type, str(date_period_obj)))	# TODO kinda messy to serialize here but whatever?
 		return ret
 
 	def parse_feature_version_ids(self, xml):
@@ -483,7 +566,7 @@ class Feature:
 		d = dict()
 		d['comment'] = self.comment
 		d['feature_type'] = self.feature_type
-		d['relevant_dates'] = list_to_json_list(self.relevant_dates)
+		d['relevant_dates'] = [str(d) for d in self.relevant_dates]
 		d['feature_locations'] = list_to_json_list(self.feature_locations)
 		d['details'] = self.details
 		d['reliability'] = self.reliability
