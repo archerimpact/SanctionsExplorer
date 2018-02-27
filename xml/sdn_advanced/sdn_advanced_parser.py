@@ -94,8 +94,7 @@ class DateBoundary:
 		self.year_fixed = xml.get("YearFixed")
 		self.month_fixed = xml.get("MonthFixed")
 		self.day_fixed = xml.get("DayFixed")
-		self.is_approximate = xml.get("Approximate")		# We sacrifice this data for schema simplicity.  Sorry.  TODO (eventually) add an is_approximate field to the Date object itself, and prepend date str with '~'
-
+		#self.is_approximate = xml.get("Approximate")		# We sacrifice this data for schema simplicity.  This is okay, because the OFAC doc says this is to be avoided/phased out.
 		self.condensed_date = self.condense_boundary(self.date_from, self.date_to)
 
 		if self.year_fixed != 'false' or self.month_fixed != 'false' or self.day_fixed != 'false':
@@ -561,13 +560,25 @@ class Feature:
 		self.reliability = self.parse_reliability(self.feature_version)
 
 	def __str__(self):
+		"""
+		IMPORTANT NOTE: THIS DOES NOT SERIALIZE THE FEATURE TYPE.
+		That is done when we construct the features dictionary in DistinctParty's __str__().
+		"""
 		d = dict()
-		d['comment'] = self.comment
-		d['feature_type'] = self.feature_type
+		d['reliability'] = self.reliability
 		d['relevant_dates'] = [str(d) for d in self.relevant_dates]
 		d['feature_locations'] = list_to_json_list(self.feature_locations)
+
 		d['details'] = self.details
-		d['reliability'] = self.reliability
+
+		if self.comment is not None:		# there's only a few of these anyway
+			if d['details'] is None or len(d['details']) is 0:		# theoretically, this len check should never be true -- either None of some text
+				d['details'] = ''
+			else:
+				d['details'] += ' '
+
+			d['details'] += '(' + self.comment + ')'
+
 		return json.dumps(d)
 
 
@@ -590,8 +601,10 @@ class Alias:
 	def parse_documented_names(self, xml, name_part_groups_dict):
 		ret = []
 		elems = xml_approx_findall(xml, "DocumentedName")
-		if len(elems) > 1:
-			print ("more than one documented name per alias", self.fixed_ref)
+		
+		# This is now handled with the outer 'for elem in elems' loop.
+		# if len(elems) > 1:
+		# 	print ("more than one documented name per alias", self.fixed_ref)
 
 		for elem in elems:
 			parts = xml_approx_findall(elem, "DocumentedNamePart")
@@ -654,21 +667,42 @@ class Identity:
 
 	def __init__(self, xml):
 		self.id = xml.get("ID")
-		self.primary = xml.get("Primary")
-		self.false = xml.get("False") # not sure what this is actually
-		# self.comment = self.parse_comment(xml) This field is never used here
-		self.name_part_groups = self.parse_name_part_groups(xml) # mapping from ID : NamePartTypeID
+		#self.primary = xml.get("Primary")			# OFAC doc states only one identity per distinct party, so this is always true.
+		#self.false = xml.get("False") 				# not sure what this is actually
+		# self.comment = self.parse_comment(xml) 	# This field is never used here
+		self.name_part_groups = self.parse_name_part_groups(xml) 			# mapping from ID : NamePartTypeID
 		self.aliases = self.parse_aliases(xml, self.name_part_groups) 
-		self.id_reg_doc_ids = None
-		self.id_reg_docs = []
+		self.id_reg_doc_ids = None		# don't need to tie these to Identity since they're tied to DistinctParty
+		self.id_reg_docs = []			# don't need to tie these to Identity since they're tied to DistinctParty
 
 	def __str__(self):
 		d = dict()
 		d['id'] = self.id
-		d['primary'] = self.primary
-		# d['comment'] = self.comment
-		d['aliases'] = list_to_json_list(self.aliases)
-		# TODO ID REG DOCS? It's already in profile??
+		d['aliases'] = [list_to_json_list(self.aliases)]
+
+		mem = dict()
+		for a in self.aliases:
+			if mem.get(a.alias_type) is None:
+				mem[a.alias_type] = 0
+
+			mem[a.alias_type] += 1
+
+			if a.alias_type == 'Name' and a.is_primary == 'false':
+				print('ERROR: There was a name that isn\'t marked as primary.')
+
+		if mem.get('Name') > 1:
+			print(mem)
+
+		for a in self.aliases:
+			if a.alias_type== 'Name':
+				if a.is_primary == 'false':
+					print('ERROR: There was a name that isn\'t marked as primary.')
+					d['primary'] = json.loads(str(a))
+				else:
+					d['aliases'].append(json.loads(str(a)))
+			else:
+				d['aliases'].append(json.loads(str(a)))
+
 		return json.dumps(d)
 
 
@@ -800,13 +834,13 @@ class DistinctParty:
 
 	## Each distinct party has one profile and one identity obj
 	def __init__(self, xml):
-		self.party_comment = self.parse_comment(xml) # should get, has remarks
-		self.fixed_ref = xml.get("FixedRef")   
-		self.profile = xml_approx_find(xml, "Profile")
-		# self.profile_comment = self.parse_comment(self.profile) This field is never used
-		self.party_sub_type = party_sub_types[self.profile.get("PartySubTypeID")].text # read subtypeid from profile and fetch value
-		self.identity = Identity(xml_approx_find(self.profile, "Identity"))
-		self.features =  self.parse_features(self.profile)
+		self.party_comment = self.parse_comment(xml) 							# should get, has remarks
+		self.fixed_ref = xml.get("FixedRef")   									# fixed ID for this party
+		self.profile = xml_approx_find(xml, "Profile")							# OFAC doc says one profile
+		# self.profile_comment = self.parse_comment(self.profile) 				# This field is never used
+		self.party_sub_type = party_sub_types[self.profile.get("PartySubTypeID")].text 		# read subtypeid from profile and fetch value
+		self.identity = Identity(xml_approx_find(self.profile, "Identity"))		# OFAC doc says one identity
+		self.features =  self.parse_features(self.profile)						# any number of features
 		self.sanctions_entry_reference_ids = self.parse_sanctions_entry_ids(self.profile)
 		self.sanctions_entries = []
 		self.external_references = None # not currently used by the file
@@ -819,10 +853,16 @@ class DistinctParty:
 		d['party_comment'] = self.party_comment
 		d['fixed_ref'] = self.fixed_ref
 		d['party_sub_type'] = str(self.party_sub_type)
-		d['features'] = list_to_json_list(self.features)
 		d['sanctions_entries'] = list_to_json_list(self.sanctions_entries)	
 		d['documents'] = list_to_json_list(self.documents)
 		d['linked_profiles'] = list_to_json_list(self.linked_profiles)
+		d['features'] = dict()
+
+		for f in self.features:
+			d['features'][f.feature_type] = json.loads(str(f))
+		# d['features'] = list_to_json_list(self.features)
+
+
 		return json.dumps(d)
 
 
@@ -970,6 +1010,20 @@ def list_to_json_list(lst):
 	else:
 		return None
 
+def write_json(filename):
+	# return str([json.loads(str([distinct_parties[list(distinct_parties.keys())[i]] for i in range(10)][j])) for j in range(10)])
+	# return str([json.loads(str([v for v in distinct_parties.values()][j])) for j in range(10)]) 
+	# str([json.loads([str(v) for v in distinct_parties.values()])) 
+	# a = [str(distinct_parties[list(distinct_parties.keys())[i]]) for i in range(num)]
+	# json.dumps([json.loads(str(a[i])) for i in range(num)])
+
+	parties = list(distinct_parties.values())
+
+	with open(filename, 'w') as f:
+		data = json.dumps([json.loads(str(i)) for i in parties])
+		f.write(data)
+		f.close()
+
 if __name__ == '__main__':
 	## First parse the file and get root
 	tree = etree.parse("sdn_advanced.xml")
@@ -980,9 +1034,13 @@ if __name__ == '__main__':
 	make_location_list(root[2])
 	make_id_doc_list(root[3])
 	make_distinct_party_list(root[4])
+	print("DEBUG: Resolving documents to parties...")
 	resolve_documents_to_parties()
-	b = list(distinct_parties.values())[0]
+	print("DEBUG: Linking profiles...")
 	add_profile_links(root[5])
+	print("DEBUG: Parsing sanctions entries...")
 	add_sanctions_entries(root[6])
 
 	# print([str(x) for x in list(distinct_parties.values())])
+
+
