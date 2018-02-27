@@ -37,7 +37,10 @@ app.get('/search/press-releases', function(req, res) {
     let query = {
         'query': {
             'match': {
-                'content': text,
+                'content': {
+                    'query': text,
+                     'operator': 'and'
+                }
             }
         },
         size: 50,
