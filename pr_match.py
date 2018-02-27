@@ -11,7 +11,7 @@ wb = load_workbook(filename='sdn.xlsx')
 ws = wb.active
 
 new_wb = Workbook()
-new_ws = wb.active
+new_ws = new_wb.active
 rownum = 1
 
 for row in ws.rows:
