@@ -91,13 +91,13 @@ class DateBoundary:
 	def __init__(self, xml):
 		self.date_from = self.parse_date(xml, "From")
 		self.date_to = self.parse_date(xml, "To")
-		self.year_fixed = xml.get("YearFixed")
-		self.month_fixed = xml.get("MonthFixed")
-		self.day_fixed = xml.get("DayFixed")
+		self.year_fixed  = json.loads(xml.get("YearFixed"))
+		self.month_fixed = json.loads(xml.get("MonthFixed"))
+		self.day_fixed   = json.loads(xml.get("DayFixed"))
 		#self.is_approximate = xml.get("Approximate")		# We sacrifice this data for schema simplicity.  This is okay, because the OFAC doc says this is to be avoided/phased out.
 		self.condensed_date = self.condense_boundary(self.date_from, self.date_to)
 
-		if self.year_fixed != 'false' or self.month_fixed != 'false' or self.day_fixed != 'false':
+		if self.year_fixed or self.month_fixed or self.day_fixed:
 			print('FUTURE_WARNING: OFAC is beginning to use year_/month_/day_fixed fields.')
 
 		# if str(self.date_from) != str(self.date_to):
@@ -378,10 +378,12 @@ class Location:
 			return None
 
 	def __init__(self, xml):
-		"""we can evaluate ID, comment, country, and location parts on instantiation. 
+		"""
+		we can evaluate ID, comment, country, and location parts on instantiation. 
 		feature_versions reference a person associated with this place so evaluation will have to be deferred
 		similarly with IDRegDocumentReferences as those have not been parsed yet
-		locpartvaluetype is always main and locpartstatus is always unknown so we do not parse these"""
+		locpartvaluetype is always main and locpartstatus is always unknown so we do not parse these.
+		"""
 		self.id = xml.get('ID')
 		# self.comment = self.parse_comment(xml), this is always empty, not going to get. 
 		self.country = self.parse_country(xml) # country object, lol assumes it exists, will break everything if it doesn't
@@ -390,22 +392,40 @@ class Location:
 		self.id_reg_doc_ids =  self.parse_reg_doc_ids(xml) # list of reg_doc_ids that must be evaluated later
 
 
-	def __str__(self):
-		d = dict()
-		# d['comment'] = None for now
-
 		# Checks that there are not conflicting country entries in this location
 		if (self.country is not None) and (self.country != 'None') and (str(self.location_parts.get('COUNTRY')) != 'None'):
-			print('WARNING: ' + str(self.country) + ' and ' + self.location_parts.get('COUNTRY') + ' are listed as countries for the same location.')
+			print('WARNING: ' + str(self.country) + ' and ' + self.location_parts['COUNTRY'] + ' are listed as countries for the same location.')
 
 		if str(self.country) != 'None':
-			d['COUNTRY'] = str(self.country)
+			self.location_parts['COUNTRY'] = str(self.country)
 
+
+	def __str__(self):
+		d = dict()
+		
 		for entry in self.location_parts:
 			if entry == 'Unknown':
 				d['COUNTRY'] = self.location_parts[entry]
 			else:
 				d[entry] = self.location_parts[entry]
+
+
+		# Construct a renderable/searchable location string
+		renderable = ''
+		order = ['ADDRESS1', 'ADDRESS2', 'ADDRESS3', 'CITY', 'STATE/PROVINCE', 'REGION', 'COUNTRY', 'POSTAL CODE', 'Unknown']		# note: if the key is 'Unknown', it will be the only key in the dict
+
+		# Checks whether OFAC has added any new fields
+		if len(set(self.location_parts.keys() - set(order))) > 0:
+			print(self.location_parts.keys())
+			print('FUTURE_WARNING: OFAC has added a new location part type.')
+
+		for field in order:
+			if self.location_parts.get(field) is not None:
+				if len(renderable) > 0:
+					renderable += ', '
+				renderable += self.location_parts[field] 
+
+		d['COMBINED'] = renderable
 
 		return json.dumps(d)
 
@@ -563,21 +583,23 @@ class Feature:
 		"""
 		IMPORTANT NOTE: THIS DOES NOT SERIALIZE THE FEATURE TYPE.
 		That is done when we construct the features dictionary in DistinctParty's __str__().
+
+		ANOTHER IMPORTANT NOTE: This will have the fields:
+		- 'reliability'
+		- 'comment'
+		- choose ONE from 'locations', 'dates', 'details'
 		"""
 		d = dict()
 		d['reliability'] = self.reliability
-		d['relevant_dates'] = [str(d) for d in self.relevant_dates]
-		d['feature_locations'] = list_to_json_list(self.feature_locations)
+		d['comment'] = self.comment 		# there's only a few of these, and they're probably being phased out because they're horrible.
 
-		d['details'] = self.details
-
-		if self.comment is not None:		# there's only a few of these anyway
-			if d['details'] is None or len(d['details']) is 0:		# theoretically, this len check should never be true -- either None of some text
-				d['details'] = ''
-			else:
-				d['details'] += ' '
-
-			d['details'] += '(' + self.comment + ')'
+		# only ONE of feature_lications, relevant_dates, or details will be populated.
+		if len(self.feature_locations) > 0:
+			d['locations'] = list_to_json_list(self.feature_locations)
+		elif len(self.relevant_dates) > 0:
+			d['dates'] = [str(d) for d in self.relevant_dates]
+		else:
+			d['details'] = self.details
 
 		return json.dumps(d)
 
@@ -586,7 +608,7 @@ class Alias:
 	def parse_comment(self, xml):
 		elem = xml_approx_find(xml, "Comment")
 		if elem is not None and elem.text is not None:
-			print(elem.text)
+			print('DEBUG: ' + elem.text)
 			return elem.text
 		else:
 			return elem
@@ -624,8 +646,8 @@ class Alias:
 		# self.comment = This field is never used in this part 
 		self.fixed_ref = xml.get("FixedRef")
 		self.alias_type = alias_types[xml.get("AliasTypeID")].text
-		self.is_primary = xml.get("Primary")
-		self.is_low_quality = xml.get("LowQuality")
+		self.is_primary = json.loads(xml.get("Primary"))
+		self.is_low_quality = json.loads(xml.get("LowQuality"))
 		self.documented_name = self.parse_documented_names(xml, name_part_groups_dict) # A list of (nameparttype, namepart) tups
 		self.date_period = self.parse_date_period(xml)
 
@@ -671,37 +693,45 @@ class Identity:
 		#self.false = xml.get("False") 				# not sure what this is actually
 		# self.comment = self.parse_comment(xml) 	# This field is never used here
 		self.name_part_groups = self.parse_name_part_groups(xml) 			# mapping from ID : NamePartTypeID
-		self.aliases = self.parse_aliases(xml, self.name_part_groups) 
 		self.id_reg_doc_ids = None		# don't need to tie these to Identity since they're tied to DistinctParty
 		self.id_reg_docs = []			# don't need to tie these to Identity since they're tied to DistinctParty
+			
+		self.all_names = self.parse_aliases(xml, self.name_part_groups) 		# consists of one primary and some number of aliases
+		self.aliases = []
+		self.primary = None
+		
+
+		for a in self.all_names:
+			if a.alias_type == 'Name':
+				self.primary = a
+
+				if not a.is_primary:
+					print('ERROR: There was a name that isn\'t marked as primary.')
+			else:
+				self.aliases.append(a)
+
 
 	def __str__(self):
 		d = dict()
 		d['id'] = self.id
 		d['aliases'] = [list_to_json_list(self.aliases)]
+		d['primary'] = json.loads(str(self.primary))
 
-		mem = dict()
-		for a in self.aliases:
-			if mem.get(a.alias_type) is None:
-				mem[a.alias_type] = 0
+		# mem = dict()
+		# for a in self.aliases:
+		# 	if mem.get(a.alias_type) is None:
+		# 		mem[a.alias_type] = 0
 
-			mem[a.alias_type] += 1
+		# 	mem[a.alias_type] += 1
 
-			if a.alias_type == 'Name' and a.is_primary == 'false':
-				print('ERROR: There was a name that isn\'t marked as primary.')
+		# 	if a.alias_type == 'Name' and not a.is_primary:
+		# 		print('ERROR: There was a name that isn\'t marked as primary.')
 
-		if mem.get('Name') > 1:
-			print(mem)
+		# if mem.get('Name') > 1:
+		# 	print(mem)
 
-		for a in self.aliases:
-			if a.alias_type== 'Name':
-				if a.is_primary == 'false':
-					print('ERROR: There was a name that isn\'t marked as primary.')
-					d['primary'] = json.loads(str(a))
-				else:
-					d['aliases'].append(json.loads(str(a)))
-			else:
-				d['aliases'].append(json.loads(str(a)))
+		d['aliases'] = []
+
 
 		return json.dumps(d)
 
@@ -766,10 +796,10 @@ class SanctionEntry:
 		return json.dumps(d)
 
 class ProfileLink:
-	def lookup_profile(self, p_id):
+	def profile_id_to_name(self, p_id):
 		for p in list(distinct_parties.values()):
 			if p.fixed_ref == p_id:
-				return p
+				return str(p.identity.primary)
 
 
 	def parse_comment(self, xml):
@@ -786,11 +816,12 @@ class ProfileLink:
 		# self.comment = self.parse_comment(xml) One entry has a comment here
 		self.id = xml.get("ID")
 		self.from_profile_id = xml.get("From-ProfileID")
-		self.to_profile_id = xml.get("To-ProfileID")
-		self.to_profile_name = self.lookup_profile(self.to_profile_id)
+		self.to_profile_id = xml.get("To-ProfileID")			# we'll keep this as a string for now.  We'll serialize it as a number in the __str__ method.  TODO come back and look at this.
+		self.to_profile_name = self.profile_id_to_name(self.to_profile_id)
+
 		self.relation_type = relation_types[xml.get("RelationTypeID")]
 		self.relation_quality = relation_qualities[xml.get("RelationQualityID")]
-		self.is_former = xml.get("Former")
+		self.is_former = json.loads(xml.get("Former"))
 		self.is_reverse = None
 		# self.sanctions_entry_id = xml.get("SanctionsEntryID")
 		# self.sanctions_entry = None # deferred
@@ -800,11 +831,12 @@ class ProfileLink:
 
 	def __str__(self):
 		d = dict()
-		d['to_id'] = str(self.to_profile_id)
-		# d['to_name'] = str(self.to_profile_name)		# TODO make sure this gets the name of the profile
+		d['to_id'] = json.loads(str(self.to_profile_id))
+		d['to_name'] = json.loads(self.to_profile_name)
 		d['relation_type'] = str(self.relation_type)
 		d['relation_quality'] = str(self.relation_quality)
 		d['is_former'] = self.is_former
+		d['is_reverse'] = self.is_reverse
 		return json.dumps(d)
 
 class DistinctParty:
@@ -1008,7 +1040,7 @@ def list_to_json_list(lst):
 	if lst is not None:
 		return [json.loads(str(l)) for l in lst]
 	else:
-		return None
+		return []
 
 def write_json(filename):
 	# return str([json.loads(str([distinct_parties[list(distinct_parties.keys())[i]] for i in range(10)][j])) for j in range(10)])
@@ -1030,6 +1062,7 @@ if __name__ == '__main__':
 	root = tree.getroot()
 
 	date_of_issue = Date(root[0])
+	print("DEBUG: Making top-level reference lists...")
 	make_lookup_lists(root[1])
 	make_location_list(root[2])
 	make_id_doc_list(root[3])
@@ -1040,7 +1073,3 @@ if __name__ == '__main__':
 	add_profile_links(root[5])
 	print("DEBUG: Parsing sanctions entries...")
 	add_sanctions_entries(root[6])
-
-	# print([str(x) for x in list(distinct_parties.values())])
-
-
