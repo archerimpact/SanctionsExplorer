@@ -14,7 +14,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#">OFACasaurus</a>
+          <a class="navbar-brand" href="#">OFACasaurus (BETA)</a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
             <span class="navbar-toggler-icon"></span>
           </button>
@@ -47,8 +47,8 @@
                             <input type="text" class="form-control form-control-sm" id="name-input">
                         </div>
                         <div class="col-md-5">
-                            <label for="name-input">Fuzziness(BETA)</label>
-                            <input type="text" class="form-control form-control-sm" id="name-input">
+                            <label for="name-input">Fuzziness</label>
+                            <input type="text" class="form-control form-control-sm" disabled id="name-input" placeholder="Coming Soon">
                         </div>
                     </div>
                     <div class="form-row">
@@ -162,7 +162,6 @@
             </div>
             <div class="collapse hide" id="card-body-{{=it.main.id}}">
                 <div class="card-body row">
-                                        {{=JSON.stringify(it)}}
                     <div class="col-lg-6 col-md-6">
                         <div class="left-card-col">
 

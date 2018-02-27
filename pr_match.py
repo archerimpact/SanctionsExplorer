@@ -2,6 +2,7 @@ import os
 from openpyxl import load_workbook
 from openpyxl import Workbook
 import requests
+import urllib
 
 url_template = "http://localhost:8080/search/press-releases?query="
 headers = {'Content-Type': 'application/json'}
@@ -16,11 +17,11 @@ rownum = 1
 
 for row in ws.rows:
 	val = row[1].value
-	print(type(val))
 	print(val)
 	if val != None and isinstance(val, unicode):
-		url = url_template + val
-		result = requests.get(url, headers=headers, data=data)
+		url = url_template + urllib.quote_plus(val).replace("+", "%20")
+		print(url)
+		result = requests.get(url)
 		if result.status_code == 200:
 			for entry in result.json()["response"]:
 				new_ws.cell(row=rownum, column=1).value = val
@@ -28,7 +29,7 @@ for row in ws.rows:
 				print(entry["link"])
 				rownum += 1
 		else:
-			print("error")
+			print(result.content)
 
 new_wb.save("prelim_matches.xlsx")
 #result = requests.get(url)

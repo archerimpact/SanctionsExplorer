@@ -128,16 +128,18 @@ function process_entry(res) {
 
     let main_fields = construct_fields(['ent_num', 'sdn_name', 'sdn_type', 'program']);
     let personal_fields = construct_fields(['nationality', 'dob', 'pob', 'gender', 'title']);
-    let id_fields = construct_fields(['passport', 'tax_id_no', 'website', 'email', 'phone']);
+    let id_fields = construct_fields(['aka', 'passport', 'tax_id_no', 'website', 'email', 'phone', 'identification_number', 'national_id_number', 'nit', 'rfc', 'swift_bic']);
     let notes_fields = construct_fields(['notes', 'additional_sanctions_info']);
     let context_fields = construct_fields(['linked_to', 'press_releases']);
+    let sea_air_fields = construct_fields(['aircraft_model', 'aircraft_operator', 'call_sign', 'grt', 'tonnage', 'vess_flag', 'vess_owner', 'vess_type', 'vessel_registration_number'])
     extract('main', main_fields);
     extract('personal', personal_fields);
     extract('identification', id_fields);
     extract('notes', notes_fields);
-    extract('context', context_fields)
+    extract('context', context_fields);
+    extract('sea_air', sea_air_fields)
 
-    data['categories'] = ['personal', 'identification', 'notes'];
+    data['categories'] = ['personal', 'identification', 'notes', 'sea_air'];
     return data;
 }
 
@@ -166,6 +168,7 @@ function construct_fields(fields) {
         'sdn_name': 'Name',
         'sdn_type': 'Type',
         'program': 'Program',
+        'aka': 'AKA',
         'nationality': 'Nationality',
         'dob': 'Date of Birth',
         'pob': 'Place of Birth',
@@ -180,6 +183,20 @@ function construct_fields(fields) {
         'additional_sanctions_info': 'Additional Sanctions Info',
         'linked_to': 'Linked To',
         'all fields': 'All fields',
+        'aircraft_model': 'Aircraft Model',
+        'aircraft_operator': 'Aircraft Operator',
+        'call_sign': 'Call Sign',
+        'grt': 'Gross Registered Tonnage',
+        'tonnage': 'Tonnage',
+        'vess_flag': 'Vessel Flag',
+        'vess_owner': 'Vessel Owner',
+        'vess_flag': 'Vessel Flag',
+        'vessel_registration_number': 'Vesseal Registration Number',
+        'identification_number': 'Identification Number',
+        'national_id_number': 'National ID Number',
+        'nit': 'NIT',
+        'rfc': 'RFC',
+        'swift_bic': 'SWIFT',
     };
 
     let retval = {};

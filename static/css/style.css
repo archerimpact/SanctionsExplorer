@@ -105,9 +105,13 @@ h5.card-detail-header {
         display: none;
     }
 
-    .page-col {
-        overflow-y: auto;
-        height: auto;
+    .right-col {
+        height: 100%;
+        overflow: visible;
+    }
+
+    .next-page {            /* TODO figure out why this isn't hiding */
+        display: none;
     }
 }
 
