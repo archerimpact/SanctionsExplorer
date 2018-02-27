@@ -36,10 +36,9 @@ app.get('/search/press-releases', function(req, res) {
 
     let query = {
         'query': {
-            'match': {
+            'match_phrase': {
                 'content': {
                     'query': text,
-                     'operator': 'and'
                 }
             }
         },
@@ -67,6 +66,7 @@ app.get('/search/sdn', function(req, res) {
         json.match[field] = {
             'query': query_str,
             'fuzziness': fuzz_setting,
+            'operator': 'and',
         };
         return json;
     };
@@ -87,6 +87,7 @@ app.get('/search/sdn', function(req, res) {
     }
 
     es_query.query = search_query;
+    console.log(JSON.stringify(es_query));
     search_ES(es_query, Entry, res);
 });
 
@@ -127,11 +128,11 @@ function search_ES(query, model, res) {
             else {
                 let response = [];
                 for (var i in results.hits.hits) {
-                    console.log(results.hits.hits[i]['_source']['sdn_name'] + ': ' + results.hits.hits[i]['_score']);
+//                    console.log(results.hits.hits[i]['_source']['sdn_name'] + ': ' + results.hits.hits[i]['_score']);
                     response.push(results.hits.hits[i]['_source']);
                 }
 
-                console.log(JSON.stringify(results.hits));
+//                console.log(JSON.stringify(results.hits));
                 res.json({'response': response, 'num_results': results.hits.total});
             }
         });
