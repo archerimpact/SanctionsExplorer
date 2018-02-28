@@ -9,17 +9,18 @@ $(document).ready(() => {
 		{
 			id: 'fuzzy',
 			question: 'How do I do fuzzy search/inexact matching?',
-			answer: '<p>You can\'t right now lmao</p>',
+			answer: '<p>By default, the SDN search performs fuzzy/inexact matching.  If you notice that halfway down the page, results are no longer relevant, then you can safely stop viewing more results since they are ordered by relevance.</p>' +
+                    '<p>We have not yet added fuzzy searching of press releases, but this is coming soon!</p>',
 		},
 		{
 			id: 'effective',
 			question: 'How do I most effectively search?',
-			answer: '<p>If no results are being returned, try removing some words from your query.</p>',
+			answer: '<p>If no results are being returned, try removing some words from your query or removing an entire filter.</p>',
 		},
 		{
 			id: 'disclaimer',
 			question: 'Are you affiliated with the Treasury? Can I use this for compliance?',
-			answer: '<p>OFACasaurus, Archer, and C4ADS are not affiliated with the U.S. Department of Treasury, which does not endorse OFACasaurus.  Additionally, OFACasaurus, Archer, and C4ADS make no guarantee on the accuracy of the data contained in the OFACasaurus platform -- although we do our best to ensure that no data is missing, we do not recommend using OFACasaurus for compliance (at least, not without verifying using the official Treasury website).</p>',
+			answer: '<p>OFACasaurus, Archer, and C4ADS are not affiliated with nor endorsed by the U.S. Department of Treasury.  Additionally, OFACasaurus, Archer, and C4ADS make no guarantee on the accuracy of the data contained in the OFACasaurus platform -- although we do our best to ensure that no data is missing, we do not recommend using OFACasaurus for compliance (at least, not without verifying using the official Treasury website).</p>',
 		}
 	];
 
