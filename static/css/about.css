@@ -2,7 +2,7 @@
 	padding-top: 0;
 }
 
-.about-right-col {
+.about-col {
 	padding: 2em;
 }
 
@@ -21,4 +21,8 @@
 .faq-card-body {
 	padding-top: 0;
 	padding-bottom: 0;
+}
+
+.beta-text {
+    color: #4e4e4e;
 }
