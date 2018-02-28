@@ -34,12 +34,20 @@ app.get('/search/press-releases', function(req, res) {
     let text = req.query.query;
     console.log(text);
 
-    let query = {
+    let es_query = {size: 50, from: 0};
+
+    if (req.query.size) {
+        es_query.size = req.query.size;
+    }
+
+    if(req.query.from){
+        es_query.from = req.query.from;
+    }
+
+    let search_query = {
         'query': {
-            'match_phrase': {
-                'content': {
-                    'query': text,
-                }
+            'match': {
+                'content': text,
             }
         },
         size: 50,
@@ -66,17 +74,16 @@ app.get('/search/sdn', function(req, res) {
         json.match[field] = {
             'query': query_str,
             'fuzziness': fuzz_setting,
-            'operator': 'and',
         };
         return json;
     };
 
     if (req.query.size) {
-        es_query.size = req.query.size
+        es_query.size = req.query.size;
     }
 
     if(req.query.from){
-        es_query.from = req.query.from
+        es_query.from = req.query.from;
     }
 
    for (var i = 0; i < keywords.length; i++) {
@@ -87,7 +94,6 @@ app.get('/search/sdn', function(req, res) {
     }
 
     es_query.query = search_query;
-    console.log(JSON.stringify(es_query));
     search_ES(es_query, Entry, res);
 });
 
@@ -121,18 +127,17 @@ function search_ES(query, model, res) {
     if (Object.keys(query['query']).length !== 0) {
         console.log(query);
         model.esSearch(query, (err, results) => {
-//            console.log(results);
             if (err) {
                 res.status(400).end();
             }
             else {
                 let response = [];
                 for (var i in results.hits.hits) {
-//                    console.log(results.hits.hits[i]['_source']['sdn_name'] + ': ' + results.hits.hits[i]['_score']);
+                    console.log(results.hits.hits[i]['_source']['sdn_name'] + ': ' + results.hits.hits[i]['_score']);
                     response.push(results.hits.hits[i]['_source']);
                 }
 
-//                console.log(JSON.stringify(results.hits));
+                console.log(JSON.stringify(results.hits));
                 res.json({'response': response, 'num_results': results.hits.total});
             }
         });
