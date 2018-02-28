@@ -32,7 +32,7 @@ app.get('/press-releases', (req, res) => {
 
 app.get('/search/press-releases', function(req, res) {
     let text = req.query.query;
-    console.log(text);
+    console.log(JSON.stringify(req.query));
 
     let es_query = {size: 50, from: 0};
 
@@ -45,15 +45,17 @@ app.get('/search/press-releases', function(req, res) {
     }
 
     let search_query = {
-        'query': {
+  //      'query': {
             'match': {
                 'content': text,
             }
-        },
-        size: 50,
+    //    },
+//        size: 50,
     }
 
-    search_ES(query, PR, res);
+    es_query.query = search_query
+
+    search_ES(es_query, PR, res);
 });
 
 
@@ -63,7 +65,7 @@ app.get('/search/sdn', function(req, res) {
 
     var es_query = {size: 50, from: 0};
     var search_query = {bool:{must:[]}};
-
+console.log(req.query)
     let create_match_phrase = (field, query_str) => {
         let json = { 'match': {} };
         var fuzz_setting = "AUTO";
@@ -125,7 +127,7 @@ app.get('/elasticsearch/all', function(req, res){
 
 function search_ES(query, model, res) {
     if (Object.keys(query['query']).length !== 0) {
-        console.log(query);
+//        console.log(query);
         model.esSearch(query, (err, results) => {
             if (err) {
                 res.status(400).end();
@@ -133,11 +135,11 @@ function search_ES(query, model, res) {
             else {
                 let response = [];
                 for (var i in results.hits.hits) {
-                    console.log(results.hits.hits[i]['_source']['sdn_name'] + ': ' + results.hits.hits[i]['_score']);
+//                    console.log(results.hits.hits[i]['_source']['sdn_name'] + ': ' + results.hits.hits[i]['_score']);
                     response.push(results.hits.hits[i]['_source']);
                 }
 
-                console.log(JSON.stringify(results.hits));
+//                console.log(JSON.stringify(results.hits));
                 res.json({'response': response, 'num_results': results.hits.total});
             }
         });

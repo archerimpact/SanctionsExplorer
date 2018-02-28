@@ -28,6 +28,8 @@ function collect_pr_query() {
     }
 
     let query = {'query': input};
+    query.size = 50;
+    query.from = 0;
     window.lastQuery = query;
     return query;
 }
