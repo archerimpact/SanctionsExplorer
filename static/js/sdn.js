@@ -14,7 +14,7 @@ $(document).ready(() => {
     });
 
     var id = 0;
-    let fields = construct_fields(['nationality', 'pob', 'dob', 'passport', 'all fields']);
+    let fields = construct_fields(['nationality', 'title', 'citizen', 'position', 'pob', 'dob', 'passport', 'all fields']);
     append_search_row(id, fields);
     id++;
 
@@ -26,6 +26,8 @@ $(document).ready(() => {
         $.each($('.search-row-select'), (index, value) => {
             if (value.value == empty_select) {
                 needNewRow = false;
+                let id_num = value.id.match('([0-9]+)')[1];     // this row's id
+                $('#search-row-' + id_num + '-input').val('');
             }
             else {
                 currentSelections.push(value.value);
@@ -127,7 +129,7 @@ function process_entry(res) {
     };
 
     let main_fields = construct_fields(['ent_num', 'sdn_name', 'sdn_type', 'program']);
-    let personal_fields = construct_fields(['nationality', 'dob', 'pob', 'gender', 'title']);
+    let personal_fields = construct_fields(['nationality', 'dob', 'pob', 'gender', 'title', 'position']);
     let id_fields = construct_fields(['aka', 'passport', 'tax_id_no', 'website', 'email', 'phone', 'identification_number', 'national_id_number', 'nit', 'rfc', 'swift_bic']);
     let notes_fields = construct_fields(['notes', 'additional_sanctions_info']);
     let context_fields = construct_fields(['linked_to', 'press_releases']);
@@ -182,7 +184,7 @@ function construct_fields(fields) {
         'notes': 'Notes',
         'additional_sanctions_info': 'Additional Sanctions Info',
         'linked_to': 'Linked To',
-        'all fields': 'All fields',
+        'all fields': 'More fields coming soon!',                 // TODO change
         'aircraft_model': 'Aircraft Model',
         'aircraft_operator': 'Aircraft Operator',
         'call_sign': 'Call Sign',
@@ -197,6 +199,8 @@ function construct_fields(fields) {
         'nit': 'NIT',
         'rfc': 'RFC',
         'swift_bic': 'SWIFT',
+        'citizen': 'Citizenship',
+        'position': 'Position',
     };
 
     let retval = {};

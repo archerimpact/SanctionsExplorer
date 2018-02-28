@@ -188,7 +188,7 @@
                             <h5 class="card-detail-header">Linked To:</h5>
                             <ul>
                             {{ for (var i in it.context['Linked To']) { }}
-                                    <li class="card-detail-info">{{=it.context['Linked To'][i]}}</li>
+                                    <li class="card-detail-info"><a href="" class="activate-modal real-link" data-toggle="modal" data-target="#placeholderModal">{{=it.context['Linked To'][i]}}</a></li>
                             {{ } }}
                             </ul>
                         {{?}}
@@ -228,6 +228,26 @@
             </div>
         </div>
     </script>
+
+    <!-- placeholder modal -->
+    <div class="modal fade" id="placeholderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Coming soon!</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            We're working on display information here about the entity you just clicked on.  For now, you can simply search the name, but soon you'll be able to see all the details right here.  If you have any feedback or ideas, remember to submit on the feedback page!
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
 
 </body>
 

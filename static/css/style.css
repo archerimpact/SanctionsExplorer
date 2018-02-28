@@ -94,6 +94,10 @@ h5.card-detail-header {
     color: #919aa1;
 }
 
+.real-link {
+    text-decoration: underline;
+}
+
 
 /*********** Print Formatting ***********/
 @media print {
