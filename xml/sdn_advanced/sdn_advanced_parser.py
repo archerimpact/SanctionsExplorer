@@ -591,6 +591,7 @@ class Feature:
 		- choose ONE from 'locations', 'dates', 'details'
 		"""
 		d = dict()
+		d['feature_type'] = self.feature_type
 		d['reliability'] = self.reliability
 		d['comment'] = self.comment 		# there's only a few of these, and they're probably being phased out because they're horrible.
 
@@ -978,7 +979,11 @@ class DistinctParty:
 		d['features'] = dict()
 
 		for f in self.features:
-			d['features'][f.feature_type] = json.loads(str(f))
+			if d['features'].get(f.feature_type) is None:
+				d['features'][f.feature_type] = []
+				
+			d['features'][f.feature_type].append(json.loads(str(f)))
+				
 		# d['features'] = list_to_json_list(self.features)
 
 
@@ -1130,12 +1135,6 @@ def list_to_json_list(lst):
 		return []
 
 def write_json(filename):
-	# return str([json.loads(str([distinct_parties[list(distinct_parties.keys())[i]] for i in range(10)][j])) for j in range(10)])
-	# return str([json.loads(str([v for v in distinct_parties.values()][j])) for j in range(10)]) 
-	# str([json.loads([str(v) for v in distinct_parties.values()])) 
-	# a = [str(distinct_parties[list(distinct_parties.keys())[i]]) for i in range(num)]
-	# json.dumps([json.loads(str(a[i])) for i in range(num)])
-
 	parties = list(distinct_parties.values())
 
 	with open(filename, 'w') as f:
