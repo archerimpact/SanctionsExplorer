@@ -817,7 +817,7 @@ class Identity:
 
 	def __str__(self):
 		d = dict()
-		d['id'] = self.id
+		d['id'] = int(self.id)
 		d['aliases'] = list_to_json_list(self.aliases)
 		d['primary'] = json.loads(str(self.primary))
 
@@ -919,7 +919,7 @@ class ProfileLink:
 
 	def __str__(self):
 		d = dict()
-		d['to_id'] = json.loads(str(self.to_profile_id))
+		d['to_id'] = int(str(self.to_profile_id))
 		d['to_name'] = json.loads(self.to_profile_name)
 		d['relation_type'] = str(self.relation_type)
 		d['relation_quality'] = str(self.relation_quality)
@@ -971,21 +971,18 @@ class DistinctParty:
 		d = dict()
 		d['identity'] = json.loads(str(self.identity))
 		d['party_comment'] = self.party_comment
-		d['fixed_ref'] = self.fixed_ref
+		d['fixed_ref'] = int(self.fixed_ref)
 		d['party_sub_type'] = str(self.party_sub_type)
 		d['sanctions_entries'] = list_to_json_list(self.sanctions_entries)	
 		d['documents'] = list_to_json_list(self.documents)
 		d['linked_profiles'] = list_to_json_list(self.linked_profiles)
-		d['features'] = dict()
+		d['features'] = dict()		# list_to_json_list(self.features)
 
 		for f in self.features:
 			if d['features'].get(f.feature_type) is None:
 				d['features'][f.feature_type] = []
-				
-			d['features'][f.feature_type].append(json.loads(str(f)))
-				
-		# d['features'] = list_to_json_list(self.features)
 
+			d['features'][f.feature_type].append(json.loads(str(f)))
 
 		return json.dumps(d)
 
