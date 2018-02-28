@@ -1,5 +1,6 @@
 from lxml import etree
 import json
+from copy import deepcopy
 
 xml_namespace = {"ofac" : "{http://www.un.org/sanctions/1.0}"}
 
@@ -416,8 +417,8 @@ class Location:
 
 		# Checks whether OFAC has added any new fields
 		if len(set(self.location_parts.keys() - set(order))) > 0:
-			print(self.location_parts.keys())
 			print('FUTURE_WARNING: OFAC has added a new location part type.')
+			print(self.location_parts.keys())
 
 		for field in order:
 			if self.location_parts.get(field) is not None:
@@ -640,7 +641,81 @@ class Alias:
 					name = value.text
 					one_name[np_type] = [name, language]
 			ret.append(one_name)
-		return ret 
+
+		if len(ret) <= 1:
+			return ret
+		else:
+			# there were some non-English names -- probably 1 -- present
+			main_name_index = 0
+
+			for i in range(len(ret)):
+				r = ret[i]
+				all_english = True
+				for k,v in r.items():
+					if v[1] != 'Latin':
+						all_english = False
+						break
+				if all_english:
+					main_name_index = i
+
+			main_name = ret.pop(main_name_index)
+
+			retdict = {
+				'main_name': main_name,
+				'non_english_names': ret,
+			}
+
+			return retdict
+
+
+	def construct_name_string(self, name_dict):
+		if 'Entity Name' in name_dict:
+			return name_dict['Entity Name'][0]
+		elif 'Aircraft Name' in name_dict:
+			return name_dict['Aircraft Name'][0]
+		elif 'Vessel Name' in name_dict:
+			return name_dict['Vessel Name'][0]
+		else:
+			# it's an individual
+			name = ''
+
+			if 'Patronymic' in name_dict and 'Last Name' in name_dict:
+				# Russian-esque name.  This doesn't display exactly like the OFAC website but 99% of entries don't even have Patronymic/Matronymic.
+
+				if 'Middle Name' in name_dict:
+					if name_dict.get('Last Name') is not None:
+						name += name_dict['Last Name'][0].upper()
+					if name_dict.get('Patronymic') is not None:
+						name += ' ' + name_dict['Patronymic'][0].upper()
+					if name_dict.get('First Name') is not None:
+						name += ', ' + name_dict['First Name'][0]
+					if name_dict.get('Middle Name') is not None:
+						name += ' ' + name_dict['Middle Name'][0]
+				else:
+					if name_dict.get('Last Name') is not None:
+						name += name_dict['Last Name'][0].upper()
+					if name_dict.get('First Name') is not None:
+						name += ', ' + name_dict['First Name'][0]
+					if name_dict.get('Patronymic') is not None:
+						name += ' ' + name_dict['Patronymic'][0]
+
+			else:
+				# any other names, include Spanish names with (P|M)atronymic
+
+				name = ''
+				if name_dict.get('Last Name') is not None:
+					name += name_dict['Last Name'][0].upper()
+				if name_dict.get('Patronymic') is not None:
+					name += ' '  + name_dict['Patronymic'][0].upper()
+				if name_dict.get('Matronymic') is not None:
+					name += ' ' + name_dict['Matronymic'][0].upper()
+				if name_dict.get('First Name') is not None:
+					name += ', ' + name_dict['First Name'][0]
+				if name_dict.get('Middle Name') is not None:
+					name += ' ' + name_dict['Middle Name'][0]
+
+			return name.strip()
+
 
 	def __init__(self, xml, name_part_groups_dict):
 		# self.comment = This field is never used in this part 
@@ -648,17 +723,30 @@ class Alias:
 		self.alias_type = alias_types[xml.get("AliasTypeID")].text
 		self.is_primary = json.loads(xml.get("Primary"))
 		self.is_low_quality = json.loads(xml.get("LowQuality"))
-		self.documented_name = self.parse_documented_names(xml, name_part_groups_dict) # A list of (nameparttype, namepart) tups
 		self.date_period = self.parse_date_period(xml)
+		self.documented_name = self.parse_documented_names(xml, name_part_groups_dict) 		# A list of (nameparttype, namepart) tups
+		self.non_english_names = []
+
+		if type(self.documented_name) == type([]):
+			# there was only one name, so extract it
+			self.documented_name = self.documented_name[0]
+		elif type(self.documented_name) == type(dict()):
+			# we got a dictionary
+			self.non_english_names = self.documented_name['non_english_names']
+			self.documented_name = self.documented_name['main_name']		# NOTE: This must come after we set non_english_names, since we're overwriting the variable main_name
+
 
 	def __str__(self):
 		d = dict()
 		# d['comment'] = self.comment
+		# d['non_english_names'] = self.non_english_names		# these are moved into their own separate aliases
 		d['alias_type'] = self.alias_type
 		d['is_primary'] = self.is_primary
 		d['is_low_quality'] = self.is_low_quality
 		d['documented_name'] = self.documented_name
 		d['date_period'] = self.date_period
+		d['display_name'] = self.construct_name_string(self.documented_name)
+
 		return json.dumps(d)
 
 
@@ -700,8 +788,19 @@ class Identity:
 		self.aliases = []
 		self.primary = None
 		
+		foreign_name_aliases = []
 
 		for a in self.all_names:
+			if a.non_english_names != []:
+				# they have some other names!
+				for foreign in a.non_english_names:
+					newAlias = deepcopy(a)
+					newAlias.documented_name = foreign
+					newAlias.is_primary = False 			# their English name will remain primary if applicable
+					newAlias.alias_type = 'A.K.A.'			# their non-English name will be an A.K.A.
+					foreign_name_aliases.append(newAlias)
+					a.non_english_names = "Removed!"
+
 			if a.alias_type == 'Name':
 				self.primary = a
 
@@ -710,28 +809,16 @@ class Identity:
 			else:
 				self.aliases.append(a)
 
+		# now add all of the aliases we just extracted
+		for f in foreign_name_aliases:
+			self.aliases.append(f)
+
 
 	def __str__(self):
 		d = dict()
 		d['id'] = self.id
-		d['aliases'] = [list_to_json_list(self.aliases)]
+		d['aliases'] = list_to_json_list(self.aliases)
 		d['primary'] = json.loads(str(self.primary))
-
-		# mem = dict()
-		# for a in self.aliases:
-		# 	if mem.get(a.alias_type) is None:
-		# 		mem[a.alias_type] = 0
-
-		# 	mem[a.alias_type] += 1
-
-		# 	if a.alias_type == 'Name' and not a.is_primary:
-		# 		print('ERROR: There was a name that isn\'t marked as primary.')
-
-		# if mem.get('Name') > 1:
-		# 	print(mem)
-
-		d['aliases'] = []
-
 
 		return json.dumps(d)
 
@@ -805,7 +892,7 @@ class ProfileLink:
 	def parse_comment(self, xml):
 		elem = xml_approx_find(xml, "Comment")
 		if elem is not None and elem.text is not None:
-			print(elem.text)
+			# print(elem.text)
 			return elem.text
 		else:
 			return elem
