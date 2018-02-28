@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const mongoosastic = require('mongoosastic');
-// mongoose.connect('mongodb://localhost/ofacasaurus');
+mongoose.connect('mongodb://localhost/ofacasaurus');
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
@@ -196,6 +196,28 @@ prSchema.plugin(mongoosastic);
 
 let Entry = mongoose.model('Entry', entrySchema);
 let PR = mongoose.model('PR', prSchema);
+
+function update_docs(){
+	console.log("Starting update");
+	Entry.find({}, function(err, entries){
+	   console.log("FOUND");
+           console.log(err);
+	   console.log(entries.length);
+           for(var i = 0; i< entries.length; i++){
+	   	var curr_entry = entries[i];
+		if(curr_entry.sdn_type == null){
+			console.log("Found null");
+			curr_entry.sdn_type = "entity"
+                }
+		curr_entry.program = "["+curr_entry.program + "]"
+		curr_entry.save();
+	   }
+	});
+	Entry.synchronize();
+}
+
+//update_docs();
+
 
 
 /*
