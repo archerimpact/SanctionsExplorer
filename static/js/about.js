@@ -20,7 +20,7 @@ $(document).ready(() => {
 		{
 			id: 'disclaimer',
 			question: 'Are you affiliated with the Treasury? Can I use this for compliance?',
-			answer: '<p>OFACasaurus, Archer, and C4ADS are not affiliated with nor endorsed by the U.S. Department of Treasury.  Additionally, OFACasaurus, Archer, and C4ADS make no guarantee on the accuracy of the data contained in the OFACasaurus platform -- although we do our best to ensure that no data is missing, we do not recommend using OFACasaurus for compliance (at least, not without verifying using the official Treasury website).</p>',
+			answer: '<p>Archer SDN, Archer, and C4ADS are not affiliated with nor endorsed by the U.S. Department of Treasury.  Additionally, Archer SDN, Archer, and C4ADS make no guarantee on the accuracy of the data contained in the Archer SDN platform -- although we do our best to ensure that no data is missing, we do not recommend using Archer SDN for compliance (at least, not without verifying using the official Treasury website).</p>',
 		}
 	];
 
