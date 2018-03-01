@@ -13,6 +13,18 @@ html, body {
     padding-left: 2em;
 }
 
+nav.navbar {
+    padding: 1em 1em;
+}
+
+.nav-link {
+    font-size: 1.1em;
+}
+
+img#archer-logo {
+    width: 12em;
+}
+
 
 /*********** Filter Column ***********/
 .left-col {

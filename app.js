@@ -4,7 +4,7 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const mongoosastic = require('mongoosastic');
-mongoose.connect('mongodb://localhost/ofacasaurus');
+// mongoose.connect('mongodb://localhost/ofacasaurus');
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
@@ -65,7 +65,7 @@ app.get('/search/sdn', function(req, res) {
 
     var es_query = {size: 50, from: 0};
     var search_query = {bool:{must:[]}};
-console.log(req.query)
+    console.log(req.query)
     let create_match_phrase = (field, query_str) => {
         let json = { 'match': {} };
         var fuzz_setting = "AUTO";
@@ -76,6 +76,7 @@ console.log(req.query)
         json.match[field] = {
             'query': query_str,
             'fuzziness': fuzz_setting,
+            'operator': 'and',
         };
         return json;
     };
