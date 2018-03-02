@@ -4,7 +4,14 @@ const express = require('express');
 const app = express();
 const mongoose = require('mongoose');
 const mongoosastic = require('mongoosastic');
+const xmlschema = require("../schema/schema.js")
+var XMLEntry = xmlschema.XMLEntry;
+
+var creds = JSON.parse(fs.readFileSync('credentials.json', 'utf8'));
 // mongoose.connect('mongodb://localhost/ofacasaurus');
+var connection = 'mongodb://' + creds.mongo_creds + '@localhost/xmlofacasaurus';
+
+mongoose.connect(connection)
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
@@ -99,6 +106,8 @@ app.get('/search/sdn', function(req, res) {
     es_query.query = search_query;
     search_ES(es_query, Entry, res);
 });
+
+
 
 app.get('/elasticsearch/all', function(req, res){
     var keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
@@ -223,6 +232,87 @@ function update_docs(){
 	});
 	Entry.synchronize();
 }
+
+//Begin new schema endpoints
+
+app.get('/v2/search/sdn', function(req, res) {
+    const keywords = var feature_schema_names = ["title", 
+												"birthdate",
+												"place_of_birth",
+												"location",
+												"website",
+												"additional_information",
+												"vessel_call_sign",
+												"vessel_flag",
+												"vessel_owner",
+												"vessel_tonnage",
+												"vessel_gross_tonnage",
+												"vessel_type",
+												"nationality_country",
+												"citizenship_country",
+												"gender",
+												"website",
+												"email_address",
+												"swift_bic",
+												"ifca_determination",
+												"aircraft_construction_number",
+												"aircraft_msn",
+												"aircraft_manufacture_date",
+												"aircraft_model",
+												"aircraft_operator",
+												"bik",
+												"un_locode",
+												"aircraft_tail_number",
+												"previous_aircraft_tail_number",
+												"micex_code",
+												"nationality_of_registration",
+												"duns_number",
+												"identity_id",
+												"primary_display_name",
+												"all_display_names",
+												"programs",
+												"linked_profile_names",
+												"linked_profile_ids",
+												"doc_id_numbers",
+												]
+    const fuzziness = {"program": "0", "doc_id_numbers": "0", "birthdate": "0"};
+
+    var es_query = {size: 50, from: 0};
+    var search_query = {bool:{must:[]}};
+    console.log(req.query)
+    let create_match_phrase = (field, query_str) => {
+        let json = { 'match': {} };
+        var fuzz_setting = "AUTO";
+        if (fuzziness[field] != null) {
+            console.log('custom fuzz of ' + fuzziness[field]);
+            fuzz_setting = fuzziness[field];
+        }
+        json.match[field] = {
+            'query': query_str,
+            'fuzziness': fuzz_setting,
+            'operator': 'and',
+        };
+        return json;
+    };
+
+    if (req.query.size) {
+        es_query.size = req.query.size;
+    }
+
+    if(req.query.from){
+        es_query.from = req.query.from;
+    }
+
+   for (var i = 0; i < keywords.length; i++) {
+        if (req.query[keywords[i]] != null) {
+            let match_phrase = create_match_phrase(keywords[i], req.query[keywords[i]])
+            search_query.bool.must.push(match_phrase)
+        }
+    }
+
+    es_query.query = search_query;
+    search_ES(es_query, XMLEntry, res);
+});
 
 //update_docs();
 

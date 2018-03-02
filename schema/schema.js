@@ -133,6 +133,8 @@ module.exports.XMLEntrySchema = mongoose.Schema({
 XMLEntrySchema.plugin(mongoosastic);
 let XMLEntry = mongoose.model('XMLEntry', this.XMLEntrySchema);
 
+module.exports.XMLEntry = XMLEntry;
+
 
 
 var data = JSON.parse(fs.readFileSync('../xml/sdn_advanced/v5.json', 'utf8'));
