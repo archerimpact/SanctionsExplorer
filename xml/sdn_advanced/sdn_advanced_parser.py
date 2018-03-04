@@ -285,6 +285,9 @@ class PartySubType:
 		self.type = self.party_lookup[party_subtype_xml.get('PartyTypeID')]
 		self.text = party_subtype_xml.text
 
+		if self.text == 'Unknown':
+			self.text = self.type
+
 	def __str__(self):
 		return self.text
 
