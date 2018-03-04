@@ -130,17 +130,17 @@ module.exports.XMLEntrySchema = mongoose.Schema({
 	duns_number:{type:[String], es_indexed:true}
 });
 
-XMLEntrySchema.plugin(mongoosastic);
+this.XMLEntrySchema.plugin(mongoosastic);
 let XMLEntry = mongoose.model('XMLEntry', this.XMLEntrySchema);
 
 module.exports.XMLEntry = XMLEntry;
 
 
-
-var data = JSON.parse(fs.readFileSync('../xml/sdn_advanced/v5.json', 'utf8'));
+//var data = JSON.parse(fs.readFileSync('../xml/sdn_advanced/v5.json', 'utf8'));
 
 var feature_keys = new Set();
 
+function print_vals(){
 for(var i =0; i< data.length; i++){
 	entry = data[i]
 	// console.log(i)
@@ -158,6 +158,7 @@ for(var i =0; i< data.length; i++){
 
 		// console.log(entry.linked_profiles);
 	}
+}
 }
 
 //console.log(feature_keys)
@@ -375,9 +376,9 @@ function sync(model) {
     stream.on('error', (err) => console.log(err));
 }
 
-load_data(data);
+//load_data(data);
 
-sync(XMLEntry);
+//sync(XMLEntry);
 
 // console.log(feature_keys)
 

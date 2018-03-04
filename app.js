@@ -2,9 +2,10 @@
 
 const express = require('express');
 const app = express();
+const fs = require('fs');
 const mongoose = require('mongoose');
 const mongoosastic = require('mongoosastic');
-const xmlschema = require("../schema/schema.js")
+const xmlschema = require("./schema/schema")
 var XMLEntry = xmlschema.XMLEntry;
 
 var creds = JSON.parse(fs.readFileSync('credentials.json', 'utf8'));
@@ -236,8 +237,8 @@ function update_docs(){
 //Begin new schema endpoints
 
 app.get('/v2/search/sdn', function(req, res) {
-    const keywords = var feature_schema_names = ["title", 
-												"birthdate",
+    const keywords =  ["title", 
+											"birthdate",
 												"place_of_birth",
 												"location",
 												"website",
