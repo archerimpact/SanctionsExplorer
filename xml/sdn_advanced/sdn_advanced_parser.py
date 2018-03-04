@@ -5,9 +5,9 @@ from copy import deepcopy
 xml_namespace = {"ofac" : "{http://www.un.org/sanctions/1.0}"}
 
 # Notes
-# in __str__, only wrap the values that explicitly need to be converted to strings with str().  This is done to make it easier to tell which items are not being explicitly converted to strings in case of JSON serializability issues. 
+# in __str__, only wrap the values that explicitly need to be converted to strings with str().  This is done to make it easier to tell which items are not being explicitly converted to strings in case of JSON serializability issues.
 
-## We know the main sections are: 
+## We know the main sections are:
 ## Date of Issue
 ## Reference Value Sets
 ## Locations
@@ -56,7 +56,7 @@ class Date:
 
 			if self.month is not None:
 				ret += ('-' + self.month)
-			
+
 				if self.day is not None:
 					ret += ('-' + self.day)
 				else:
@@ -81,8 +81,8 @@ class DateBoundary:
 			return from_date
 
 		elif years_match(from_date, to_date) and months_span_year(from_date, to_date) and days_span_month(from_date, to_date):
-		   	# these dates span one year, so we will use the year they span
-		   	return Date(None, y=from_date.year)
+			   # these dates span one year, so we will use the year they span
+			   return Date(None, y=from_date.year)
 
 		else:
 			print('ERROR: DateBoundary was not condensable: ' + str(from_date) + ', ' + str(to_date))
@@ -114,7 +114,7 @@ class DateBoundary:
 # 		self.years = None
 # 		self.months = None
 # 		self.days = None
-# 		self.is_approximate = None 
+# 		self.is_approximate = None
 
 class DatePeriod:
 	def parse_date_boundary(self, xml, tag):
@@ -129,16 +129,16 @@ class DatePeriod:
 			return str(from_boundary)
 
 		elif years_match(from_boundary, to_boundary) and months_span_year(from_boundary, to_boundary) and days_span_month(from_boundary, to_boundary):
-		   	# these dates span one year, so we will use the year they span
-		   	return str(from_boundary.year)
+			   # these dates span one year, so we will use the year they span
+			   return str(from_boundary.year)
 
 		elif years_match(from_boundary, to_boundary) and months_match(from_boundary, to_boundary) and days_span_month(from_boundary, to_boundary):
-		   	# these dates span one month, so we will use the year they span
-		   	return str(from_boundary.year)
+			   # these dates span one month, so we will use the year they span
+			   return str(from_boundary.year)
 
 		elif (not years_match(from_boundary, to_boundary)) and months_span_year(from_boundary, to_boundary) and days_span_month(from_boundary, to_boundary):
-		   	# these dates span some number of years
-		   	return str(from_boundary.year) + ' to ' + str(to_boundary.year)
+			   # these dates span some number of years
+			   return str(from_boundary.year) + ' to ' + str(to_boundary.year)
 
 		elif from_boundary.year is not None and to_boundary.year is not None and \
 			 from_boundary.month is None and to_boundary.month is None and \
@@ -175,7 +175,7 @@ class AliasType:
 class AreaCode:
 	def __init__(self, area_code_xml):
 		""" country_id refers to a country class
-		description holds the full name of the country, if available 
+		description holds the full name of the country, if available
 		text holds a short form version of the full name
 		seems to be the same values as Country below"""
 		self.id = area_code_xml.get('ID')
@@ -185,7 +185,7 @@ class AreaCode:
 
 class Country:
 	def __init__(self, country_xml):
-		""" iso2 has a 2 letter country code, 
+		""" iso2 has a 2 letter country code,
 		text holds the full name of the country"""
 		self.id = country_xml.get('ID')
 		self.iso2 = country_xml.get('ISO2')
@@ -196,7 +196,7 @@ class Country:
 
 class DetailReference:
 	def __init__(self, detail_xml):
-		"""text holds a detail about the object. 
+		"""text holds a detail about the object.
 		examples include bulk carrier, male, female, etc)"""
 		self.id = detail_xml.get('ID')
 		self.text = detail_xml.text
@@ -206,14 +206,14 @@ class DetailReference:
 
 class DetailType:
 	def __init__(self, detail_xml):
-		"""text holds what type of detail it is, possible values are 
+		"""text holds what type of detail it is, possible values are
 		date, lookup, text, country, location"""
 		self.id = detail_xml.get('ID')
 		self.text = detail_xml.text
 
 class FeatureType:
 	def __init__(self, feature_xml):
-		"""text describes what the feature is, possible values include vessel call sign, 
+		"""text describes what the feature is, possible values include vessel call sign,
 		vessel type, email, website, location, title, aircraft model, gender, etc"""
 		self.id = feature_xml.get('ID')
 		self.text = feature_xml.text
@@ -240,7 +240,7 @@ class IDRegDocType:
 
 class LegalBasis:
 	def __init__(self, legal_basis_xml):
-		"""the legal basis for an action. short_ref is currently always equal to text, 
+		"""the legal basis for an action. short_ref is currently always equal to text,
 		which holds the EO or law under which the sanction was made
 		example value: magnitsky"""
 		self.id = legal_basis_xml.get('ID')
@@ -262,7 +262,7 @@ class LocPart:
 
 class LocPartType:
 	def __init__(self, loc_part_xml):
-		"""text holds what part of the location this is, 
+		"""text holds what part of the location this is,
 		example values include region, city, Address1, etc"""
 		self.id = loc_part_xml.get('ID')
 		self.text = loc_part_xml.text
@@ -284,6 +284,9 @@ class PartySubType:
 		self.id = party_subtype_xml.get('ID')
 		self.type = self.party_lookup[party_subtype_xml.get('PartyTypeID')]
 		self.text = party_subtype_xml.text
+
+		if self.text == 'Unknown':
+			self.text = self.type
 
 	def __str__(self):
 		return self.text
@@ -380,13 +383,13 @@ class Location:
 
 	def __init__(self, xml):
 		"""
-		we can evaluate ID, comment, country, and location parts on instantiation. 
+		we can evaluate ID, comment, country, and location parts on instantiation.
 		feature_versions reference a person associated with this place so evaluation will have to be deferred
 		similarly with IDRegDocumentReferences as those have not been parsed yet
 		locpartvaluetype is always main and locpartstatus is always unknown so we do not parse these.
 		"""
 		self.id = xml.get('ID')
-		# self.comment = self.parse_comment(xml), this is always empty, not going to get. 
+		# self.comment = self.parse_comment(xml), this is always empty, not going to get.
 		self.country = self.parse_country(xml) # country object, lol assumes it exists, will break everything if it doesn't
 		self.location_parts = self.parse_location_parts(xml) # list of (locparttype objs, locpart objs)
 		self.feature_version_ids = self.parse_feature_version_ids(xml) # list of feature versions ids that must be evaluated later
@@ -403,7 +406,7 @@ class Location:
 
 	def __str__(self):
 		d = dict()
-		
+
 		for entry in self.location_parts:
 			if entry == 'Unknown':
 				d['COUNTRY'] = self.location_parts[entry]
@@ -424,7 +427,7 @@ class Location:
 			if self.location_parts.get(field) is not None:
 				if len(renderable) > 0:
 					renderable += ', '
-				renderable += self.location_parts[field] 
+				renderable += self.location_parts[field]
 
 		d['COMBINED'] = renderable
 
@@ -495,7 +498,7 @@ class IDRegDocument:
 			return []
 
 	def __init__(self, xml):
-		"""defer parsing of IdentityID, FeatureVersionReference, DocumentedName, 
+		"""defer parsing of IdentityID, FeatureVersionReference, DocumentedName,
 		ProfileRelationship, documentMentions because these are not parse yet"""
 		self.comment = self.parse_comment(xml)
 		self.id = xml.get('ID')
@@ -508,7 +511,7 @@ class IDRegDocument:
 		self.issuing_authority = self.parse_issuing_auth(xml)
 		self.id_number = self.parse_id_num(xml)
 		self.relevant_dates = self.parse_dates(xml)
-		self.document_mentions = None # Not currently used 
+		self.document_mentions = None # Not currently used
 		# self.feature_version_ids = self.parse_feature_version_ids(xml)
 		# self.feature_versions = []
 		# self.documented_name_ids = self.parse_documented_name_ids(xml)
@@ -518,7 +521,7 @@ class IDRegDocument:
 
 	def __str__(self):
 		d = dict()
-		# d['comment'] 
+		# d['comment']
 		d['type'] = str(self.type)
 		# d['identity'] = self.identity     	# not necessary since each IDRegDoc obj is owned by an identity
 		d['issued_by'] = str(self.issued_by)
@@ -625,7 +628,7 @@ class Alias:
 	def parse_documented_names(self, xml, name_part_groups_dict):
 		ret = []
 		elems = xml_approx_findall(xml, "DocumentedName")
-		
+
 		# This is now handled with the outer 'for elem in elems' loop.
 		# if len(elems) > 1:
 		# 	print ("more than one documented name per alias", self.fixed_ref)
@@ -670,6 +673,10 @@ class Alias:
 
 
 	def construct_name_string(self, name_dict):
+		unknown_keys = set(name_dict.keys()) - set(['Entity Name', 'Aircraft Name', 'Vessel Name', 'First Name', 'Middle Name', 'Last Name', 'Maiden Name', 'Nickname', 'Patronymic', 'Matronymic'])
+		if len(unknown_keys) > 0:
+			print('ERROR: OFAC has added an unknown key(s): ' + str(unknown_keys))
+
 		if 'Entity Name' in name_dict:
 			return name_dict['Entity Name'][0]
 		elif 'Aircraft Name' in name_dict:
@@ -681,7 +688,7 @@ class Alias:
 			name = ''
 
 			if 'Patronymic' in name_dict and 'Last Name' in name_dict:
-				# Russian-esque name.  This doesn't display exactly like the OFAC website but 99% of entries don't even have Patronymic/Matronymic.
+				# Russian-esque name.  This doesn't always display in the exact order that the OFAC website does, but 99% of entries don't even have Patronymic/Matronymic.
 
 				if 'Middle Name' in name_dict:
 					if name_dict.get('Last Name') is not None:
@@ -715,11 +722,16 @@ class Alias:
 				if name_dict.get('Middle Name') is not None:
 					name += ' ' + name_dict['Middle Name'][0]
 
+			if name_dict.get('Nickname') is not None:
+				name += ' ("' + name_dict['Nickname'][0] + '")'
+			if name_dict.get('Maiden Name') is not None:
+				name += ' (maiden name: ' + name_dict['Maiden Name'][0] + ')'
+
 			return name.strip()
 
 
 	def __init__(self, xml, name_part_groups_dict):
-		# self.comment = This field is never used in this part 
+		# self.comment = This field is never used in this part
 		self.fixed_ref = xml.get("FixedRef")
 		self.alias_type = alias_types[xml.get("AliasTypeID")].text
 		self.is_primary = json.loads(xml.get("Primary"))
@@ -784,11 +796,11 @@ class Identity:
 		self.name_part_groups = self.parse_name_part_groups(xml) 			# mapping from ID : NamePartTypeID
 		self.id_reg_doc_ids = None		# don't need to tie these to Identity since they're tied to DistinctParty
 		self.id_reg_docs = []			# don't need to tie these to Identity since they're tied to DistinctParty
-			
+
 		self.all_names = self.parse_aliases(xml, self.name_part_groups) 		# consists of one primary and some number of aliases
 		self.aliases = []
 		self.primary = None
-		
+
 		foreign_name_aliases = []
 
 		for a in self.all_names:
@@ -856,7 +868,7 @@ class SanctionEntry:
 
 				if sanctions_type != 'Block':		# currently, sanctions block doesn't contain anything but a date.
 					ret.append(comment)
-				
+
 				if sanctions_type == 'Block' and comment is not None:
 					print('FUTURE_WARNING: Sanctions Block now contains a comment (' + comment + ')')
 
@@ -973,7 +985,7 @@ class DistinctParty:
 		d['party_comment'] = self.party_comment
 		d['fixed_ref'] = int(self.fixed_ref)
 		d['party_sub_type'] = str(self.party_sub_type)
-		d['sanctions_entries'] = list_to_json_list(self.sanctions_entries)	
+		d['sanctions_entries'] = list_to_json_list(self.sanctions_entries)
 		d['documents'] = list_to_json_list(self.documents)
 		d['linked_profiles'] = list_to_json_list(self.linked_profiles)
 		d['features'] = dict()		# list_to_json_list(self.features)
@@ -988,7 +1000,7 @@ class DistinctParty:
 
 
 ## Defining lookup lists
-## each one has ID : associated object of appropriate class 
+## each one has ID : associated object of appropriate class
 alias_types = {}
 area_codes = {}
 countries = {}
@@ -1061,8 +1073,8 @@ def xml_approx_findall(xml_elem, child_tag_name):
 		return None
 
 def make_lookup_lists(reference_value_sets_xml):
-	"""for each of the 21 lists, gets the lists xml and 
-	then make a class object for each element and 
+	"""for each of the 21 lists, gets the lists xml and
+	then make a class object for each element and
 	add it to the appropriate list with key = id"""
 
 	def parse_list(xml_list_name, python_list_name, class_name):
@@ -1114,7 +1126,7 @@ def add_sanctions_entries(sanction_xml):
 	for sanction in sanction_xml:
 		obj = SanctionEntry(sanction)
 		pid = obj.profile_id
-		dp = distinct_parties[pid] 
+		dp = distinct_parties[pid]
 		dp.sanctions_entries.append(obj)
 
 		# for dp in list(distinct_parties.values()):
