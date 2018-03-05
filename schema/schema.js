@@ -143,7 +143,7 @@ module.exports.XMLEntry = XMLEntry;
 
 var data = JSON.parse(fs.readFileSync('/home/deploy/ofacasaurus/xml/sdn_advanced/v7.json', 'utf8'));
 
-var data = JSON.parse(fs.readFileSync('../xml/sdn_advanced/v7.json', 'utf8'));
+//var data = JSON.parse(fs.readFileSync('../xml/sdn_advanced/v7.json', 'utf8'));
 //var data = JSON.parse(fs.readFileSync('../xml/sdn_advanced/v5.json', 'utf8'));
 
 var feature_keys = new Set();
@@ -174,7 +174,7 @@ for(var i =0; i< data.length; i++){
 function load_data(data){
 	all_data = []
 
-	for(var i = 0; i<10; i++){
+	for(var i = 0; i<data.length; i++){
 		console.log("Doing data "+i)
 
 		entry = data[i]
@@ -313,7 +313,7 @@ function load_data(data){
 		"duns_number"
 		]
 
-		console.log(entry.features)
+		// console.log(entry.features)
 
 
 		for(feature_key in entry.features){
@@ -331,11 +331,11 @@ function load_data(data){
 					}
 				}
 				//Match with correct field
-				feature.feature_type = key;
+				feature.feature_type = feature_key;
 				feature.reliability = entry.features[feature_key][j].reliability;
 				feature.comment = entry.features[feature_key][j].comment;
 
-				console.log(entry.features[feature_key][j])
+				// console.log(entry.features[feature_key][j])
 
 				if(entry.features[feature_key][j].locations){
 					feature.locations = entry.features[feature_key][j].locations;
@@ -354,9 +354,9 @@ function load_data(data){
 					feature.details = null;
 				}
 				if(entry.features[feature_key][j].dates){
-					features.dates = entry.features[feature_key][j].dates;
+					feature.dates = entry.features[feature_key][j].dates;
 					for(var k = 0; k< entry.features[feature_key][j].dates.length; k++){
-						full_json[feature_schema_names[idx]].push(entry.features[feature_key][j].locations[k].combined)
+						full_json[feature_schema_names[idx]].push(entry.features[feature_key][j].dates[k].combined)
 					}
 				}
 				else{
