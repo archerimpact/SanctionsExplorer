@@ -910,19 +910,23 @@ class ProfileLink:
 		else:
 			return elem
 
-	def __init__(self, xml):
+	def __init__(self, xml, is_reverse):
 		## comment, date period and idregdocument are currently not used so not grabbing them.
 		## stored in the from_profile so only storing information about the to profile
 		# self.comment = self.parse_comment(xml) One entry has a comment here
 		self.id = xml.get("ID")
-		self.from_profile_id = xml.get("From-ProfileID")
-		self.to_profile_id = xml.get("To-ProfileID")			# we'll keep this as a string for now.  We'll serialize it as a number in the __str__ method.  TODO come back and look at this.
-		self.to_profile_name = self.profile_id_to_name(self.to_profile_id)
+		if is_reverse:
+			self.linked_profile_id = xml.get("From-ProfileID")
+			self.is_reverse = True
+		else:
+			self.linked_profile_id = xml.get("To-ProfileID")			# we'll keep this as a string for now.  We'll serialize it as a number in the __str__ method.  TODO come back and look at this.
+			self.is_reverse = False
+
+		self.linked_name = self.profile_id_to_name(self.linked_profile_id)
 
 		self.relation_type = relation_types[xml.get("RelationTypeID")]
 		self.relation_quality = relation_qualities[xml.get("RelationQualityID")]
 		self.is_former = json.loads(xml.get("Former"))
-		self.is_reverse = None
 		# self.sanctions_entry_id = xml.get("SanctionsEntryID")
 		# self.sanctions_entry = None # deferred
 
@@ -931,8 +935,8 @@ class ProfileLink:
 
 	def __str__(self):
 		d = dict()
-		d['to_id'] = int(str(self.to_profile_id))
-		d['to_name'] = json.loads(self.to_profile_name)
+		d['linked_id'] = int(str(self.to_profile_id))
+		d['linked_name'] = json.loads(self.linked_name)
 		d['relation_type'] = str(self.relation_type)
 		d['relation_quality'] = str(self.relation_quality)
 		d['is_former'] = self.is_former
@@ -1102,17 +1106,15 @@ def make_distinct_party_list(party_xml):
 
 def add_profile_links(link_xml):
 	for l in link_xml:
-		obj = ProfileLink(l)
-		obj.is_reverse = False
+		obj = ProfileLink(l, is_reverse=False)
 
-		obj2 = ProfileLink(l)
-		obj2.is_reverse = True
+		obj2 = ProfileLink(l, is_reverse=True)
 
-		distinct_p = distinct_parties[obj.get_owner_id(l)]
+		distinct_p = distinct_parties[obj2.linked_profile_id]
+		reverse_p = distinct_parties[obj.linked_profile_id]
 		distinct_p.add_link(obj)
-
-		reverse_p = distinct_parties[obj2.to_profile_id]
 		reverse_p.add_link(obj2)
+
 
 def resolve_documents_to_parties():
 	for id_doc in list(id_docs.values()):
