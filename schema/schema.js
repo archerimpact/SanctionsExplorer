@@ -275,11 +275,10 @@ function load_data(data){
 		  'Nationality of Registration',
 		  'D-U-N-S Number']
 
-		var feature_schema_names = ["title", 
+		var feature_schema_names = ["location",
+		"title", 
 		"birthdate",
 		"place_of_birth",
-		"location",
-		"website",
 		"additional_information",
 		"vessel_call_sign",
 		"vessel_flag",
