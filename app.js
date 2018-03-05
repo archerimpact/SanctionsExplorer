@@ -5,14 +5,14 @@ const app = express();
 const fs = require('fs');
 const mongoose = require('mongoose');
 const mongoosastic = require('mongoosastic');
-const xmlschema = require("./schema/schema")
+const xmlschema = require('./schema/schema');
 var XMLEntry = xmlschema.XMLEntry;
 
 var creds = JSON.parse(fs.readFileSync('credentials.json', 'utf8'));
 // mongoose.connect('mongodb://localhost/ofacasaurus');
-var connection = 'mongodb://' + creds.mongo_creds + '@localhost/xmlofacasaurus';
+//var connection = 'mongodb://' + creds.mongo_creds + '@localhost/xmlofacasaurus';
 
-mongoose.connect(connection)
+//mongoose.connect(connection)
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
@@ -209,8 +209,14 @@ const prSchema = mongoose.Schema({
     content:String
 });
 
-entrySchema.plugin(mongoosastic);
-prSchema.plugin(mongoosastic);
+var options = {
+	  host: 'localhost',
+	  port: 9200,
+	  log: 'trace'
+};
+
+entrySchema.plugin(mongoosastic, options);
+prSchema.plugin(mongoosastic, options);
 
 let Entry = mongoose.model('Entry', entrySchema);
 let PR = mongoose.model('PR', prSchema);
@@ -310,6 +316,8 @@ app.get('/v2/search/sdn', function(req, res) {
             search_query.bool.must.push(match_phrase)
         }
     }
+
+    console.log(JSON.stringify(search_query));
 
     es_query.query = search_query;
     search_ES(es_query, XMLEntry, res);

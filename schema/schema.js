@@ -1,8 +1,12 @@
 const mongoosastic = require("mongoosastic");
 const mongoose = require("mongoose");
 const fs = require('fs')
-mongoose.connect('mongodb://localhost/xmlofacasaurus');
 
+var creds = JSON.parse(fs.readFileSync("/home/deploy/ofacasaurus/credentials.json", 'utf8'))
+
+console.log(creds.mongo_creds);
+
+mongoose.connect('mongodb://localhost/xmlofacasaurus');
 
 module.exports.IdentitySchema = mongoose.Schema({
 	id:Number,
@@ -84,7 +88,7 @@ module.exports.XMLEntrySchema = mongoose.Schema({
 	linked_profiles:[this.LinkedToSchema],
 	party_comment:String,
 	fixed_ref:Number,
-	party_sub_type:String,
+	party_sub_type:{type:String, es_indexed:true},
 	//Start Identity Fields
 	identity_id:{type:Number, es_indexed:true},
 	primary_display_name:{type:String, es_indexed:true},
@@ -136,7 +140,7 @@ let XMLEntry = mongoose.model('XMLEntry', this.XMLEntrySchema);
 module.exports.XMLEntry = XMLEntry;
 
 
-//var data = JSON.parse(fs.readFileSync('../xml/sdn_advanced/v5.json', 'utf8'));
+var data = JSON.parse(fs.readFileSync('/home/deploy/ofacasaurus/xml/sdn_advanced/v7.json', 'utf8'));
 
 var feature_keys = new Set();
 
@@ -274,11 +278,9 @@ function load_data(data){
 		  'Nationality of Registration',
 		  'D-U-N-S Number']
 
-		var feature_schema_names = ["title", 
+		var feature_schema_names = ["location","title", 
 		"birthdate",
 		"place_of_birth",
-		"location",
-		"website",
 		"additional_information",
 		"vessel_call_sign",
 		"vessel_flag",
@@ -378,7 +380,7 @@ function sync(model) {
 
 //load_data(data);
 
-//sync(XMLEntry);
+sync(XMLEntry);
 
 // console.log(feature_keys)
 
