@@ -1,6 +1,7 @@
 const mongoosastic = require("mongoosastic");
 const mongoose = require("mongoose");
 const fs = require('fs')
+//mongoose.connect('mongodb://localhost/xmlofacasaurus');
 
 var creds = JSON.parse(fs.readFileSync("/home/deploy/ofacasaurus/credentials.json", 'utf8'))
 
@@ -142,6 +143,9 @@ module.exports.XMLEntry = XMLEntry;
 
 var data = JSON.parse(fs.readFileSync('/home/deploy/ofacasaurus/xml/sdn_advanced/v7.json', 'utf8'));
 
+var data = JSON.parse(fs.readFileSync('../xml/sdn_advanced/v7.json', 'utf8'));
+//var data = JSON.parse(fs.readFileSync('../xml/sdn_advanced/v5.json', 'utf8'));
+
 var feature_keys = new Set();
 
 function print_vals(){
@@ -170,7 +174,7 @@ for(var i =0; i< data.length; i++){
 function load_data(data){
 	all_data = []
 
-	for(var i = 0; i<data.length; i++){
+	for(var i = 0; i<10; i++){
 		console.log("Doing data "+i)
 
 		entry = data[i]
@@ -309,10 +313,14 @@ function load_data(data){
 		"duns_number"
 		]
 
-		for(var j = 0; j < entry.features.length; j++){
-			for (key in entry.features[j]){
+		console.log(entry.features)
+
+
+		for(feature_key in entry.features){
+			// console.log(feature_key)
+			for (var j = 0; j< entry.features[feature_key].length; j++){
 				feature = {}
-				var idx = feature_names.indexOf(key)
+				var idx = feature_names.indexOf(feature_key)
 				if(idx<0){
 					console.log(key + " NOT FOUND");
 					continue;
@@ -324,29 +332,31 @@ function load_data(data){
 				}
 				//Match with correct field
 				feature.feature_type = key;
-				feature.reliability = entry.features[j].reliability;
-				feature.comment = entry.features[j].comment;
+				feature.reliability = entry.features[feature_key][j].reliability;
+				feature.comment = entry.features[feature_key][j].comment;
 
-				if(entry.features[j].locations){
-					feature.locations = entry.features[j].locations;
-					for(var k = 0; k< entry.features[j].locations.length; k++){
-						full_json[feature_schema_names[idx]].push(entry.features[j].locations[k].combined)
+				console.log(entry.features[feature_key][j])
+
+				if(entry.features[feature_key][j].locations){
+					feature.locations = entry.features[feature_key][j].locations;
+					for(var k = 0; k< entry.features[feature_key][j].locations.length; k++){
+						full_json[feature_schema_names[idx]].push(entry.features[feature_key][j].locations[k].combined)
 					}
 				}
 				else{
 					feature.locations = null;
 				}
-				if(entry.features[j].details){
-					feature.details = entry.features[j].details;
-					full_json[feature_schema_names[idx]].push(entry.features[j].details)
+				if(entry.features[feature_key][j].details){
+					feature.details = entry.features[feature_key][j].details;
+					full_json[feature_schema_names[idx]].push(entry.features[feature_key][j].details)
 				}
 				else{
 					feature.details = null;
 				}
-				if(entry.features[j].dates){
-					features.dates = entry.features[j].dates;
-					for(var k = 0; k< entry.features[j].dates.length; k++){
-						full_json[feature_schema_names[idx]].push(entry.features[j].locations[k].combined)
+				if(entry.features[feature_key][j].dates){
+					features.dates = entry.features[feature_key][j].dates;
+					for(var k = 0; k< entry.features[feature_key][j].dates.length; k++){
+						full_json[feature_schema_names[idx]].push(entry.features[feature_key][j].locations[k].combined)
 					}
 				}
 				else{
@@ -359,11 +369,11 @@ function load_data(data){
 		}
 		// console.log(full_json)
 		let new_entry = new XMLEntry(full_json);
-		new_entry.save((err)=>{
-			if(err){
-				console.log(err);
-			}
-		})
+		 new_entry.save((err)=>{
+		 	if(err){
+		 		console.log(err);
+		 	}
+		 })
 		// console.log(new_entry)
 	}
 
@@ -378,9 +388,9 @@ function sync(model) {
     stream.on('error', (err) => console.log(err));
 }
 
-//load_data(data);
+load_data(data);
 
-sync(XMLEntry);
+//sync(XMLEntry);
 
 // console.log(feature_keys)
 
