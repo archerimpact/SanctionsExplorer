@@ -9,7 +9,7 @@ var data = JSON.parse(fs.readFileSync('v8.json', 'utf8'));
 
 let requests = [];
 
-for (var i = 5913; i < 5914; i++) {
+for (var i = 0; i < data.length; i++) {
     // Augment the data with these fields
     data[i].identity_id = data[i].identity.id
     data[i].primary_display_name = data[i].identity.primary.display_name;
@@ -64,8 +64,9 @@ client.bulk({
         errors += 0;
         console.log(err);
     }
-}
+});
 
 if (errors > 0) {
     // restart and try again. Log and notify.
+    console.log(errors + ' errors occured during the export.');
 }
