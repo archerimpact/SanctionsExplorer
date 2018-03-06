@@ -935,7 +935,7 @@ class ProfileLink:
 
 	def __str__(self):
 		d = dict()
-		d['linked_id'] = int(str(self.to_profile_id))
+		d['linked_id'] = int(str(self.linked_profile_id))
 		d['linked_name'] = json.loads(self.linked_name)
 		d['relation_type'] = str(self.relation_type)
 		d['relation_quality'] = str(self.relation_quality)
