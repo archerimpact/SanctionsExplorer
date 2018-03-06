@@ -3,16 +3,6 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
-const mongoose = require('mongoose');
-const mongoosastic = require('mongoosastic');
-const xmlschema = require("./schema/schema")
-var XMLEntry = xmlschema.XMLEntry;
-
-var creds = JSON.parse(fs.readFileSync('credentials.json', 'utf8'));
-// mongoose.connect('mongodb://localhost/ofacasaurus');
-var connection = 'mongodb://' + creds.mongo_creds + '@localhost/xmlofacasaurus';
-
-mongoose.connect(connection)
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
@@ -157,125 +147,48 @@ function search_ES(query, model, res) {
     }
 }
 
-const entrySchema = mongoose.Schema({
-    ent_num:String,
-    sdn_name:String,
-    sdn_type:String,
-    program:String,
-    title:String,
-    call_sign:String,
-    vess_type:String,
-    tonnage:String,
-    grt:String,
-    vess_flag:String,
-    vess_owner:String,
-    remarks:String,
-    linked_to:[String],
-    nationality:[String],
-    dob:[String],
-    aka:String,
-    pob:[String],
-    passport:[String],
-    nit:[String],
-    cedula_no:String,
-    ssn:String,
-    dni:String,
-    rfc:[String],
-    website:[String],
-    vessel_registration_number:String,
-    gender:String,
-    swift_bic:[String],
-    tax_id_no:[String],
-    email:[String],
-    phone:String,
-    registration_id:[String],
-    company_number:String,
-    aircraft_construction_number:String,
-    citizen:[String],
-    additional_sanctions_info:[String],
-    aircraft_manufacture_date:String,
-    aircraft_model:[String],
-    aircraft_operator:[String],
-    position:String,
-    national_id_number:[String],
-    identification_number:[String],
-    previous_aircraft_tail_number:String
-});
-
-const prSchema = mongoose.Schema({
-    title:String,
-    link:String,
-    date:String,
-    content:String
-});
-
-entrySchema.plugin(mongoosastic);
-prSchema.plugin(mongoosastic);
-
-let Entry = mongoose.model('Entry', entrySchema);
-let PR = mongoose.model('PR', prSchema);
-
-function update_docs(){
-	console.log("Starting update");
-	Entry.find({}, function(err, entries){
-	   console.log("FOUND");
-           console.log(err);
-	   console.log(entries.length);
-           for(var i = 0; i< entries.length; i++){
-	   	var curr_entry = entries[i];
-		if(curr_entry.sdn_type == null){
-			console.log("Found null");
-			curr_entry.sdn_type = "entity"
-                }
-		curr_entry.program = "["+curr_entry.program + "]"
-		curr_entry.save();
-	   }
-	});
-	Entry.synchronize();
-}
-
-//Begin new schema endpoints
 
 app.get('/v2/search/sdn', function(req, res) {
-    const keywords =  ["title", 
-											"birthdate",
-												"place_of_birth",
-												"location",
-												"website",
-												"additional_information",
-												"vessel_call_sign",
-												"vessel_flag",
-												"vessel_owner",
-												"vessel_tonnage",
-												"vessel_gross_tonnage",
-												"vessel_type",
-												"nationality_country",
-												"citizenship_country",
-												"gender",
-												"website",
-												"email_address",
-												"swift_bic",
-												"ifca_determination",
-												"aircraft_construction_number",
-												"aircraft_msn",
-												"aircraft_manufacture_date",
-												"aircraft_model",
-												"aircraft_operator",
-												"bik",
-												"un_locode",
-												"aircraft_tail_number",
-												"previous_aircraft_tail_number",
-												"micex_code",
-												"nationality_of_registration",
-												"duns_number",
-												"identity_id",
-												"primary_display_name",
-												"all_display_names",
-												"programs",
-												"linked_profile_names",
-												"linked_profile_ids",
-												"doc_id_numbers",
-												]
+    const keywords =  [
+        "title",
+        "birthdate",
+        "place_of_birth",
+        "location",
+        "website",
+        "additional_information",
+        "vessel_call_sign",
+        "vessel_flag",
+        "vessel_owner",
+        "vessel_tonnage",
+        "vessel_gross_tonnage",
+        "vessel_type",
+        "nationality_country",
+        "citizenship_country",
+        "gender",
+        "website",
+        "email_address",
+        "swift_bic",
+        "ifca_determination",
+        "aircraft_construction_number",
+        "aircraft_msn",
+        "aircraft_manufacture_date",
+        "aircraft_model",
+        "aircraft_operator",
+        "bik",
+        "un_locode",
+        "aircraft_tail_number",
+        "previous_aircraft_tail_number",
+        "micex_code",
+        "nationality_of_registration",
+        "duns_number",
+        "identity_id",
+        "primary_display_name",
+        "all_display_names",
+        "programs",
+        "linked_profile_names",
+        "linked_profile_ids",
+        "doc_id_numbers",
+    ];
     const fuzziness = {"program": "0", "doc_id_numbers": "0", "birthdate": "0"};
 
     var es_query = {size: 50, from: 0};
@@ -314,52 +227,3 @@ app.get('/v2/search/sdn', function(req, res) {
     es_query.query = search_query;
     search_ES(es_query, XMLEntry, res);
 });
-
-//update_docs();
-
-
-
-/*
- ******* LEGACY SEARCH FUNCTIONS *******
-
-const sqlite3 = require('sqlite3').verbose();
-let db = new sqlite3.Database('press_releases.db');
-mongoose.connect('mongodb://archer:ilovearcher@ds217898.mlab.com:17898/archer-ofacasaurus', {connectTimeoutMS:5000});
-
-app.get('/search/press-release-sqlite', function(req, res) {
-    let text = req.query.query;
-    console.log(text);
-    // TODO don't let them inject SQL lol
-    db.all('SELECT name,pr_date,link FROM press_releases WHERE content LIKE "%' + text + '%";', (err, rows) => {
-        res.json({'dates': rows});
-    });
-});
-
-app.get('/search/sdn-mongo', function(req, res) {
-   // res.send('search');
-   var keywords = ["id", "ent_num", "sdn_name","sdn_type","program","title","call_sign","vess_type","tonnage","grt","vess_flag","vess_owner","remarks","linked_to","nationality","dob","aka","pob","passport","nit","cedula_no","ssn","dni","rfc","website","vessel_registration_number","gender","swift_bic","tax_id_no","email","phone","registration_id","company_number","aircraft_construction_number","citizen","additional_sanctions_info","aircraft_manufacture_date","aircraft_model","aircraft_operator","position","national_id_number","identification_number","previous_aircraft_tail_number"]
-   var search_query = {}
-
-   if(req.query.id){
-       search_query["_id"] = req.query.id;
-   }
-
-    for (var i=0; i<keywords.length; i++){
-        if(req.query[keywords[i]]!=null){
-            console.log(keywords[i]);
-            search_query[keywords[i]] = req.query[keywords[i]]
-        }
-   }
-
-    if (Object.keys(search_query).length !== 0) {
-        Entry.find(search_query, function(err, result){
-             if (err) {
-                res.status(400).end();
-             }
-             else {
-                 res.json(result);
-             }
-        });
-    }
-});
-*/
