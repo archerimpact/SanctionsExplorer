@@ -3,6 +3,10 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const es = require("elasticsearch");
+const client = new es.Client({
+	host:'localhost:9200'
+});
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
@@ -155,7 +159,7 @@ app.get('/v2/search/sdn', function(req, res) {
         "place_of_birth",
         "location",
         "website",
-        "additional_information",
+        "additional_sanctions_information_-_",
         "vessel_call_sign",
         "vessel_flag",
         "vessel_owner",
@@ -167,20 +171,20 @@ app.get('/v2/search/sdn', function(req, res) {
         "gender",
         "website",
         "email_address",
-        "swift_bic",
-        "ifca_determination",
-        "aircraft_construction_number",
-        "aircraft_msn",
+        "swift/bic",
+        "ifca_determination_-_",
+        "aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n",
+        "aircraft_manufacturer's_serial_number_(msn)",
         "aircraft_manufacture_date",
         "aircraft_model",
         "aircraft_operator",
-        "bik",
-        "un_locode",
+        "bik_(ru)",
+        "un/locode",
         "aircraft_tail_number",
         "previous_aircraft_tail_number",
         "micex_code",
         "nationality_of_registration",
-        "duns_number",
+        "d-u-n-s_number",
         "identity_id",
         "primary_display_name",
         "all_display_names",
@@ -189,7 +193,7 @@ app.get('/v2/search/sdn', function(req, res) {
         "linked_profile_ids",
         "doc_id_numbers",
     ];
-    const fuzziness = {"program": "0", "doc_id_numbers": "0", "birthdate": "0"};
+    const fuzziness = {"programs": "0", "doc_id_numbers": "0", "birthdate": "0"};
 
     var es_query = {size: 50, from: 0};
     var search_query = {bool:{must:[]}};
@@ -225,5 +229,21 @@ app.get('/v2/search/sdn', function(req, res) {
     }
 
     es_query.query = search_query;
-    search_ES(es_query, XMLEntry, res);
+    var full_es_query = {}
+    full_es_query.index = "sdn";
+    full_es_query.body = es_query;
+    console.log(full_es_query);
+    client.search(full_es_query, function(error, results){
+	if(error){
+	    console.log(error);
+        }
+	else{
+	    let response = []
+	    for(var i in results.hits.hits){
+		    response.push(results.hits.hits[i]['_source']);
+    	    }
+	    res.json({'response': response, 'num_results':results.hits.total});
+	}
+    });
+    //search_ES(es_query, XMLEntry, res);
 });
