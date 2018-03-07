@@ -8,7 +8,7 @@ url_template = "http://localhost:8080/search/press-releases?query="
 headers = {'Content-Type': 'application/json'}
 data = {"query": "Colima"}
 
-wb = load_workbook(filename='sdn.xlsx')
+wb = load_workbook(filename='../xml/sdn.xlsx')
 ws = wb.active
 
 new_wb = Workbook()
@@ -26,6 +26,8 @@ for row in ws.rows:
 			for entry in result.json()["response"]:
 				new_ws.cell(row=rownum, column=1).value = val
 				new_ws.cell(row=rownum, column=2).value = entry["link"]
+                                new_ws.cell(row=rownum, column=3).value = entry["date"]
+                                new_ws.cell(row=rownum, column=4).value = entry["title"]
 				print(entry["link"])
 				rownum += 1
 		else:
