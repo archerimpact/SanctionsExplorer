@@ -11,23 +11,25 @@ reqs[0] = [];
 var i = 0;
 var x = 0;
 var j = 0;
+
 function runSearches() {
-	        if (i == j) {
-			                return;
-			        } else {
-					                client.msearch({
-								                        maxConcurrentSearches:10,
-								                        body:reqs[j]
-								                }, function(err, responses) {
-											                        if (err) {
-															                                console.log("err");
-															                        }
-											                        console.log('finished pass: ' + j.toString());
-											                        j = j + 1;
-											                        runSearches();
-											                });
-					        }
+	if (i == j) {
+		return;
+	} else {
+		client.msearch({
+			maxConcurrentSearches:10,
+			body:reqs[j]
+		}, function(err, responses) {
+			if (err) {
+				console.log("err");
+			}	
+			console.log('finished pass: ' + j.toString());
+			j = j + 1;
+			runSearches();
+		});
+	}
 }
+
 function getReqs(entry_lines) {
   entry_lines.forEach(function(line) {
 	let line_split = line.split(" | ");
@@ -49,13 +51,11 @@ function getReqs(entry_lines) {
 		x = 0;
 	}
   });
-  
-  
+  runSearches();
 }
 
 var entry_lines = [];
 fs.readFile("../press_releases/matchdata.txt", 'utf8', function(err, data) {
-	//console.log(data);
 	entry_lines = data.split("\n");
 	getReqs(entry_lines);
 });
