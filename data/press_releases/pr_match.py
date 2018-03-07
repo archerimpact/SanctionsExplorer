@@ -26,6 +26,8 @@ for row in ws.rows:
 			for entry in result.json()["response"]:
 				new_ws.cell(row=rownum, column=1).value = val
 				new_ws.cell(row=rownum, column=2).value = entry["link"]
+                                new_ws.cell(row=rownum, column=3).value = entry["date"]
+                                new_ws.cell(row=rownum, column=4).value = entry["title"]
 				print(entry["link"])
 				rownum += 1
 		else:
