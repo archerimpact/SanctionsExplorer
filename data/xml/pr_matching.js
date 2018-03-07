@@ -59,7 +59,7 @@ fs.readFile("../press_releases/matchdata.txt", 'utf8', function(err, data) {
 	entry_lines = data.split("\n");
 	getReqs(entry_lines);
 });
-
+console.log('asdf');
 
 entries = {};
 
