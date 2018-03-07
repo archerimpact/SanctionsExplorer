@@ -6,6 +6,7 @@ const client = new es.Client({
 
 console.log("hello, connected to clients");
 
+var entries = {};
 var reqs = {};
 reqs[0] = [];
 var i = 0;
@@ -24,6 +25,7 @@ function runSearches() {
 				console.log("err");
 			}	
 			console.log('finished pass: ' + j.toString());
+			console.log(responses);
 			j = j + 1;
 			runSearches();
 		});
@@ -33,13 +35,20 @@ function runSearches() {
 function getReqs(entry_lines) {
   entry_lines.forEach(function(line) {
 	let line_split = line.split(" | ");
+	if (entries[line_split[0]] == null) {
+		entries[line_split[0]] = [];
+	}
+	entries[line_split[0]].push({link: line_split[1], date: line_split[2], title: line_split[3]});
 	let search_query = {
 		search: {
 			index: 'sdn',
 			q: 'primary_display_name:'+line_split[0]
 		}
 	}
-	let q = { query: { query_string: { query: line_split[0]}}};
+  });
+
+  Object.keys(entries).forEach(function(entry) {
+  	let q = { query: { query_string: { query: entry}}};
 	let search_index = { index: 'sdn', type: 'entry' }
 	if (x < 400) {
 		reqs[i].push(search_index);
@@ -59,8 +68,6 @@ fs.readFile("../press_releases/matchdata.txt", 'utf8', function(err, data) {
 	entry_lines = data.split("\n");
 	getReqs(entry_lines);
 });
-
-entries = {};
 
 //console.log(entries);
 //
