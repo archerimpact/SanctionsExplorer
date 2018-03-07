@@ -5,7 +5,7 @@ $(document).ready(() => {
     window.searchRow = get_template('#search-row-template');
 
     $('.search-button').click(event => {
-        search(event, addr + '/search/sdn', collect_query_info(), display_query, '#search-results');
+        search(event, addr + '/v2/search/sdn', collect_query_info(), display_query, '#search-results');
     });
 
     $('.next-page').click(event => {
@@ -14,7 +14,7 @@ $(document).ready(() => {
     });
 
     var id = 0;
-    let fields = construct_fields(['nationality', 'title', 'citizen', 'position', 'pob', 'dob', 'passport', 'all fields']);
+    let fields = construct_fields(['nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'birthdate', 'doc_id_numbers', 'all fields']);
     append_search_row(id, fields);
     id++;
 
@@ -78,17 +78,17 @@ function collect_query_info() {
 
     let name = get_name_input();
     if (name !== null && name !== "") {
-        query['sdn_name'] = name;
+        query['all_display_names'] = name;
     }
 
     let type = get_type_select()
     if (type !== empty_type_field) {
-        query['sdn_type'] = type;
+        query['party_sub_type'] = type;
     }
 
     let program = get_program_select()
     if (program !== empty_program_field) {
-        query['program'] = program;
+        query['programs'] = program;
     }
 
     $.each(get_search_row_ids(), (index, row_id) => {
@@ -143,41 +143,41 @@ function display_query(res) {
 
 function construct_fields(fields) {
     let api_to_ui = {
-        'ent_num': 'id',
-        'sdn_name': 'Name',
-        'sdn_type': 'Type',
-        'program': 'Program',
-        'aka': 'AKA',
-        'nationality': 'Nationality',
-        'dob': 'Date of Birth',
-        'pob': 'Place of Birth',
-        'gender': 'Gender',
-        'title': 'Title',
-        'passport': 'Passport Number',
-        'tax_id_no': 'Tax ID Number',
-        'website': 'Website',
-        'phone': 'Phone',
-        'email': 'Email',
-        'notes': 'Notes',
-        'additional_sanctions_info': 'Additional Sanctions Info',
-        'linked_to': 'Linked To',
-        'all fields': 'More fields coming soon!',                 // TODO change
-        'aircraft_model': 'Aircraft Model',
-        'aircraft_operator': 'Aircraft Operator',
-        'call_sign': 'Call Sign',
-        'grt': 'Gross Registered Tonnage',
-        'tonnage': 'Tonnage',
-        'vess_flag': 'Vessel Flag',
-        'vess_owner': 'Vessel Owner',
-        'vess_flag': 'Vessel Flag',
-        'vessel_registration_number': 'Vesseal Registration Number',
-        'identification_number': 'Identification Number',
-        'national_id_number': 'National ID Number',
-        'nit': 'NIT',
-        'rfc': 'RFC',
-        'swift_bic': 'SWIFT',
-        'citizen': 'Citizenship',
-        'position': 'Position',
+        'identity_id':                          'ID',
+        'primary_display_name':                 'Primary Display Name',
+        'all_display_names':                    'Names',
+        'doc_id_numbers':                       'ID Numbers',
+        'programs':                             'Programs',
+        'location':                             'Location',
+        'title':                                'Title',
+        'birthdate':                            'Birthdate',
+        'place_of_birth':                       'Place of Birth',
+        'additional_sanctions_information_-_':  'Additional Sanctions Information',
+        'nationality_country':                  'Nationality',
+        'citizenship_country':                  'Citizenship',
+        'gender':                               'Gender',
+        'website':                              'Website',
+        'email_address':                        'Email',
+        'swift/bic':                            'SWIFT/BIC',
+        'ifca_determination_-_':                'IFCA Determination',
+        'bik_(ru)':                             'BIK (RU)',
+        'un/locode':                            'UN/LOCODE',
+        'micex_code':                           'MICES Code',
+        'nationality_of_registration':          'Nationality of Registration',
+        'd-u-n-s_number':                       'DUNS Number',
+        'vessel_call_sign':                     'Vessel Call Sign',
+        'vessel_flag':                          'Vessel Flag',
+        'vessel_owner':                         'Vessel Owner',
+        'vessel_tonnage':                       'Vessel Tonnage',
+        'vessel_gross_registered_tonnage':      'Vessel Gross Registered Tonnage',
+        'vessel_type':                          'Vessel Type',
+        'aircraft_manufacture_date':            'Aircraft Manufacture Date',
+        'aircraft_model':                       'Aircraft Model',
+        'aircraft_operator':                    'Aircraft Operator',
+        'aircraft_tail_number':                 'Aircraft Tail Number',
+        'previous_aircraft_tail_number':        'Previous Aircraft Tail Number',
+        'aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n)':         'Aircraft Construction Number',
+        'aircraft_manufacturer\'s_serial_number_(msn)':                         'Aircraft Manufacturer\'s Serial Number',
     };
 
     let retval = {};

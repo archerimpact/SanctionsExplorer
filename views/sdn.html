@@ -65,10 +65,10 @@
                         <div class="form-group col-md-5">
                             <select class="custom-select form-control form-control-sm" id="type-select">
                                 <option selected="">All types</option>
-                                <option value="individual">Individual</option>
-                                <option value="entity">Entity</option>
-                                <option value="aircraft">Aircraft</option>
-                                <option value="vessel">Vessel</option>
+                                <option value="Individual">Individual</option>
+                                <option value="Entity">Entity</option>
+                                <option value="Aircraft">Aircraft</option>
+                                <option value="Vessel">Vessel</option>
                             </select>
                         </div>
                         <div class="form-group col-md-7">
@@ -174,100 +174,104 @@
             </div>
             <div class="collapse hide" id="card-body-{{=it.identity.id}}">
                 <div class="card-body">
-                    <h5 class="card-detail-header">Aliases</h5>
-                    <table class="table table-sm">
-                        <tbody>
-                            {{ for (var i in it.identity.aliases) { }}
+                    {{? it.identity.aliases.length > 0}}
+                        <h5 class="card-detail-header">Aliases</h5>
+                        <table class="table table-sm">
+                            <tbody>
+                                {{ for (var i in it.identity.aliases) { }}
+                                    <tr>
+                                        <td>{{= it.identity.aliases[i].display_name }}</td>
+                                        <td>{{= it.identity.aliases[i].strength }}</td>
+                                        <td>{{= it.identity.aliases[i].alias_type }}</td>
+                                    </tr>
+                                {{ } }}
+                            </tbody>
+                        </table>
+                    {{?}}
+
+                    {{? it.documents.length > 0 }}
+                        <h5 class="card-detail-header">Documents</h5>
+                        <table class="table table-sm">
+                            <thead>
+                                <tr></tr>
                                 <tr>
-                                    <td>{{= it.identity.aliases[i].display_name }}</td>
-                                    <td>{{= it.identity.aliases[i].strength }}</td>
-                                    <td>{{= it.identity.aliases[i].alias_type }}</td>
-                                </tr>
-                            {{ } }}
-                        </tbody>
-                    </table>
-
-                    <h5 class="card-detail-header">Documents</h5>
-                    <table class="table table-sm">
-                        <thead>
-                            <tr></tr>
-                            <tr>
-                                <td class="muted-table-text">#</td>
-                                <td class="muted-table-text">type</td>
-                                <td class="muted-table-text">validity</td>
-                                {{? it.document_headers.includes('issued_by') }}
-                                    <td class="muted-table-text">issued by</td>
-                                {{?}}
-                                {{? it.document_headers.includes('issued_in') }}
-                                    <td class="muted-table-text">issued in</td>
-                                {{?}}
-                                {{? it.document_headers.includes('issuing_authority') }}
-                                    <td class="muted-table-text">authorized by</td>
-                                {{?}}
-                                {{? it.document_headers.includes('Expiration Date') }}
-                                    <td class="muted-table-text">expires on</td>
-                                {{?}}
-                                {{? it.document_headers.includes('Issue Date') }}
-                                    <td class="muted-table-text">issued on</td>
-                                {{?}}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {{ for (var i in it.documents) { }}
-                                <tr>
-                                    <td class="doc-number">
-                                        {{= it.documents[i].id_number }}
-                                    </td>
-                                    <td>
-                                        {{= it.documents[i].type }}
-                                    </td>
-                                    <td>
-                                        {{= it.documents[i].validity }}
-                                    </td>
-
-                                    {{? it.document_headers.includes('issued_by') }}
-                                        <td class="doc-info">
-                                            {{? it.documents[i].issued_by }}
-                                                {{= it.documents[i].issued_by }}
-                                            {{?}}
-                                        </td>
+                                    <td class="muted-table-text">#</td>
+                                    <td class="muted-table-text">type</td>
+                                    <td class="muted-table-text">validity</td>
+                                    {{? it.document_headers && it.document_headers.includes('issued_by') }}
+                                        <td class="muted-table-text">issued by</td>
                                     {{?}}
-
-                                    {{? it.document_headers.includes('issued_in') }}
-                                        <td class="doc-info">
-                                            {{? it.documents[i].issued_in }}
-                                                {{= it.documents[i].issued_in }}
-                                            {{?}}
-                                        </td>
+                                    {{? it.document_headers && it.document_headers.includes('issued_in') }}
+                                        <td class="muted-table-text">issued in</td>
                                     {{?}}
-
-                                    {{? it.document_headers.includes('issuing_authority') }}
-                                        <td class="doc-info">
-                                            {{? it.documents[i].issuing_authority }}
-                                                {{= it.documents[i].issuing_authority }}
-                                            {{?}}
-                                        </td>
+                                    {{? it.document_headers && it.document_headers.includes('issuing_authority') }}
+                                        <td class="muted-table-text">authorized by</td>
                                     {{?}}
-
-                                    {{? it.document_headers.includes('Issue Date') }}
-                                        <td class="doc-info">
-                                            {{? it.documents[i]['Issue Date'] }}
-                                                {{= it.documents[i]['Issue Date'] }}
-                                            {{?}}
-                                        </td>
+                                    {{? it.document_headers && it.document_headers.includes('Expiration Date') }}
+                                        <td class="muted-table-text">expires on</td>
                                     {{?}}
-
-                                    {{? it.document_headers.includes('Expiration Date') }}
-                                        <td class="doc-info">
-                                            {{? it.documents[i]['Expiration Date'] }}
-                                                {{= it.documents[i]['Expiration Date'] }}
-                                            {{?}}
-                                        </td>
+                                    {{? it.document_headers && it.document_headers.includes('Issue Date') }}
+                                        <td class="muted-table-text">issued on</td>
                                     {{?}}
                                 </tr>
-                            {{ } }}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                {{ for (var i in it.documents) { }}
+                                    <tr>
+                                        <td class="doc-number">
+                                            {{= it.documents[i].id_number }}
+                                        </td>
+                                        <td>
+                                            {{= it.documents[i].type }}
+                                        </td>
+                                        <td>
+                                            {{= it.documents[i].validity }}
+                                        </td>
+
+                                        {{? it.document_headers.includes('issued_by') }}
+                                            <td class="doc-info">
+                                                {{? it.documents[i].issued_by }}
+                                                    {{= it.documents[i].issued_by }}
+                                                {{?}}
+                                            </td>
+                                        {{?}}
+
+                                        {{? it.document_headers.includes('issued_in') }}
+                                            <td class="doc-info">
+                                                {{? it.documents[i].issued_in }}
+                                                    {{= it.documents[i].issued_in }}
+                                                {{?}}
+                                            </td>
+                                        {{?}}
+
+                                        {{? it.document_headers.includes('issuing_authority') }}
+                                            <td class="doc-info">
+                                                {{? it.documents[i].issuing_authority }}
+                                                    {{= it.documents[i].issuing_authority }}
+                                                {{?}}
+                                            </td>
+                                        {{?}}
+
+                                        {{? it.document_headers.includes('Issue Date') }}
+                                            <td class="doc-info">
+                                                {{? it.documents[i]['Issue Date'] }}
+                                                    {{= it.documents[i]['Issue Date'] }}
+                                                {{?}}
+                                            </td>
+                                        {{?}}
+
+                                        {{? it.document_headers.includes('Expiration Date') }}
+                                            <td class="doc-info">
+                                                {{? it.documents[i]['Expiration Date'] }}
+                                                    {{= it.documents[i]['Expiration Date'] }}
+                                                {{?}}
+                                            </td>
+                                        {{?}}
+                                    </tr>
+                                {{ } }}
+                            </tbody>
+                        </table>
+                    {{?}}
 
                     {{ for (var feature in it.features) { }}
                         <h5 class="card-detail-header">{{= feature }}</h5>
