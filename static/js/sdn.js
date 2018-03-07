@@ -5,7 +5,7 @@ $(document).ready(() => {
     window.searchRow = get_template('#search-row-template');
 
     $('.search-button').click(event => {
-        search(event, addr + '/v2/search/sdn', collect_query_info(), display_query, '#search-results');
+        search(event, addr + '/search/sdn', collect_query_info(), display_query, '#search-results');
     });
 
     $('.next-page').click(event => {
