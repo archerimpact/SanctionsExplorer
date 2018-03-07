@@ -1,52 +1,43 @@
-const es = require('elasticsearch')
-const XLSX = require('xlsx')
-const sdn_client = new es.Client({
-	host: 'localhost:9200/sdn/'
-});
-const pr_client = new es.Client({
-	host: 'localhost:9200/pr/'
-});
+const es = require('elasticsearch');
+const fs = require('fs');
 const client = new es.Client({
 	host: 'localhost:9200'
 });
 
 console.log("hello, connected to clients");
 
-var workbook = XLSX.readFile('../press_releases/prelim_matches.xlsx');
-var sheet_name_list = workbook.SheetNames;
-var xlData = XLSX.utils.sheet_to_json(workbook.Sheets[sheet_name_list[0]]);
-
-pr_client.search({
-	index: 'pr',
-	q: 'link:https://www.state.gov/r/pa/prs/ps/2018/02/278481.htm'
-}, function(err, response) {
-	console.log(response);
-});
-
-
-entries = {};
-xlData.forEach(function(entry) {
-	if (entries[entry['Name']] == null) {
-		entries[entry['Name']] = [entry['Link']];
-	} else {
-		entries[entry['Name']].push(entry['Link']);
-	}
-});
-
-//console.log(entries);
-//
 var reqs = {};
 reqs[0] = [];
 var i = 0;
 var x = 0;
-Object.keys(entries).forEach(function(key) {
+var j = 0;
+function runSearches() {
+	        if (i == j) {
+			                return;
+			        } else {
+					                client.msearch({
+								                        maxConcurrentSearches:10,
+								                        body:reqs[j]
+								                }, function(err, responses) {
+											                        if (err) {
+															                                console.log("err");
+															                        }
+											                        console.log('finished pass: ' + j.toString());
+											                        j = j + 1;
+											                        runSearches();
+											                });
+					        }
+}
+function getReqs(entry_lines) {
+  entry_lines.forEach(function(line) {
+	let line_split = line.split(" | ");
 	let search_query = {
 		search: {
 			index: 'sdn',
-			q: 'primary_display_name:'+key
+			q: 'primary_display_name:'+line_split[0]
 		}
 	}
-	let q = { query: { query_string: { query: key}}};
+	let q = { query: { query_string: { query: line_split[0]}}};
 	let search_index = { index: 'sdn', type: 'entry' }
 	if (x < 400) {
 		reqs[i].push(search_index);
@@ -57,28 +48,67 @@ Object.keys(entries).forEach(function(key) {
 		reqs[i] = [];
 		x = 0;
 	}
+  });
+  
+  
+}
+
+var entry_lines = [];
+fs.readFile("../press_releases/matchdata.txt", 'utf8', function(err, data) {
+	//console.log(data);
+	entry_lines = data.split("\n");
+	getReqs(entry_lines);
 });
 
-var j = 0;
-function runSearches() {
-	if (i == j) {
-		return;
-	} else {
-		client.msearch({
-			maxConcurrentSearches:10,
-			body:reqs[j]
-		}, function(err, responses) {
-			if (err) {
-				console.log("err");
-			}
-			console.log('finished pass: ' + j.toString());
-			j = j + 1;
-			runSearches();
-		});
-	}
-}
+
+entries = {};
+
+//console.log(entries);
+//
+//var reqs = {};
+//reqs[0] = [];
+//var i = 0;
+//var x = 0;
+//Object.keys(entries).forEach(function(key) {
+//	let search_query = {
+//		search: {
+//			index: 'sdn',
+//			q: 'primary_display_name:'+key
+//		}
+//	}
+//	let q = { query: { query_string: { query: key}}};
+//	let search_index = { index: 'sdn', type: 'entry' }
+//	if (x < 400) {
+//		reqs[i].push(search_index);
+//		reqs[i].push(q);
+//		x = x + 1;
+//	} else {
+//		i = i + 1;
+//		reqs[i] = [];
+//		x = 0;
+//	}
+//});
+
+//var j = 0;
+//function runSearches() {
+//	if (i == j) {
+//		return;
+//	} else {
+//		client.msearch({
+///			maxConcurrentSearches:10,
+//			body:reqs[j]
+//		}, function(err, responses) {
+//			if (err) {
+//				console.log("err");
+//			}
+//			console.log('finished pass: ' + j.toString());
+//			j = j + 1;
+//			runSearches();
+//		});
+//	}
+//}
 console.log("running searches");
-runSearches();
+//runSearches();
 
 //client.msearch({
 //	maxConcurrentSearches:10,
