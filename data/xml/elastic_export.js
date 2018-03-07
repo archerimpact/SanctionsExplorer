@@ -66,16 +66,17 @@ for (var i = 0; i < data.length; i++) {
             }
 
             if (entry.dates) {
-                entry.dates.forEach(d => {
-                    combined_info.push(d);
-                });
+                combined_info.push(entry.dates[0])      // there's always one! TODO fix in parser
+                if (entry.dates.length > 1) {
+                    console.log('More than one date in the feature.');
+                }
             }
 
             if (entry.locations) {
-                let locs = [];
-                entry.locations.forEach(loc => {
-                    combined_info.push(loc['COMBINED']);
-                });
+                combined_info.push(entry.locations[0])  // there's always one! TODO fix in parser
+                if (entry.locations.length > 1) {
+                    console.log('More than one location in the feature.');
+                }
             }
         });
 

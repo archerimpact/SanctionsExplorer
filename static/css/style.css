@@ -107,7 +107,7 @@ h5.card-detail-header {
     font-size: 14px;
     text-transform: none;
     letter-spacing: 1px;
-    color: #919aa1;
+    color: #646b70;
 }
 
 .real-link {
@@ -120,6 +120,28 @@ h5.card-detail-header {
 
 .real-link:hover {
     opacity: 0.5;
+}
+
+.table-sm td {
+    padding: 0.25em;
+}
+
+table {
+    margin-left: 2em;
+    font-size: 13px;
+}
+
+.muted-table-text {
+    color: #cccccc;
+}
+
+h6.doc-number {
+    text-transform: none;
+    letter-spacing: 1px;
+}
+
+td.doc-info {
+    text-align: start;
 }
 
 

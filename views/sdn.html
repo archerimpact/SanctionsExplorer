@@ -161,63 +161,165 @@
     <script id="card-template" type="text/template">
         <div class="card">
             <div class="card-header">
-                <a data-toggle="collapse" href="#card-body-{{=it.main.id}}">
-                    {{=it.main.Name}}
+                <a data-toggle="collapse" href="#card-body-{{=it.identity.id}}">
+                    {{=it.primary_display_name}}
                 </a>
-                <small class="card-sdn-type">({{=it.main.Type}})</small>
+                <small class="card-sdn-type">
+                    ({{=it.party_sub_type}})
+                </small>
 
                 <div class="float-right" style="margin-left: 10px;">
-                    {{=it.main.Program}}
+                    {{=it.programs.join(' / ')}}
                 </div>
             </div>
-            <div class="collapse hide" id="card-body-{{=it.main.id}}">
-                <div class="card-body row">
-                    <div class="col-lg-6 col-md-6">
-                        <div class="left-card-col">
+            <div class="collapse hide" id="card-body-{{=it.identity.id}}">
+                <div class="card-body">
+                    <h5 class="card-detail-header">Aliases</h5>
+                    <table class="table table-sm">
+                        <tbody>
+                            {{ for (var i in it.identity.aliases) { }}
+                                <tr>
+                                    <td>{{= it.identity.aliases[i].display_name }}</td>
+                                    <td>{{= it.identity.aliases[i].strength }}</td>
+                                    <td>{{= it.identity.aliases[i].alias_type }}</td>
+                                </tr>
+                            {{ } }}
+                        </tbody>
+                    </table>
 
-                            {{ for (var category in it.categories) { }}
-                                    {{ for (var key in it[it.categories[category]]) { }}
-                                            {{? (Array.isArray(it[it.categories[category]][key]) && it[it.categories[category]][key].length > 1) }}
-                                                    <h5 class="card-detail-header">{{=key}}:</h5>
-                                                    <ul>
-                                                            {{ for (var item in it[it.categories[category]][key]) { }}
-                                                                    <li class="card-detail-info">{{=it[it.categories[category]][key][item]}}</li>
-                                                            {{ } }}
-                                                    </ul>
-                                            {{??}}
-                                                    <h5 class="card-detail-header">{{=key}}: <small class="card-detail-info">{{=it[it.categories[category]][key]}}</small></h5>
+                    <h5 class="card-detail-header">Documents</h5>
+                    <table class="table table-sm">
+                        <thead>
+                            <tr></tr>
+                            <tr>
+                                <td class="muted-table-text">#</td>
+                                <td class="muted-table-text">type</td>
+                                <td class="muted-table-text">validity</td>
+                                {{? it.document_headers.includes('issued_by') }}
+                                    <td class="muted-table-text">issued by</td>
+                                {{?}}
+                                {{? it.document_headers.includes('issued_in') }}
+                                    <td class="muted-table-text">issued in</td>
+                                {{?}}
+                                {{? it.document_headers.includes('issuing_authority') }}
+                                    <td class="muted-table-text">authorized by</td>
+                                {{?}}
+                                {{? it.document_headers.includes('Expiration Date') }}
+                                    <td class="muted-table-text">expires on</td>
+                                {{?}}
+                                {{? it.document_headers.includes('Issue Date') }}
+                                    <td class="muted-table-text">issued on</td>
+                                {{?}}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{ for (var i in it.documents) { }}
+                                <tr>
+                                    <td class="doc-number">
+                                        {{= it.documents[i].id_number }}
+                                    </td>
+                                    <td>
+                                        {{= it.documents[i].type }}
+                                    </td>
+                                    <td>
+                                        {{= it.documents[i].validity }}
+                                    </td>
+
+                                    {{? it.document_headers.includes('issued_by') }}
+                                        <td class="doc-info">
+                                            {{? it.documents[i].issued_by }}
+                                                {{= it.documents[i].issued_by }}
                                             {{?}}
-                                    {{ } }}
+                                        </td>
+                                    {{?}}
+
+                                    {{? it.document_headers.includes('issued_in') }}
+                                        <td class="doc-info">
+                                            {{? it.documents[i].issued_in }}
+                                                {{= it.documents[i].issued_in }}
+                                            {{?}}
+                                        </td>
+                                    {{?}}
+
+                                    {{? it.document_headers.includes('issuing_authority') }}
+                                        <td class="doc-info">
+                                            {{? it.documents[i].issuing_authority }}
+                                                {{= it.documents[i].issuing_authority }}
+                                            {{?}}
+                                        </td>
+                                    {{?}}
+
+                                    {{? it.document_headers.includes('Issue Date') }}
+                                        <td class="doc-info">
+                                            {{? it.documents[i]['Issue Date'] }}
+                                                {{= it.documents[i]['Issue Date'] }}
+                                            {{?}}
+                                        </td>
+                                    {{?}}
+
+                                    {{? it.document_headers.includes('Expiration Date') }}
+                                        <td class="doc-info">
+                                            {{? it.documents[i]['Expiration Date'] }}
+                                                {{= it.documents[i]['Expiration Date'] }}
+                                            {{?}}
+                                        </td>
+                                    {{?}}
+                                </tr>
                             {{ } }}
+                        </tbody>
+                    </table>
 
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-6">
+                    {{ for (var feature in it.features) { }}
+                        <h5 class="card-detail-header">{{= feature }}</h5>
+                        <ul>
+                            {{ for (var i = 0; i < it.features[feature].length; i++) { }}
 
-                        {{? it.context['Linked To'] }}
-                            <h5 class="card-detail-header">Linked To:</h5>
-                            <ul>
-                            {{ for (var i in it.context['Linked To']) { }}
-                                    <li class="card-detail-info"><a href="" class="activate-modal real-link" data-toggle="modal" data-target="#placeholderModal">{{=it.context['Linked To'][i]}}</a></li>
-                            {{ } }}
-                            </ul>
-                        {{?}}
+                                {{? it.features[feature][i].details }}
+                                    <li>
+                                        {{= it.features[feature][i].details }}
+                                        {{? it.features[feature][i].reliability != "Unknown" }}
+                                            ({{= it.features[feature][i].reliability }})
+                                        {{?}}
 
-                        {{? it.context['Press Releases'] }}
-                            <h5 class="card-detail-header">Press Releases:</h5>
-                            <ul>
-                            {{ for (var i in it.context['Press Releases']) { }}
-                                    <li class="card-detail-info">
-                                        ({{=it.context['Press Releases'][i].date}})
-                                        <a href="{{=it.context['Press Releases'][i].url}}">
-                                            {{=it.context['Press Releases'][i].name}}
-                                        </a>
+                                        {{? it.features[feature][i].comment }}
+                                            ({{= it.features[feature][i].comment }})
+                                        {{?}}
                                     </li>
-                            {{ } }}
-                            </ul>
-                        {{?}}
+                                {{?}}
 
-                    </div>
+                                {{? it.features[feature][i].dates }}
+                                    <li>
+                                        {{= it.features[feature][i].dates }}
+                                        {{? it.features[feature][i].reliability != "Unknown" }}
+                                            ({{= it.features[feature][i].reliability }})
+                                        {{?}}
+
+                                        {{? it.features[feature][i].comment }}
+                                            ({{= it.features[feature][i].comment }})
+                                        {{?}}
+                                    </li>
+                                {{?}}
+
+                                {{? it.features[feature][i].locations }}
+                                    <li>
+                                        {{= it.features[feature][i].locations[0]["COMBINED"] }}
+                                        {{? it.features[feature][i].reliability != "Unknown" }}
+                                            ({{= it.features[feature][i].reliability }})
+                                        {{?}}
+
+                                        {{? it.features[feature][i].comment }}
+                                            ({{= it.features[feature][i].comment }})
+                                        {{?}}
+                                    </li>
+                                {{?}}
+                            {{ } }}
+                        </ul>
+                    {{ } }}
+
+                    {{? it.party_comment }}
+                        <h5 class="card-detail-header">Comment</h5>
+                        <p>{{= it.party_comment }}
+                    {{?}}
                 </div>
             </div>
         </div>
