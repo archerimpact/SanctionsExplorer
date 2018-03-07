@@ -8,7 +8,7 @@ url_template = "http://localhost:8080/search/press-releases?query="
 headers = {'Content-Type': 'application/json'}
 data = {"query": "Colima"}
 
-wb = load_workbook(filename='sdn.xlsx')
+wb = load_workbook(filename='../xml/sdn.xlsx')
 ws = wb.active
 
 new_wb = Workbook()
