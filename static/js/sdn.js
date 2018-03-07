@@ -124,7 +124,7 @@ function process_entry(res) {
 
 
 function display_query(res) {
-    let data = res//.response;
+    let data = res.response;
     let result = [];
     for (var i = 0; i < data.length; i++) {
         result.push(process_entry(data[i]));
@@ -138,4 +138,54 @@ function display_query(res) {
     });
     append_to_results(c);
     update_results_header(res['num_results']);
+}
+
+
+function construct_fields(fields) {
+    let api_to_ui = {
+        'ent_num': 'id',
+        'sdn_name': 'Name',
+        'sdn_type': 'Type',
+        'program': 'Program',
+        'aka': 'AKA',
+        'nationality': 'Nationality',
+        'dob': 'Date of Birth',
+        'pob': 'Place of Birth',
+        'gender': 'Gender',
+        'title': 'Title',
+        'passport': 'Passport Number',
+        'tax_id_no': 'Tax ID Number',
+        'website': 'Website',
+        'phone': 'Phone',
+        'email': 'Email',
+        'notes': 'Notes',
+        'additional_sanctions_info': 'Additional Sanctions Info',
+        'linked_to': 'Linked To',
+        'all fields': 'More fields coming soon!',                 // TODO change
+        'aircraft_model': 'Aircraft Model',
+        'aircraft_operator': 'Aircraft Operator',
+        'call_sign': 'Call Sign',
+        'grt': 'Gross Registered Tonnage',
+        'tonnage': 'Tonnage',
+        'vess_flag': 'Vessel Flag',
+        'vess_owner': 'Vessel Owner',
+        'vess_flag': 'Vessel Flag',
+        'vessel_registration_number': 'Vesseal Registration Number',
+        'identification_number': 'Identification Number',
+        'national_id_number': 'National ID Number',
+        'nit': 'NIT',
+        'rfc': 'RFC',
+        'swift_bic': 'SWIFT',
+        'citizen': 'Citizenship',
+        'position': 'Position',
+    };
+
+    let retval = {};
+    for (var f in fields) {
+        let fieldname = fields[f]
+        if (fieldname in api_to_ui) {
+            retval[fieldname] = api_to_ui[fieldname];
+        }
+    }
+    return retval;
 }
