@@ -5,7 +5,7 @@ $(document).ready(() => {
     window.searchRow = get_template('#search-row-template');
 
     $('.search-button').click(event => {
-        search(event, addr + '/search/sdn', collect_query_info(), display_query, '#search-results');
+        search(event, addr + '/v2/search/sdn', collect_query_info(), display_query, '#search-results');
     });
 
     $('.next-page').click(event => {
@@ -14,7 +14,7 @@ $(document).ready(() => {
     });
 
     var id = 0;
-    let fields = construct_fields(['nationality', 'title', 'citizen', 'position', 'pob', 'dob', 'passport', 'all fields']);
+    let fields = construct_fields(['nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'birthdate', 'doc_id_numbers', 'all fields']);
     append_search_row(id, fields);
     id++;
 
@@ -78,17 +78,17 @@ function collect_query_info() {
 
     let name = get_name_input();
     if (name !== null && name !== "") {
-        query['sdn_name'] = name;
+        query['all_display_names'] = name;
     }
 
     let type = get_type_select()
     if (type !== empty_type_field) {
-        query['sdn_type'] = type;
+        query['party_sub_type'] = type;
     }
 
     let program = get_program_select()
     if (program !== empty_program_field) {
-        query['program'] = program;
+        query['programs'] = program;
     }
 
     $.each(get_search_row_ids(), (index, row_id) => {
@@ -114,35 +114,12 @@ function collect_query_info() {
 
 
 function process_entry(res) {
-    let data = {};
-
-    let extract = (name, fields) => {
-        data[name] = {};
-        $.each(fields, (key, value) => {
-            if (res[key] != null && res[key].length != 0) {
-                let formatted_key = fields[key];
-                data[name][formatted_key] = res[key];
-            } else if (res[key] == null && fields[key] == 'Type') {        // TODO hacky solution to display entity types. Fix in DB.  We can't search for entities either.
-                data[name]['Type'] = 'entity';
-            }
-        });
-    };
-
-    let main_fields = construct_fields(['ent_num', 'sdn_name', 'sdn_type', 'program']);
-    let personal_fields = construct_fields(['nationality', 'dob', 'pob', 'gender', 'title', 'position']);
-    let id_fields = construct_fields(['aka', 'passport', 'tax_id_no', 'website', 'email', 'phone', 'identification_number', 'national_id_number', 'nit', 'rfc', 'swift_bic']);
-    let notes_fields = construct_fields(['notes', 'additional_sanctions_info']);
-    let context_fields = construct_fields(['linked_to', 'press_releases']);
-    let sea_air_fields = construct_fields(['aircraft_model', 'aircraft_operator', 'call_sign', 'grt', 'tonnage', 'vess_flag', 'vess_owner', 'vess_type', 'vessel_registration_number'])
-    extract('main', main_fields);
-    extract('personal', personal_fields);
-    extract('identification', id_fields);
-    extract('notes', notes_fields);
-    extract('context', context_fields);
-    extract('sea_air', sea_air_fields)
-
-    data['categories'] = ['personal', 'identification', 'notes', 'sea_air'];
-    return data;
+    /*
+    // FOR TESTING PURPOSES.
+    res = {"document_headers": ["issued_in", "issued_by", "issuing_authority", "Expiration Date"], "identity":{"id":14947,"aliases":[{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Tyurin","Latin"],"First Name":["Vladimir","Latin"],"Middle Name":["Anatolievich","Latin"]},"display_name":"TYURIN, Vladimir Anatolievich","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Tiourine","Latin"],"First Name":["Vladimir","Latin"]},"display_name":"TIOURINE, Vladimir","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Tiurin","Latin"],"First Name":["Vladimir","Latin"]},"display_name":"TIURIN, Vladimir","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Turin","Latin"],"First Name":["Vladimir","Latin"]},"display_name":"TURIN, Vladimir","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Tyurine","Latin"],"First Name":["Vladimir","Latin"]},"display_name":"TYURINE, Vladimir","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Tiurine","Latin"],"First Name":["Vladimir","Latin"]},"display_name":"TIURINE, Vladimir","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Tiorine","Latin"],"First Name":["Vladimir","Latin"]},"display_name":"TIORINE, Vladimir","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Tjrurin","Latin"],"First Name":["Vladimir","Latin"]},"display_name":"TJRURIN, Vladimir","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Turiyan","Latin"],"First Name":["Vladimir","Latin"]},"display_name":"TURIYAN, Vladimir","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Tyurin","Latin"],"First Name":["Volodya","Latin"]},"display_name":"TYURIN, Volodya","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Tyurine","Latin"],"First Name":["Anatoly","Latin"]},"display_name":"TYURINE, Anatoly","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Tyurin","Latin"],"First Name":["Anatoly","Latin"]},"display_name":"TYURIN, Anatoly","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Turin","Latin"],"First Name":["Anatolievich","Latin"]},"display_name":"TURIN, Anatolievich","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Tjurin","Latin"],"First Name":["Wladimir","Latin"]},"display_name":"TJURIN, Wladimir","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Gromov","Latin"],"First Name":["Vladimir","Latin"],"Middle Name":["Pavlovich","Latin"]},"display_name":"GROMOV, Vladimir Pavlovich","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Pugachev","Latin"],"First Name":["Aleksei","Latin"],"Middle Name":["Vladimirovich","Latin"]},"display_name":"PUGACHEV, Aleksei Vladimirovich","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Pugachev","Latin"],"First Name":["Alexei","Latin"],"Middle Name":["Pavlovich","Latin"]},"display_name":"PUGACHEV, Alexei Pavlovich","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["Pugachev","Latin"],"First Name":["Alexey","Latin"]},"display_name":"PUGACHEV, Alexey","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":true,"documented_name":{"Last Name":["Tyurik","Latin"]},"display_name":"TYURIK","strength":"weak"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":true,"documented_name":{"Last Name":["Tiurik","Latin"]},"display_name":"TIURIK","strength":"weak"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":true,"documented_name":{"Last Name":["Tyurya","Latin"]},"display_name":"TYURYA","strength":"weak"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["ТЮРИН","Cyrillic"],"First Name":["ВЛАДИМИР","Cyrillic"],"Middle Name":["АНАТОЛЬЕВИЧ","Cyrillic"]},"display_name":"ТЮРИН, ВЛАДИМИР АНАТОЛЬЕВИЧ","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["ГРОМОВ","Cyrillic"],"First Name":["ВЛАДИМИР","Cyrillic"],"Middle Name":["ПАВЛОВИЧ","Cyrillic"]},"display_name":"ГРОМОВ, ВЛАДИМИР ПАВЛОВИЧ","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":false,"documented_name":{"Last Name":["ПУГАЧЕВ","Cyrillic"],"First Name":["АЛЕКСЕЙ","Cyrillic"],"Middle Name":["ВЛАДИМИРОВИЧ","Cyrillic"]},"display_name":"ПУГАЧЕВ, АЛЕКСЕЙ ВЛАДИМИРОВИЧ","strength":"strong"},{"alias_type":"A.K.A.","is_primary":false,"is_low_quality":true,"documented_name":{"Last Name":["ТЮРИК","Cyrillic"]},"display_name":"ТЮРИК","strength":"weak"}],"primary":{"alias_type":"Name","is_primary":true,"is_low_quality":false,"documented_name":{"Last Name":["Tyurin","Latin"],"First Name":["Vladimir","Latin"],"Middle Name":["Anatolyevich","Latin"]},"date_period":null,"display_name":"TYURIN, Vladimir Anatolyevich"}},"party_comment":null,"fixed_ref":23243,"party_sub_type":"Individual","sanctions_entries":[{"list":"SDN List","entry_events":[["2017-12-22","Executive Order 13581 (TCO)"]],"program":["TCO"]}],"documents":[{"type":"Passport","issued_by":"Belgium","issued_in":null,"validity":"Fraudulent","issuing_authority":null,"id_number":"EA804478","relevant_dates":{},"display":{"info":"Fraudulent Passport","issue":"Issued by Belgium"}},{"type":"Passport","issued_by":"Russia","issued_in":null,"validity":"Fraudulent","issuing_authority":"Singapore","id_number":"432062125","relevant_dates":{},"display":{"info":"Fraudulent Passport","issue":"Issued by Russia"}},{"type":"Passport","issued_by":"Russia","issued_in":"Moscow","validity":"Fraudulent","issuing_authority":"Russian Government","id_number":"410579055","relevant_dates":{},"display":{"info":"Fraudulent Passport","issue":"Issued by Russia"}},{"type":"Passport","issued_by":"Russia","issued_in":null,"validity":"Fraudulent","issuing_authority":null,"id_number":"4511264874","Expiration Date":"2018-07-18","relevant_dates":{},"display":{"info":"Fraudulent Passport","issue":"Issued by Russia"}}],"linked_profiles":[{"linked_id":23223,"linked_name":{"alias_type":"Name","is_primary":true,"is_low_quality":false,"documented_name":{"Entity Name":["Thieves-in-Law","Latin"]},"date_period":null,"display_name":"Thieves-in-Law"},"relation_type":"Acting for or on behalf of","relation_quality":"Unknown","is_former":false,"is_reverse":false}],"features":{"Birthdate":[{"feature_type":"Birthdate","reliability":"Unknown","comment":null,"dates":["1958-11-25"]},{"feature_type":"Birthdate","reliability":"Unknown","comment":null,"dates":["1958-12-20"]}],"Place of Birth":[{"feature_type":"Place of Birth","reliability":"Unknown","comment":null,"details":"Tirlyan, Beloretskiy Rayon, Bashkiria, Russia"},{"feature_type":"Place of Birth","reliability":"Verified by me","comment":"yucky","details":"Irkutsk, Russia"},{"feature_type":"Place of Birth","reliability":"Unknown","comment":"yucccc","details":"Bratsk, Russia"}],"Citizenship Country":[{"feature_type":"Citizenship Country","reliability":"Unknown","comment":null,"locations":[{"COUNTRY":"Russia","COMBINED":"Russia"}]},{"feature_type":"Citizenship Country","reliability":"Unknown","comment":null,"locations":[{"COUNTRY":"Kazakhstan","COMBINED":"Kazakhstan"}]}],"Gender":[{"feature_type":"Gender","reliability":"Reported","comment":null,"details":"Male"}],"Location":[{"feature_type":"Location","reliability":"Unknown","comment":null,"locations":[{"CITY":"Moscow","COUNTRY":"Russia","COMBINED":"Moscow, Russia"}]}]},"identity_id":14947,"primary_display_name":"TYURIN, Vladimir Anatolyevich","programs":["TCO"],"all_display_names":["TYURIN, Vladimir Anatolievich","TIOURINE, Vladimir","TIURIN, Vladimir","TURIN, Vladimir","TYURINE, Vladimir","TIURINE, Vladimir","TIORINE, Vladimir","TJRURIN, Vladimir","TURIYAN, Vladimir","TYURIN, Volodya","TYURINE, Anatoly","TYURIN, Anatoly","TURIN, Anatolievich","TJURIN, Wladimir","GROMOV, Vladimir Pavlovich","PUGACHEV, Aleksei Vladimirovich","PUGACHEV, Alexei Pavlovich","PUGACHEV, Alexey","TYURIK","TIURIK","TYURYA","ТЮРИН, ВЛАДИМИР АНАТОЛЬЕВИЧ","ГРОМОВ, ВЛАДИМИР ПАВЛОВИЧ","ПУГАЧЕВ, АЛЕКСЕЙ ВЛАДИМИРОВИЧ","ТЮРИК"],"doc_id_numbers":["EA804478","432062125","410579055","4511264874"],"linked_profile_ids":[23223],"linked_profile_names":["Thieves-in-Law"],"birthdate":[{"feature_type":"Birthdate","reliability":"Unknown","comment":null,"dates":["1958-11-25"]},{"feature_type":"Birthdate","reliability":"Unknown","comment":null,"dates":["1958-12-20"]}],"place_of_birth":[{"feature_type":"Place of Birth","reliability":"Unknown","comment":null,"details":"Tirlyan, Beloretskiy Rayon, Bashkiria, Russia"},{"feature_type":"Place of Birth","reliability":"Unknown","comment":null,"details":"Irkutsk, Russia"},{"feature_type":"Place of Birth","reliability":"Unknown","comment":null,"details":"Bratsk, Russia"}],"citizenship_country":[{"feature_type":"Citizenship Country","reliability":"Unknown","comment":null,"locations":[{"COUNTRY":"Russia","COMBINED":"Russia"}]},{"feature_type":"Citizenship Country","reliability":"Unknown","comment":null,"locations":[{"COUNTRY":"Kazakhstan","COMBINED":"Kazakhstan"}]}],"gender":[{"feature_type":"Gender","reliability":"Reported","comment":null,"details":"Male"}],"location":[{"feature_type":"Location","reliability":"Unknown","comment":null,"locations":[{"CITY":"Moscow","COUNTRY":"Russia","COMBINED":"Moscow, Russia"}]}]};
+    console.log(res);
+    */
+    return res;
 }
 
 
@@ -166,41 +143,41 @@ function display_query(res) {
 
 function construct_fields(fields) {
     let api_to_ui = {
-        'ent_num': 'id',
-        'sdn_name': 'Name',
-        'sdn_type': 'Type',
-        'program': 'Program',
-        'aka': 'AKA',
-        'nationality': 'Nationality',
-        'dob': 'Date of Birth',
-        'pob': 'Place of Birth',
-        'gender': 'Gender',
-        'title': 'Title',
-        'passport': 'Passport Number',
-        'tax_id_no': 'Tax ID Number',
-        'website': 'Website',
-        'phone': 'Phone',
-        'email': 'Email',
-        'notes': 'Notes',
-        'additional_sanctions_info': 'Additional Sanctions Info',
-        'linked_to': 'Linked To',
-        'all fields': 'More fields coming soon!',                 // TODO change
-        'aircraft_model': 'Aircraft Model',
-        'aircraft_operator': 'Aircraft Operator',
-        'call_sign': 'Call Sign',
-        'grt': 'Gross Registered Tonnage',
-        'tonnage': 'Tonnage',
-        'vess_flag': 'Vessel Flag',
-        'vess_owner': 'Vessel Owner',
-        'vess_flag': 'Vessel Flag',
-        'vessel_registration_number': 'Vesseal Registration Number',
-        'identification_number': 'Identification Number',
-        'national_id_number': 'National ID Number',
-        'nit': 'NIT',
-        'rfc': 'RFC',
-        'swift_bic': 'SWIFT',
-        'citizen': 'Citizenship',
-        'position': 'Position',
+        'identity_id':                          'ID',
+        'primary_display_name':                 'Primary Display Name',
+        'all_display_names':                    'Names',
+        'doc_id_numbers':                       'ID Numbers',
+        'programs':                             'Programs',
+        'location':                             'Location',
+        'title':                                'Title',
+        'birthdate':                            'Birthdate',
+        'place_of_birth':                       'Place of Birth',
+        'additional_sanctions_information_-_':  'Additional Sanctions Information',
+        'nationality_country':                  'Nationality',
+        'citizenship_country':                  'Citizenship',
+        'gender':                               'Gender',
+        'website':                              'Website',
+        'email_address':                        'Email',
+        'swift/bic':                            'SWIFT/BIC',
+        'ifca_determination_-_':                'IFCA Determination',
+        'bik_(ru)':                             'BIK (RU)',
+        'un/locode':                            'UN/LOCODE',
+        'micex_code':                           'MICES Code',
+        'nationality_of_registration':          'Nationality of Registration',
+        'd-u-n-s_number':                       'DUNS Number',
+        'vessel_call_sign':                     'Vessel Call Sign',
+        'vessel_flag':                          'Vessel Flag',
+        'vessel_owner':                         'Vessel Owner',
+        'vessel_tonnage':                       'Vessel Tonnage',
+        'vessel_gross_registered_tonnage':      'Vessel Gross Registered Tonnage',
+        'vessel_type':                          'Vessel Type',
+        'aircraft_manufacture_date':            'Aircraft Manufacture Date',
+        'aircraft_model':                       'Aircraft Model',
+        'aircraft_operator':                    'Aircraft Operator',
+        'aircraft_tail_number':                 'Aircraft Tail Number',
+        'previous_aircraft_tail_number':        'Previous Aircraft Tail Number',
+        'aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n)':         'Aircraft Construction Number',
+        'aircraft_manufacturer\'s_serial_number_(msn)':                         'Aircraft Manufacturer\'s Serial Number',
     };
 
     let retval = {};
