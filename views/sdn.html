@@ -324,6 +324,25 @@
                         <h5 class="card-detail-header">Comment</h5>
                         <p>{{= it.party_comment }}
                     {{?}}
+
+                    {{? it.sanctions_entries[0].entry_events.length > 0 }}
+                        <h5 class="card-detail-header">Sanction Events</h5>
+                        <ul>
+                            {{ for (var i = 0; i < it.sanctions_entries[0].entry_events.length; i++) { }}
+                                <li>{{= it.sanctions_entries[0].entry_events[i][0] }}: {{= it.sanctions_entries[0].entry_events[i][1] }}</li>
+                            {{ } }}
+                        </ul>
+                    {{?}}
+
+                    {{? it.linked_profile_ids.length > 0 }}
+                        <h5 class="card-detail-header">Linked To</h5>
+                        <ul>
+                            {{ for (var i = 0; i < it.linked_profiles.length; i++) { }}
+                                <li>{{= it.linked_profiles[i].linked_name.display_name }}</li>
+                            {{ } }}
+                        </ul>
+                    {{?}}
+
                 </div>
             </div>
         </div>
