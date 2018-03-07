@@ -55,9 +55,12 @@ app.get('/search/press-releases', function(req, res) {
 //        size: 50,
     }
 
-    es_query.query = search_query
+    es_query.query = search_query;
+    var full_es_query = {}
+    full_es_query.index = "pr";
+    full_es_query.body = es_query;
 
-    search_ES(es_query, PR, res);
+    search_ES(full_es_query, res);
 });
 
 
@@ -130,25 +133,26 @@ app.get('/elasticsearch/all', function(req, res){
 })
 
 
-function search_ES(query, model, res) {
-    if (Object.keys(query['query']).length !== 0) {
-//        console.log(query);
-        model.esSearch(query, (err, results) => {
-            if (err) {
-                res.status(400).end();
+function search_ES(query, res) {
+    console.log(JSON.stringify(query));
+    client.search(query, (error, results) =>
+    	if (error) {
+    	    console.log(error);
+            res.status(400).end();
+        }
+    	else {
+    	    let response = []
+            let response = [];
+            for (var i in results.hits.hits) {
+                response.push(results.hits.hits[i]['_source']);
             }
-            else {
-                let response = [];
-                for (var i in results.hits.hits) {
-//                    console.log(results.hits.hits[i]['_source']['sdn_name'] + ': ' + results.hits.hits[i]['_score']);
-                    response.push(results.hits.hits[i]['_source']);
-                }
+    	    res.json({
+                'response': response,
+                'num_results': results.hits.total
+            });
+    	}
+    });
 
-//                console.log(JSON.stringify(results.hits));
-                res.json({'response': response, 'num_results': results.hits.total});
-            }
-        });
-    }
 }
 
 
@@ -232,18 +236,6 @@ app.get('/v2/search/sdn', function(req, res) {
     var full_es_query = {}
     full_es_query.index = "sdn";
     full_es_query.body = es_query;
-    console.log(full_es_query);
-    client.search(full_es_query, function(error, results){
-	if(error){
-	    console.log(error);
-        }
-	else{
-	    let response = []
-	    for(var i in results.hits.hits){
-		    response.push(results.hits.hits[i]['_source']);
-    	    }
-	    res.json({'response': response, 'num_results':results.hits.total});
-	}
-    });
-    //search_ES(es_query, XMLEntry, res);
+
+    search_ES(full_es_query, res);
 });
