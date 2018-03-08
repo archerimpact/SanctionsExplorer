@@ -47,8 +47,11 @@ app.get('/search/press-releases', function(req, res) {
     }
 
     let search_query = {
-        'match': {
-            'content': text,
+        'match_phrase': {
+            'content': {
+                'query': text,
+                'slop': 3,
+            }
         }
     };
 

@@ -19,7 +19,6 @@ for (var i = 0; i < data.length; i++) {
     };
     requests.push(es_index_statement);
     requests.push(data[i]);
-    console.log(data[i]);
 }
 
 

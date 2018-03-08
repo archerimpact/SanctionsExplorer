@@ -10,94 +10,95 @@
         gtag(‘js’, new Date());
         gtag(‘config’, ‘UA-111936547-2’);
     </script>
-	<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous"> -->
-	<link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
-	<link rel="stylesheet" href="../static/css/style.css"></link>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-	<script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-	<script src="../static/js/doT.min.js" charset="utf-8"></script>
-	<script src="../static/js/search.js"></script>
-	<script src="../static/js/press-release.js"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
+    <link rel="stylesheet" href="../static/css/style.css"></link>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="http://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="../static/js/doT.min.js" charset="utf-8"></script>
+    <script src="../static/js/search.js"></script>
+    <script src="../static/js/press-release.js"></script>
 </head>
 
 <body>
-	<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
           <a class="navbar-brand" href="#"><img id="archer-logo" src="../static/img/archer_sdn.png"></a>
           <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
             <span class="navbar-toggler-icon"></span>
           </button>
 
-		  <div class="collapse navbar-collapse" id="navbarColor02">
-		    <ul class="navbar-nav mr-auto">
-					<li class="nav-item">
-		        <a class="nav-link" href="/sdn">SDN</a>
-		      </li>
-					<li class="nav-item active">
-		        <a class="nav-link" href="/press-releases">Press Releases</a>
-		      </li>
-		      <li class="nav-item">
-		        <a class="nav-link" href="/about">About</a>
-		      </li>
-			</ul>
+          <div class="collapse navbar-collapse" id="navbarColor02">
+            <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                <a class="nav-link" href="/sdn">SDN</a>
+              </li>
+                    <li class="nav-item active">
+                <a class="nav-link" href="/press-releases">Press Releases</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="/about">About</a>
+              </li>
+            </ul>
             <div class="justify-content-end">
                 <p>hi!</p>
             </div>
-		  </div>
-		</div>
-	</nav>
+          </div>
+        </div>
+    </nav>
 
-	<div class="container-fluid">
-		<div class="row">
-			<div class="col-lg-4 col-md-12 page-col left-col">
-				<h3 class="col-header" id="press-release-header">Press Releases</h3>
-				<hr>
-				<form>
-					<div class="form-row">
-						<div class="form-group col-lg-9 col-md-12">
-					    <input type="text" class="form-control form-control-sm" id="press-release-input" placeholder="Search query">
-					    <small id="quicksearch-help" class="form-text text-muted">Search all database fields.</small>
-					  </div>
-						<div class="col-lg-3 col-md-12">
-							<button type="submit" class="btn btn-primary btn-sm float-right" id="press-release-button">Search</button>
-						</div>
-					</div><!-- /form-row -->
-				</form>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-lg-4 col-md-12 page-col left-col">
+                <h3 class="col-header" id="press-release-header">Press Releases</h3>
+                <hr>
+                <form>
+                    <div class="form-row">
+                        <div class="form-group col-lg-9 col-md-12">
+                        <input type="text" class="form-control form-control-sm" id="press-release-input" placeholder="Search query">
+                        <small id="quicksearch-help" class="form-text text-muted">Search all database fields.</small>
+                      </div>
+                        <div class="col-lg-3 col-md-12">
+                            <button type="submit" class="btn btn-primary btn-sm float-right" id="press-release-button">Search</button>
+                        </div>
+                    </div><!-- /form-row -->
+                </form>
 
-			</div><!-- /left-col -->
+            </div><!-- /left-col -->
 
-			<div class="col-lg-8 col-md-12 page-col right-col">
-				<h3 class="col-header text-center" id="results-header">Results</h3>
-				<!-- <a><small class="float-right" id="collapse-all"> Collapse</small></a> <a><small class="float-right" id="expand-all"> Expand</small></a> -->
-				<p class="print-view-filters text-center d-none d-print-block">
-					<!-- Populated by Javascript; only shown for printing -->
-				</p>
-				<hr class="no-bottom-margin">
-				<div class="loader">Loading...</div>
-				<div id="search-results">
-					<!-- Populated with Javscript -->
-				</div>
+            <div class="col-lg-8 col-md-12 page-col right-col">
+                <h3 class="col-header text-center" id="results-header">Results</h3>
+                <!-- <a><small class="float-right" id="collapse-all"> Collapse</small></a> <a><small class="float-right" id="expand-all"> Expand</small></a> -->
+                <p class="print-view-filters text-center d-none d-print-block">
+                    <!-- Populated by Javascript; only shown for printing -->
+                </p>
+                <hr class="no-bottom-margin">
+                <div class="loader">Loading...</div>
+                <div id="search-results">
+                    <!-- Populated with Javscript -->
+                </div>
                 <button class="next-page btn btn-outline-primary btn-md">Next Page</button>
-			</div><!-- /col-md-8 -->
+            </div><!-- /col-md-8 -->
 
-		</div><!-- /row -->
-	</div><!-- /container-fluid -->
+        </div><!-- /row -->
+    </div><!-- /container-fluid -->
 
-	<script id="pr-card-template" type="text/template">
-		<div class="card">
-			<div class="card-header">
-				<a href="{{=it.link}}" target="_blank">{{=it.title}}</a>
-				<div class="float-right" style="margin-left: 10px;">
-					{{=it.date}}
-				</div>
-			</div>
-			<!-- <div class="card-body">
+    <script id="pr-card-template" type="text/template">
+        <div class="card">
+            <div class="card-header">
+                <a href="{{=it.link}}" target="_blank">{{=it.title}}</a>
+                <div class="float-right" style="margin-left: 10px;">
+                    {{=it.date}}
+                </div>
+            </div>
+            <!-- <div class="card-body">
 
-			</div> -->
-			</div>
-		</div>
-	</script>
+            </div> -->
+            </div>
+        </div>
+    </script>
 
 
 </body>
