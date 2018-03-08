@@ -183,6 +183,15 @@ class AreaCode:
 		self.description = area_code_xml.get('Description')
 		self.text = area_code_xml.text
 
+	def __str__(self):
+		area = ''
+		if self.text:
+			area += str(self.text)
+		if self.description:
+			area += ' (' + str(self.description) + ')'
+
+		return area.strip()
+
 class Country:
 	def __init__(self, country_xml):
 		""" iso2 has a 2 letter country code,
@@ -381,6 +390,13 @@ class Location:
 		else:
 			return None
 
+	def parse_area_code(self, xml):
+		area_code = xml_approx_find(xml, "LocationAreaCode")
+		if area_code is not None:
+			return area_codes[area_code.get("AreaCodeID")]
+		else:
+			return None
+
 	def __init__(self, xml):
 		"""
 		we can evaluate ID, comment, country, and location parts on instantiation.
@@ -391,10 +407,10 @@ class Location:
 		self.id = xml.get('ID')
 		# self.comment = self.parse_comment(xml), this is always empty, not going to get.
 		self.country = self.parse_country(xml) # country object, lol assumes it exists, will break everything if it doesn't
-		self.location_parts = self.parse_location_parts(xml) # list of (locparttype objs, locpart objs)
+		self.location_parts = self.parse_location_parts(xml) # dict map (str locparttype, str locpart)
 		self.feature_version_ids = self.parse_feature_version_ids(xml) # list of feature versions ids that must be evaluated later
 		self.id_reg_doc_ids =  self.parse_reg_doc_ids(xml) # list of reg_doc_ids that must be evaluated later
-
+		self.area_code = str(self.parse_area_code(xml))
 
 		# Checks that there are not conflicting country entries in this location
 		if (self.country is not None) and (self.country != 'None') and (str(self.location_parts.get('COUNTRY')) != 'None'):
@@ -413,10 +429,9 @@ class Location:
 			else:
 				d[entry] = self.location_parts[entry]
 
-
 		# Construct a renderable/searchable location string
 		renderable = ''
-		order = ['ADDRESS1', 'ADDRESS2', 'ADDRESS3', 'CITY', 'STATE/PROVINCE', 'REGION', 'COUNTRY', 'POSTAL CODE', 'Unknown']		# note: if the key is 'Unknown', it will be the only key in the dict
+		order = ['ADDRESS1', 'ADDRESS2', 'ADDRESS3', 'CITY', 'STATE/PROVINCE', 'REGION', 'POSTAL CODE', 'COUNTRY', 'Unknown']		# note: if the key is 'Unknown', it will be the only key in the dict
 
 		# Checks whether OFAC has added any new fields
 		if len(set(self.location_parts.keys() - set(order))) > 0:
@@ -429,7 +444,12 @@ class Location:
 					renderable += ', '
 				renderable += self.location_parts[field]
 
-		d['COMBINED'] = renderable if renderable else None
+		if len(renderable) is 0:
+			# area code only used as a last case resort -- this value should always be '(undetermined)'
+			d['AREA CODE'] = str(self.area_code)
+			d['COMBINED'] = str(self.area_code)
+		else:
+			d['COMBINED'] = renderable
 
 		return json.dumps(d)
 
