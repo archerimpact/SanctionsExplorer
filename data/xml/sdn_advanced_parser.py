@@ -429,7 +429,7 @@ class Location:
 					renderable += ', '
 				renderable += self.location_parts[field]
 
-		d['COMBINED'] = renderable
+		d['COMBINED'] = renderable if renderable else None
 
 		return json.dumps(d)
 
@@ -540,12 +540,12 @@ class VersionDetail:
 		self.text = None
 
 class Feature:
-	def parse_dates(self, version_xml):
-		dates = xml_approx_findall(version_xml, "DatePeriod")
-		if dates is not None:
-			return [DatePeriod(d) for d in dates]
+	def parse_date(self, version_xml):
+		date = xml_approx_find(version_xml, "DatePeriod")
+		if date is not None:
+			return DatePeriod(date)
 		else:
-			return []
+			return None
 
 	def parse_details(self, version_xml):
 		version_details = xml_approx_findall(version_xml, "VersionDetail")
@@ -562,13 +562,13 @@ class Feature:
 			pass
 
 
-	def parse_locations(self, version_xml):
+	def parse_location(self, version_xml):
 		ret = []
-		locs = xml_approx_findall(version_xml, "VersionLocation")
-		if locs is not None:
-			return [locations[l.get("LocationID")] for l in locs]
+		loc = xml_approx_find(version_xml, "VersionLocation")
+		if loc is not None:
+			return locations[loc.get("LocationID")]
 		else:
-			return []
+			return None
 
 	def parse_reliability(self, version_xml):
 		r = version_xml.get("ReliabilityID")
@@ -578,8 +578,8 @@ class Feature:
 		self.feature_version = xml_approx_find(feature_xml, "FeatureVersion")
 		self.comment = xml_approx_find(self.feature_version, "Comment").text # should get
 		self.feature_type = feature_types[feature_xml.get("FeatureTypeID")].text
-		self.relevant_dates = self.parse_dates(self.feature_version)
-		self.feature_locations = self.parse_locations(self.feature_version)
+		self.relevant_date = self.parse_date(self.feature_version)
+		self.feature_location = self.parse_location(self.feature_version)
 		self.details = self.parse_details(self.feature_version)
 		self.reliability = self.parse_reliability(self.feature_version)
 
@@ -599,12 +599,14 @@ class Feature:
 		d['comment'] = self.comment 		# there's only a few of these, and they're probably being phased out because they're horrible.
 
 		# only ONE of feature_lications, relevant_dates, or details will be populated.
-		if len(self.feature_locations) > 0:
-			d['locations'] = list_to_json_list(self.feature_locations)
-		elif len(self.relevant_dates) > 0:
-			d['dates'] = [str(d) for d in self.relevant_dates]
-		else:
+		if self.feature_location:
+			d['location'] = json.loads(str(self.feature_location))
+		elif self.relevant_date:
+			d['date'] = str(self.relevant_date)
+		elif self.details:
 			d['details'] = self.details
+		else:
+			print('WARNING: There was a feature without a location, date, or details.')
 
 		return json.dumps(d)
 
@@ -621,6 +623,7 @@ class Alias:
 	def parse_date_period(self, xml):
 		elem = xml_approx_find(xml, "DatePeriod")
 		if elem is not None:
+			print('Date period wasnt none')
 			return DatePeriod(elem)
 		else:
 			return elem
@@ -644,6 +647,8 @@ class Alias:
 					np_type = name_part_groups_dict[group_id]
 					name = value.text
 					one_name[np_type] = [name, language]
+					# if language != 'Latin':
+					# 	print(one_name[np_type])
 			ret.append(one_name)
 
 		if len(ret) <= 1:
@@ -726,6 +731,10 @@ class Alias:
 				name += ' ("' + name_dict['Nickname'][0] + '")'
 			if name_dict.get('Maiden Name') is not None:
 				name += ' (maiden name: ' + name_dict['Maiden Name'][0] + ')'
+
+			# should only apply in the case where the name is just a nickname
+			if name.startswith('(') and name.endswith(')'):
+				name = name[1:-1]
 
 			return name.strip()
 

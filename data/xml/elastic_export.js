@@ -5,7 +5,7 @@ const client = new es.Client({
     // log: 'trace'
 });
 
-var data = JSON.parse(fs.readFileSync('v8.json', 'utf8'));
+var data = JSON.parse(fs.readFileSync('v9.json', 'utf8'));
 
 let requests = [];
 
@@ -55,28 +55,15 @@ for (var i = 0; i < data.length; i++) {
 
         data[i].features[f_key].forEach(entry => {
             if (entry.details) {
-                if (Array.isArray(entry.details)) {
-                    entry.details.forEach(d => {
-                        combined_info.push(d);
-                    });
-                }
-                else {
-                    combined_info.push(entry.details);
-                }
+                combined_info.push(entry.details);
             }
 
-            if (entry.dates) {
-                combined_info.push(entry.dates[0])      // there's always one! TODO fix in parser
-                if (entry.dates.length > 1) {
-                    console.log('More than one date in the feature.');
-                }
+            if (entry.date) {
+                combined_info.push(entry.date);
             }
 
-            if (entry.locations) {
-                combined_info.push(entry.locations[0])  // there's always one! TODO fix in parser
-                if (entry.locations.length > 1) {
-                    console.log('More than one location in the feature.');
-                }
+            if (entry.location && entry.location['COMBINED']) {
+                combined_info.push(entry.location['COMBINED']);
             }
         });
 
@@ -132,6 +119,9 @@ for (var i = 0; i < data.length; i++) {
     };
     requests.push(es_index_statement);
     requests.push(data[i]);
+    if (i == 5913) {
+        console.log(data[i]);
+    }
 }
 
 let errors = 0

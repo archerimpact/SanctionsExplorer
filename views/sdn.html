@@ -291,9 +291,9 @@
                                     </li>
                                 {{?}}
 
-                                {{? it.features[feature][i].dates }}
+                                {{? it.features[feature][i].date }}
                                     <li>
-                                        {{= it.features[feature][i].dates }}
+                                        {{= it.features[feature][i].date }}
                                         {{? it.features[feature][i].reliability != "Unknown" }}
                                             ({{= it.features[feature][i].reliability }})
                                         {{?}}
@@ -304,9 +304,9 @@
                                     </li>
                                 {{?}}
 
-                                {{? it.features[feature][i].locations }}
+                                {{? it.features[feature][i].location }}
                                     <li>
-                                        {{= it.features[feature][i].locations[0]["COMBINED"] }}
+                                        {{= it.features[feature][i].location }}
                                         {{? it.features[feature][i].reliability != "Unknown" }}
                                             ({{= it.features[feature][i].reliability }})
                                         {{?}}
