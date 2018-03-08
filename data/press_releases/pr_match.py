@@ -4,9 +4,9 @@ from openpyxl import Workbook
 import requests
 import urllib
 
-url_template = "http://localhost:8080/search/press-releases?operator=and&query="
+url_template = "http://localhost:8080/search/press-releases"
 headers = {'Content-Type': 'application/json'}
-data = {"query": "Colima"}
+data = {"query": {"match": {"query": "", "fuziness": "0", "operator": "and"}}}
 
 wb = load_workbook(filename='../xml/sdn.xlsx')
 ws = wb.active
@@ -22,15 +22,17 @@ for row in ws.rows:
 	print(val)
 	if val != None and isinstance(val, unicode):
 		url = url_template + urllib.quote_plus(val).replace("+", "%20")
-		print(url)
-		result = requests.get(url)
+		#print(url)
+		data["query"]["match"]["query"] = val;
+		#print(data)
+		result = requests.get(url_template, params=data)
 		if result.status_code == 200:
 			for entry in result.json()["response"]:
 				#new_ws.cell(row=rownum, column=1).value = val
 				#new_ws.cell(row=rownum, column=2).value = entry["link"]
                 		#new_ws.cell(row=rownum, column=3).value = entry["date"]
                 		#new_ws.cell(row=rownum, column=4).value = entry["title"]
-				#print(entry["link"])
+				print(entry["link"])
 				writefile.write(val + " | " + entry["link"] + " | " + entry["date"] + " | ")
 				writefile.write(entry["title"].encode("utf-8"))
 				writefile.write("\n")
