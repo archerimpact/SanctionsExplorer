@@ -177,6 +177,13 @@
                     {{? it.identity.aliases.length > 0}}
                         <h5 class="card-detail-header">Aliases</h5>
                         <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th class="muted-table-text">name</th>
+                                    <th class="muted-table-text">quality</th>
+                                    <th class="muted-table-text">type</th>
+                                </tr>
+                            </thead>
                             <tbody>
                                 {{ for (var i in it.identity.aliases) { }}
                                     <tr>
@@ -193,25 +200,24 @@
                         <h5 class="card-detail-header">Documents</h5>
                         <table class="table table-sm">
                             <thead>
-                                <tr></tr>
                                 <tr>
-                                    <td class="muted-table-text">#</td>
-                                    <td class="muted-table-text">type</td>
-                                    <td class="muted-table-text">validity</td>
+                                    <th class="muted-table-text">#</th>
+                                    <th class="muted-table-text">type</th>
+                                    <th class="muted-table-text">validity</th>
                                     {{? it.document_headers && it.document_headers.includes('issued_by') }}
-                                        <td class="muted-table-text">issued by</td>
+                                        <th class="muted-table-text">issued by</th>
                                     {{?}}
                                     {{? it.document_headers && it.document_headers.includes('issued_in') }}
-                                        <td class="muted-table-text">issued in</td>
+                                        <th class="muted-table-text">issued in</th>
                                     {{?}}
                                     {{? it.document_headers && it.document_headers.includes('issuing_authority') }}
-                                        <td class="muted-table-text">authorized by</td>
+                                        <th class="muted-table-text">authorized by</th>
                                     {{?}}
                                     {{? it.document_headers && it.document_headers.includes('Expiration Date') }}
-                                        <td class="muted-table-text">expires on</td>
+                                        <th class="muted-table-text">expires on</th>
                                     {{?}}
                                     {{? it.document_headers && it.document_headers.includes('Issue Date') }}
-                                        <td class="muted-table-text">issued on</td>
+                                        <th class="muted-table-text">issued on</th>
                                     {{?}}
                                 </tr>
                             </thead>
@@ -338,18 +344,22 @@
                         <h5 class="card-detail-header">Linked To</h5>
                         <ul>
                             {{ for (var i = 0; i < it.linked_profiles.length; i++) { }}
-                                <li>{{= it.linked_profiles[i].linked_name.display_name }}</li>
+                                <li>
+                                    <a href="" class="activate-modal real-link" data-toggle="modal" data-target="#placeholderModal">
+                                        {{= it.linked_profiles[i].linked_name.display_name }}
+                                    </a>
+                                </li>
                             {{ } }}
                         </ul>
                     {{?}}
 
-                    {{? it.prs && it.prs.length > 0 }}
+                    {{? it.pr_data && it.pr_data.length > 0 }}
                         <h5 class="card-detail-header">Possible Press Releases</h5>
                         <ul>
-                            {{ for (var i = 0; i < it.prs.length; i++) { }}
+                            {{ for (var i = 0; i < it.pr_data.length; i++) { }}
                                 <li>
-                                    <a href="{{= it.prs[i].link }}">
-                                        {{= it.prs[i].date }}: {{= it.prs[i].name }}
+                                    <a href="{{= it.pr_data[i].link }}">
+                                        {{= it.pr_data[i].date }}: {{= it.pr_data[i].name }}
                                     </a>
                                 </li>
                             {{ } }}

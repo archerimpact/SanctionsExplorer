@@ -101,14 +101,7 @@ small.card-sdn-type {
 h5.card-detail-header {
     font-size: 14px;
     margin-top: 1em;
-    letter-spacing: 1px;
-}
-
-.card-detail-info {
-    font-size: 14px;
-    text-transform: none;
-    letter-spacing: 1px;
-    color: #646b70;
+    letter-spacing: 2px;
 }
 
 .real-link {
@@ -123,8 +116,13 @@ h5.card-detail-header {
     opacity: 0.5;
 }
 
-.table-sm td {
+.table-sm td, .table-sm th {
     padding: 0.25em;
+    text-transform: none;
+}
+
+.table-sm th {
+    border-top: 0;
 }
 
 table {
