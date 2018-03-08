@@ -32,6 +32,7 @@ for (var i = 0; i < data.length; i++) {
         data[i].linked_profile_names.push(p.linked_name.display_name);
     });
 
+    data[i].all_display_names.push(data[i].primary_display_name);
     data[i].identity.aliases.forEach(alias => {
         data[i].all_display_names.push(alias.display_name);
         if (alias.date_period !== null) {
@@ -119,9 +120,6 @@ for (var i = 0; i < data.length; i++) {
     };
     requests.push(es_index_statement);
     requests.push(data[i]);
-    if (i == 5913) {
-        console.log(data[i]);
-    }
 }
 
 let errors = 0

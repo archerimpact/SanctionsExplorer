@@ -306,7 +306,7 @@
 
                                 {{? it.features[feature][i].location }}
                                     <li>
-                                        {{= it.features[feature][i].location }}
+                                        {{= it.features[feature][i].location['COMBINED'] }}
                                         {{? it.features[feature][i].reliability != "Unknown" }}
                                             ({{= it.features[feature][i].reliability }})
                                         {{?}}
