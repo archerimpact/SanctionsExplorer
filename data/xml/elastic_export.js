@@ -62,7 +62,7 @@ for (var i = 0; i < data.length; i++) {
                 combined_info.push(entry.date);
             }
 
-            if (entry.location && entry.location['COMBINED']) {
+            if (entry.location) {
                 combined_info.push(entry.location['COMBINED']);
             }
         });
