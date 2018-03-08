@@ -321,7 +321,7 @@
                     {{ } }}
 
                     {{? it.party_comment }}
-                        <h5 class="card-detail-header">Comment</h5>
+                        <h5 class="card-detail-header">OFAC Comment</h5>
                         <p>{{= it.party_comment }}
                     {{?}}
 
@@ -339,6 +339,19 @@
                         <ul>
                             {{ for (var i = 0; i < it.linked_profiles.length; i++) { }}
                                 <li>{{= it.linked_profiles[i].linked_name.display_name }}</li>
+                            {{ } }}
+                        </ul>
+                    {{?}}
+
+                    {{? it.prs && it.prs.length > 0 }}
+                        <h5 class="card-detail-header">Possible Press Releases</h5>
+                        <ul>
+                            {{ for (var i = 0; i < it.prs.length; i++) { }}
+                                <li>
+                                    <a href="{{= it.prs[i].link }}">
+                                        {{= it.prs[i].date }}: {{= it.prs[i].name }}
+                                    </a>
+                                </li>
                             {{ } }}
                         </ul>
                     {{?}}
