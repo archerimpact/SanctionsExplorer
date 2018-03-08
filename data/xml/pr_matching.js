@@ -55,7 +55,7 @@ function getReqs(entry_lines) {
 }
 
 var entry_lines = [];
-fs.readFile("../press_releases/matchdata.txt", 'utf8', function(err, data) {
+fs.readFile("../press_releases/match_data.txt", 'utf8', function(err, data) {
 	entry_lines = data.split("\n");
 	getReqs(entry_lines);
 });

@@ -40,7 +40,7 @@ function runSearches() {
 				} else {
 					response.hits.hits.forEach(function(hit) {
 						if (hit._source.primary_display_name === name) {
-							entries[name].id = hit._id;
+							entries[name].sdnid = hit._id;
 					//	console.log("match");
 						}
 					})
@@ -58,9 +58,9 @@ function getReqs(entry_lines) {
   entry_lines.forEach(function(line) {
 	let line_split = line.split(" | ");
 	if (entries[line_split[0]] == null) {
-		entries[line_split[0]] = {data: []};
+		entries[line_split[0]] = {pr_data: []};
 	}
-	entries[line_split[0]].data.push({link: line_split[1], date: line_split[2], title: line_split[3]});
+	entries[line_split[0]].pr_data.push({link:line_split[1], date:line_split[2], title:line_split[3]});
 	let search_query = {
 		search: {
 			index: 'sdn',
@@ -86,7 +86,7 @@ function getReqs(entry_lines) {
 }
 
 var entry_lines = [];
-fs.readFile("../press_releases/matchdata.txt", 'utf8', function(err, data) {
+fs.readFile("../press_releases/match_data.txt", 'utf8', function(err, data) {
 	entry_lines = data.split("\n");
 	getReqs(entry_lines);
 });
