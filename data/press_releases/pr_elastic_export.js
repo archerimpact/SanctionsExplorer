@@ -1,11 +1,12 @@
 const fs = require('fs');
+const path = require('path');
 const es = require('elasticsearch');
 const client = new es.Client({
     host: 'localhost:9200',
     // log: 'trace'
 });
 
-var data = JSON.parse(fs.readFileSync('press_release.json', 'utf8'));
+var data = JSON.parse(fs.readFileSync(path.join(__dirname, 'press_release.json'), 'utf8'));
 
 let requests = [];
 

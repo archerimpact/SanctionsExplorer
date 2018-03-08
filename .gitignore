@@ -60,5 +60,10 @@ typings/
 # next.js build output
 .next
 
-# ignore XML files
-*.xml
+# ignore data files
+data/**/*.xml
+data/**/*.json
+data/**/*.xlsx
+
+# ignore rss update data
+data/xml/updater/rss*
