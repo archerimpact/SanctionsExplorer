@@ -14,7 +14,7 @@ $(document).ready(() => {
     });
 
     var id = 0;
-    let fields = construct_fields(['nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'birthdate', 'doc_id_numbers', 'all fields']);
+    let fields = construct_fields(['nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'birthdate', 'doc_id_numbers']);
     append_search_row(id, fields);
     id++;
 
@@ -152,32 +152,8 @@ function construct_fields(fields) {
         'title':                                'Title',
         'birthdate':                            'Birthdate',
         'place_of_birth':                       'Place of Birth',
-        'additional_sanctions_information_-_':  'Additional Sanctions Information',
         'nationality_country':                  'Nationality',
         'citizenship_country':                  'Citizenship',
-        'gender':                               'Gender',
-        'website':                              'Website',
-        'email_address':                        'Email',
-        'swift/bic':                            'SWIFT/BIC',
-        'ifca_determination_-_':                'IFCA Determination',
-        'bik_(ru)':                             'BIK (RU)',
-        'un/locode':                            'UN/LOCODE',
-        'micex_code':                           'MICES Code',
-        'nationality_of_registration':          'Nationality of Registration',
-        'd-u-n-s_number':                       'DUNS Number',
-        'vessel_call_sign':                     'Vessel Call Sign',
-        'vessel_flag':                          'Vessel Flag',
-        'vessel_owner':                         'Vessel Owner',
-        'vessel_tonnage':                       'Vessel Tonnage',
-        'vessel_gross_registered_tonnage':      'Vessel Gross Registered Tonnage',
-        'vessel_type':                          'Vessel Type',
-        'aircraft_manufacture_date':            'Aircraft Manufacture Date',
-        'aircraft_model':                       'Aircraft Model',
-        'aircraft_operator':                    'Aircraft Operator',
-        'aircraft_tail_number':                 'Aircraft Tail Number',
-        'previous_aircraft_tail_number':        'Previous Aircraft Tail Number',
-        'aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n)':         'Aircraft Construction Number',
-        'aircraft_manufacturer\'s_serial_number_(msn)':                         'Aircraft Manufacturer\'s Serial Number',
     };
 
     let retval = {};

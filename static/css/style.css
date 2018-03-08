@@ -2,6 +2,7 @@
 html, body {
     margin: 0;
     height: 100%;
+    color: #919aa1;        /* Lux default */
     /*overflow: hidden;*/
 }
 
@@ -142,6 +143,13 @@ h6.doc-number {
 
 td.doc-info {
     text-align: start;
+}
+
+.inline-info {
+    padding-left: 2em;
+    color: #919aa1;
+    text-transform: none;
+    font-size: 14px;
 }
 
 
