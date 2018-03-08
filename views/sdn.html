@@ -362,8 +362,12 @@
                         <ul>
                             {{ for (var i = 0; i < it.pr_data.length; i++) { }}
                                 <li>
-                                    <a href="{{= it.pr_data[i].link }}">
-                                        {{= it.pr_data[i].date }}: {{= it.pr_data[i].name }}
+                                    <a href="{{= it.pr_data[i].link }}" class="real-link">
+					{{? it.pr_data[i].date }}
+						{{= it.pr_data[i].date }}: 
+					{{?}}
+
+					{{= it.pr_data[i].title }}
                                     </a>
                                 </li>
                             {{ } }}
