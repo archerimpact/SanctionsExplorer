@@ -1,13 +1,11 @@
 'use strict';
 
 $(document).ready(() => {
-    console.log('ready');
 
     $('#one-search-input').on('submit', event => {
         event.preventDefault();
         let input = $('#one-search-input').val();
-        console.log(input);
-        window.location.href = "http://localhost:8080/sdn/?searchall=" + input;
+        window.location.href = window.location.protocol + '//' + window.location.host + '/sdn/?searchall=' + input;     // TODO escape things properly.
     });
 
     $('#one-search-input').keydown(function(event) {
