@@ -129,7 +129,7 @@ app.get('/search/sdn', function(req, res) {
         "doc_id_numbers",
         "fixed_ref",
     ];
-    const fuzziness = {"programs": "0", "doc_id_numbers": "0", "birthdate": "0"};
+    const fuzziness = {"programs": "0", "doc_id_numbers": "0", "birthdate": "0", "fixed_ref": "NONE"};
 
     var es_query = {size: 50, from: 0};
     var search_query = {bool:{must:[]}};
@@ -143,9 +143,12 @@ app.get('/search/sdn', function(req, res) {
         }
         json.match[field] = {
             'query': query_str,
-            'fuzziness': fuzz_setting,
+            //'fuzziness': fuzz_setting,
             'operator': 'and',
         };
+	if (fuzziness[field] != 'NONE') {
+            json.match[field].fuzziness = fuzz_setting;
+        }
         return json;
     };
 
@@ -165,7 +168,6 @@ app.get('/search/sdn', function(req, res) {
     }
 
     es_query.query = search_query;
-    console.log(query);
     let full_query = {
         index: 'sdn',
         body: es_query,
@@ -173,3 +175,125 @@ app.get('/search/sdn', function(req, res) {
 
     search_ES(full_query, res);
 });
+/*
+app.get('/search/sdn/all_fields', function(req, res){
+	let search_query = {
+		"multi_match":{
+			"query":"",
+			"fields":["programs",
+				  "doc_id_numbers",
+				  "linked_profile_ids",
+				  "linked_profile_names",
+				  "location",
+				  "title",
+				  "birthdate",
+				  "place_of_birth",
+				  "additional_sanctions_information_-_",
+				  "nationality_country",
+				  "citizenship_country",
+				  "website",
+				  "email_address",
+				  "swift/bic",
+				  "ifca_determination_-_",
+				  "aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n)",
+				  "aircraft_manufacturer's_serial_number_(msn)",
+				  "aircraft_manufacture_date",
+				  "aircraft_model",
+				  "aircraft_operator",
+				  "bik_(ru)",
+				  "un/locode",
+				  "aircraft_tail_number",
+				  "previous_aircraft_tail_number",
+				  "micex_code",
+				  "nationality_of_registration",
+				  "d-u-n-s_number"]
+		}
+	};
+
+	if(req.query.search_term == null){
+		res.status(400).send("No input provided");
+	}
+	else{
+		search_query.multi_match.query = req.query.search_term;
+	}
+	
+	let es_query = {};
+	es_query.query = search_query;
+	es_query.size =50;
+	es_query.from =0;
+	
+	if (req.query.size) {
+		es_query.size = req.query.size;
+	}
+
+	if(req.query.from){
+		es_query.from = req.query.from;
+	}
+
+	let full_query = {
+		index:'sdn',
+		body: es_query,
+	};
+
+	search_ES(full_query, res);
+});
+
+app.get('/search/sdn/country', function(req, res){
+	if(req.query.country == null){
+		res.status(400).send("No country provided");
+	}
+
+	var country_to_program = new Map([["Cuba":["CUBA"]],
+		  			  ["Syria":["SYRIA", "HRIT-SY", "FSE-SY"]],
+					  ["Iraq":["IRAQ2","IRAQ"]],
+					  ["Iran":["IRAN", "IRAN-TRA", "IRAN-HR", "IFSR", "HRIT-IR", "IRGC", "ISA"]],
+					  ["Zimbabwe":["ZIMBABWE"]],
+		 			  ["Balkans":["BALKANS"]],
+					  ["Congo":["DRCONGO"]],
+					  ["Darfur":["DARFUR"]],
+					  ["North Korea":["DPRK", "DPRK2", "DPRK3", "DPRK4"]],
+		  			  ["Palestine":["NS-PLC"]],
+					  ["Belarus":["BELARUS"]],
+					  ["Lebanon":["LEBANON"]],
+					  ["Somalia":["SOMALIA"]],
+					  ["Central African Republic":["CAR"]],
+					  ["Lybia":["LIBYA2", "LIBYA3"]],
+					  ["Venezuela":["VENEZUELA"]],
+					  ["Ukraine":["UKRAINE-EO13660", "UKRAINE-E013661", "UKRAINE-EO13685"]],
+					  ["South Sudan":["SOUTH SUDAN"]],
+					  ["Yemen":["YEMEN"]]]);
+	if(!country_to_program.has(req.query.country)){
+		res.status(400).send("Country doesn't match program");
+	}
+
+	let search_query = {"constant_score":{
+				"filter":{
+					"terms":{
+						"programs":[]
+					}
+				}
+	}
+	}
+
+	search_query.constant_score.filter.terms.programs = country_to_programs.get(req.query.country);
+	
+	let es_query = {}
+	es_query.size =50;
+	es_query.from =0;
+	es_query.query = search_query;
+	if (req.query.size) {
+		es_query.size = req.query.size;
+	}
+
+	if(req.query.from){
+		es_query.from = req.query.from;
+	}
+	let full_query = {
+		             index:'sdn',
+		             body: es_query,
+		        };
+
+	search_ES(full_query, res);
+
+});
+*/
