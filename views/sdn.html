@@ -349,7 +349,7 @@
                         <ul>
                             {{ for (var i = 0; i < it.linked_profiles.length; i++) { }}
                                 <li>
-                                    <a href="" class="activate-modal real-link" data-toggle="modal" data-target="#placeholderModal">
+                                    <a href="{{= it.linked_profiles[i].linked_id }}" class="activate-modal real-link" data-toggle="modal" data-target="#placeholderModal">
                                         {{= it.linked_profiles[i].linked_name.display_name }}
                                     </a>
                                 </li>

@@ -127,6 +127,7 @@ app.get('/search/sdn', function(req, res) {
         "linked_profile_names",
         "linked_profile_ids",
         "doc_id_numbers",
+        "fixed_ref",
     ];
     const fuzziness = {"programs": "0", "doc_id_numbers": "0", "birthdate": "0"};
 
@@ -164,7 +165,7 @@ app.get('/search/sdn', function(req, res) {
     }
 
     es_query.query = search_query;
-
+    console.log(query);
     let full_query = {
         index: 'sdn',
         body: es_query,

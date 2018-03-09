@@ -60,6 +60,15 @@ $(document).ready(() => {
         search(event, window.searchRoute, query, display_query, '#search-results');
     }
 
+    if (getParameterByName('id')) {
+        let query = {
+            'fixed_ref': parseInt(getParameterByName('id')),       // should be changed to `all_fields` once Elastic supports it.
+        }
+        query = add_elastic_params(query);
+        console.log(query);
+        search(event, window.searchRoute, query, display_query, '#search-results');
+    }
+
 });
 
 let append_search_row = (id, fields) => $('.search-rows').append(searchRow({'id': id, 'fields': fields}));
