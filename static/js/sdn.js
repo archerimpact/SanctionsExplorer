@@ -3,14 +3,15 @@
 $(document).ready(() => {
     window.card = get_template('#card-template');
     window.searchRow = get_template('#search-row-template');
+    window.searchRoute = window.addr + '/search/sdn';
 
     $('.search-button').click(event => {
-        search(event, addr + '/search/sdn', collect_query_info(), display_query, '#search-results');
+        search(event, window.searchRoute, collect_query_info(), display_query, '#search-results');
     });
 
     $('.next-page').click(event => {
         window.lastQuery.from += window.lastQuery.size;
-        search(event, addr + '/search/sdn', window.lastQuery, display_query, '#search-results', true);
+        search(event, window.searchRoute, window.lastQuery, display_query, '#search-results', true);
     });
 
     var id = 0;
@@ -50,6 +51,14 @@ $(document).ready(() => {
         }
     });
 
+    if (getParameterByName('searchall')) {
+        let query = {
+            'all_display_names': getParameterByName('searchall'),       // should be changed to `all_fields` once Elastic supports it.
+        }
+        query = add_elastic_params(query);
+        console.log(query);
+        search(event, window.searchRoute, query, display_query, '#search-results');
+    }
 
 });
 
@@ -99,6 +108,10 @@ function collect_query_info() {
         }
     });
 
+    return add_elastic_params(query);
+}
+
+function add_elastic_params(query) {
     if (!$.isEmptyObject(query)) {
         query.size = 50;
         query.from = 0;
@@ -147,4 +160,15 @@ function construct_fields(fields) {
         }
     }
     return retval;
+}
+
+// From https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript/901144#901144
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
 }

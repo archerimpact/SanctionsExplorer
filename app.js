@@ -16,7 +16,7 @@ app.listen(8080, "127.0.0.1", () => {
 });
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/views/sdn.html');
+    res.sendFile(__dirname + '/views/onebar.html');
 });
 
 app.get('/sdn', (req, res) => {

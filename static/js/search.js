@@ -9,7 +9,7 @@ $(document).ready(() => {
     $('#collapse-all').click(() => $('.card .collapse').collapse('hide'));
     $('#expand-all').click(() => $('.card .collapse').collapse('show'));
 
-    window.addr = window.location.protocol + '//' + window.location.host;
+    window.addr = 'http://35.229.19.59';//window.location.protocol + '//' + window.location.host;
     window.requesting = null;
 });
 
@@ -46,7 +46,9 @@ const error_alert = '<div class="alert alert-danger search-error-alert">There wa
 
 
 function search(event, url, params, display_func, divToUse, append) {
-    event.preventDefault();
+    if (event) {
+        event.preventDefault();
+    }
 
     if (requesting != null) {
         window.requesting.abort();
