@@ -94,8 +94,8 @@ $(document).ready(() => {
             event.preventDefault();
         }
         let id = $(event.target).attr('data-id');
+        $('#placeholderModal').modal('show');
         if ($('.modal .card-body-' + id).length == 0) {
-            $('#placeholderModal').modal('show');
             let query = {
                 'fixed_ref': parseInt(id)
             };
