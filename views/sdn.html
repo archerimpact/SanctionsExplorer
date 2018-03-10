@@ -165,7 +165,7 @@
     <script id="card-template" type="text/template">
         <div class="card">
             <div class="card-header">
-                <a data-toggle="collapse" href="#card-body-{{=it.identity.id}}">
+                <a href="#" class="collapse-link" data-id="{{= it.fixed_ref }}">
                     {{=it.primary_display_name}}
                 </a>
                 <small class="card-sdn-type">
@@ -176,7 +176,7 @@
                     {{=it.programs.join(' / ')}}
                 </div>
             </div>
-            <div class="collapse hide" id="card-body-{{=it.identity.id}}">
+            <div class="collapse hide card-body-{{=it.fixed_ref }}">
                 <div class="card-body">
                     {{? it.identity.aliases.length > 0}}
                         <h5 class="card-detail-header">Aliases</h5>
@@ -349,7 +349,7 @@
                         <ul>
                             {{ for (var i = 0; i < it.linked_profiles.length; i++) { }}
                                 <li>
-                                    <a href="{{= it.linked_profiles[i].linked_id }}" class="activate-modal real-link" data-toggle="modal" data-target="#placeholderModal">
+                                    <a href="#" data-id="{{= it.linked_profiles[i].linked_id }}" class="activate-modal real-link">
                                         {{= it.linked_profiles[i].linked_name.display_name }}
                                     </a>
                                 </li>
@@ -362,12 +362,12 @@
                         <ul>
                             {{ for (var i = 0; i < it.pr_data.length; i++) { }}
                                 <li>
-                                    <a href="{{= it.pr_data[i].link }}" class="real-link">
-					{{? it.pr_data[i].date }}
-						{{= it.pr_data[i].date }}:
-					{{?}}
+                                    <a href="{{= it.pr_data[i].link }}" class="real-link" target="_blank">
+                                        {{? it.pr_data[i].date }}
+                                            {{= it.pr_data[i].date }}:
+                                        {{?}}
 
-					{{= it.pr_data[i].title }}
+                                        {{= it.pr_data[i].title }}
                                     </a>
                                 </li>
                             {{ } }}
@@ -396,21 +396,21 @@
     </script>
 
     <!-- placeholder modal -->
-    <div class="modal fade" id="placeholderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal modal-lg entity-modal fade" id="placeholderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Coming soon!</h5>
+            <h5 class="modal-title">Link Explorer</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
-            <p>We're working on display information here about the entity you just clicked on.  For now, you can simply search the name, but soon you'll be able to see all the details right here.  If you have any feedback or ideas, remember to submit on the feedback page!</p>
-            <p><a href="https://docs.google.com/forms/d/1P0-2SQ_ouXyxdTpXRoZ2zD-E4duEqmr55NJX84ElYIw/" class="real-link" target="_blank">Feedback Form</a></p>
+          <div class="modal-body" id="entity-modal-body">
+              <!-- Populated with Javascript (hopefully) -->
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-secondary" data-dismiss="modal" id="clear-modal-body">Clear All</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
           </div>
         </div>
       </div>

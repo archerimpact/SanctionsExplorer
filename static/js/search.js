@@ -45,7 +45,8 @@ let update_filters_for_print = (data) => $('.print-view-filters').text(JSON.stri
 const error_alert = '<div class="alert alert-danger search-error-alert">There was an error. Please try again.</div>';
 
 
-function search(event, url, params, display_func, divToUse, append) {
+function search(event, url, params, display_func, divToUse, mode) {
+    // mode should be 'OVERWRITE', 'APPEND', or 'MODAL'.
     if (event) {
         event.preventDefault();
     }
@@ -61,12 +62,13 @@ function search(event, url, params, display_func, divToUse, append) {
     let newReq = $.get(url, params);
     window.requesting = newReq;
 
-    update_filters_for_print(params);
-
-    change_next_page_text('Loading...');
+    if (mode == 'OVERWRITE' || mode == 'APPEND') {
+        change_next_page_text('Loading...');
+    }
 
     // disable_search_buttons(true);
-    if (!append) {
+    if (mode == 'OVERWRITE') {
+        update_filters_for_print(params);
         display_loading_bar(true);
         update_results_header(null);
         clear_search_results();
@@ -74,10 +76,13 @@ function search(event, url, params, display_func, divToUse, append) {
 
     newReq.done(data => {
         console.log(data);
-        if (!append) {
+        if (mode == 'OVERWRITE') {
             clear_search_results();
         }
-        display_func(data);
+        let num_results = display_func(data, divToUse);
+        if (mode == 'OVERWRITE' || mode == 'APPEND') {
+            update_results_header(num_results);
+        }
     })
     .fail((e) => {
         if (e.statusText != 'abort') {
@@ -85,9 +90,14 @@ function search(event, url, params, display_func, divToUse, append) {
         }
     })
     .always(() => {
-        display_loading_bar(false);
-        display_search_results(true);
-        change_next_page_text('Next Page')
+        if (mode == 'OVERWRITE') {
+            display_loading_bar(false);
+            display_search_results(true);
+        }
+
+        if (mode == 'OVERWRITE' || mode == 'APPEND') {
+            change_next_page_text('Next Page');
+        }
         // disable_search_buttons(false);
         window.requesting = null;
     });

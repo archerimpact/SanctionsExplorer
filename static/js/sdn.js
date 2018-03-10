@@ -6,12 +6,12 @@ $(document).ready(() => {
     window.searchRoute = window.addr + '/search/sdn';
 
     $('.search-button').click(event => {
-        search(event, window.searchRoute, collect_query_info(), display_query, '#search-results');
+        search(event, window.searchRoute, collect_query_info(), display_query, '#search-results', 'OVERWRITE');
     });
 
     $('.next-page').click(event => {
         window.lastQuery.from += window.lastQuery.size;
-        search(event, window.searchRoute, window.lastQuery, display_query, '#search-results', true);
+        search(event, window.searchRoute, window.lastQuery, display_query, '#search-results', 'APPEND');
     });
 
     var id = 0;
@@ -63,11 +63,51 @@ $(document).ready(() => {
     if (getParameterByName('id')) {
         let query = {
             'fixed_ref': parseInt(getParameterByName('id')),       // should be changed to `all_fields` once Elastic supports it.
-        }
+        };
         query = add_elastic_params(query);
         console.log(query);
         search(event, window.searchRoute, query, display_query, '#search-results');
     }
+
+    $(document).on('click', '.collapse-link', event => {
+        if (event) {
+            event.preventDefault();
+        }
+        let id = $(event.target).attr('data-id');
+        console.log(id);
+        var inModal = false;
+        $(event.target).parents().each((i,v) => {
+            if ($(v).hasClass('modal')) {
+                inModal = true;
+                return false;   // break
+            }
+        });
+        if (inModal) {
+            $('.modal .card-body-' + id).collapse('toggle');
+        } else {
+            $('#search-results .card-body-' + id).collapse('toggle');
+        }
+    });
+
+    $(document).on('click', '.activate-modal', event => {
+        if (event) {
+            event.preventDefault();
+        }
+        let id = $(event.target).attr('data-id');
+        if ($('.modal .card-body-' + id).length == 0) {
+            $('#placeholderModal').modal('show');
+            let query = {
+                'fixed_ref': parseInt(id)
+            };
+            query = add_elastic_params(query);
+            console.log(query);
+            search(event, window.searchRoute, query, display_query, '#entity-modal-body', 'MODAL');
+        }
+    });
+
+    $(document).on('click', '#clear-modal-body', event => {
+        $('.modal-body').empty();
+    });
 
 });
 
@@ -79,7 +119,7 @@ let get_type_select = () => $('#type-select').val();
 let get_program_select = () => $('#program-select').val();
 let get_row_select = (id) => $('#' + id + '-select').val();
 let get_row_input = (id) => $('#' + id + '-input').val().trim();
-let append_to_results = (elem) => $('#search-results').append(elem);
+let append_to_results = (elem, divToUse) => $(divToUse).append(elem);
 const empty_type_field = 'All types';
 const empty_program_field = 'All programs';
 const empty_select = 'Select field';
@@ -134,15 +174,15 @@ function add_elastic_params(query) {
 }
 
 
-function display_query(res) {
+function display_query(res, divToUse) {
     let c = document.createDocumentFragment();
     $.each(res.response, (index, value) => {
         let e = document.createElement("div");
         e.innerHTML = generate_card(value);
         c.appendChild(e);
     });
-    append_to_results(c);
-    update_results_header(res['num_results']);
+    append_to_results(c, divToUse);
+    return res['num_results']
 }
 
 

@@ -30,6 +30,14 @@ img#c4ads-logo {
     height: 4em;
 }
 
+.modal-lg {
+    margin: auto;
+}
+
+.modal-dialog {
+    max-width: 1000px;
+}
+
 
 /*********** Filter Column ***********/
 .left-col {
