@@ -25,48 +25,49 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-          <a class="navbar-brand" href="#"><img id="archer-logo" src="../static/img/archer_sdn.png"></a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
-            <span class="navbar-toggler-icon"></span>
-          </button>
+            <a class="navbar-brand" href="/"><img id="archer-logo" src="../static/img/archer_sdn.png"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-          <div class="collapse navbar-collapse" id="navbarColor02">
-            <ul class="navbar-nav mr-auto">
+            <div class="collapse navbar-collapse" id="navbarColor02">
+                <ul class="navbar-nav mr-auto">
                     <li class="nav-item">
-                <a class="nav-link" href="/sdn">SDN</a>
-              </li>
+                        <a class="nav-link" href="/sdn">SDN</a>
+                    </li>
                     <li class="nav-item active">
-                <a class="nav-link" href="/press-releases">Press Releases</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/about">About</a>
-              </li>
-            </ul>
-          </div>
+                        <a class="nav-link" href="/press-releases">Press Releases</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </nav>
 
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-4 col-md-12 page-col left-col">
-                <h3 class="col-header" id="press-release-header">Press Releases</h3>
-                <hr>
-                <form>
-                    <div class="form-row">
-                        <div class="form-group col-lg-9 col-md-12">
-                        <input type="text" class="form-control form-control-sm" id="press-release-input" placeholder="Search query">
-                      </div>
-                        <div class="col-lg-3 col-md-12">
-                            <button type="submit" class="btn btn-primary btn-sm float-right" id="press-release-button">Search</button>
-                        </div>
-                    </div><!-- /form-row -->
-                </form>
-                <p>Search all <a href="https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/OFAC-Recent-Actions.aspx">OFAC Recent Actions/Press Releases</a>.  This can also be used to find individuals or entities who were previously on the SDN list, as OFAC announces all additions, removals, or modifications.</p>
+                <div class="d-flex flex-column">
+                    <h3 class="col-header" id="press-release-header">Press Releases</h3>
+                    <hr>
+                    <form>
+                        <div class="form-row">
+                            <div class="form-group col-lg-9 col-md-12">
+                            <input type="text" class="form-control form-control-sm" id="press-release-input" placeholder="Search query">
+                          </div>
+                            <div class="col-lg-3 col-md-12">
+                                <button type="submit" class="btn btn-primary btn-sm float-right" id="press-release-button">Search</button>
+                            </div>
+                        </div><!-- /form-row -->
+                    </form>
+                    <p>Search all <a href="https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/OFAC-Recent-Actions.aspx" target="_blank">OFAC Recent Actions/Press Releases</a>.  This can also be used to find individuals or entities who were previously on the SDN list, as OFAC announces all additions, removals, or modifications.</p>
 
-                <div id="footer">
-                    <p>Made by <a href="https://archerimpact.com">Archer</a> in collaboration with <a href="https://c4ads.org">C4ADS</a>.</p>
+                    <div class="mt-auto" id="footer">
+                        <p>Made by <a href="https://archerimpact.com">Archer</a> in collaboration with <a href="https://c4ads.org">C4ADS</a>.</p>
+                    </div>
                 </div>
-
             </div><!-- /left-col -->
 
             <div class="col-lg-8 col-md-12 page-col right-col">

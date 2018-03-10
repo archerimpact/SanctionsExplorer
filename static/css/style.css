@@ -55,9 +55,13 @@ img#c4ads-logo {
 }
 
 #footer {
-    margin-top: 80%;                        /* TODO come up with a better way to stick this to the bottom. */
+
 }
 
+.flex-column {
+    flex: 1 1 auto;
+    height: 100%;
+}
 
 /*********** Results Column ***********/
 hr.no-bottom-margin {

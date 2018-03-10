@@ -24,124 +24,122 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-          <a class="navbar-brand" href="/"><img id="archer-logo" src="../static/img/archer_sdn.png"></a>
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
-            <span class="navbar-toggler-icon"></span>
-          </button>
+            <a class="navbar-brand" href="/"><img id="archer-logo" src="../static/img/archer_sdn.png"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-          <div class="collapse navbar-collapse" id="navbarColor02">
-            <ul class="navbar-nav mr-auto">
-              <li class="nav-item active">
-                <a class="nav-link" href="/sdn">SDN</a>
-              </li>
+            <div class="collapse navbar-collapse" id="navbarColor02">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/sdn">SDN</a>
+                    </li>
                     <li class="nav-item">
-                <a class="nav-link" href="/press-releases">Press Releases</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link" href="/about">About</a>
-              </li>
+                        <a class="nav-link" href="/press-releases">Press Releases</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
                 </ul>
-          </div>
+            </div>
         </div>
     </nav>
 
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-4 col-md-12 page-col left-col">
-                <h3 class="col-header">SDN Search</h3> <!--<span class="badge badge-primary badge-pill">Beta</span>--></h3>
-                <hr>
-                <form class="search-form">
-                    <div class="form-row">
-                        <div class="form-group col-md-12">
-                            <label for="name-input">Name</label>
-                            <input type="text" class="form-control form-control-sm" id="name-input">
+                <div class="d-flex flex-column">
+                    <h3 class="col-header">SDN Search</h3>
+                    <hr>
+                    <form class="search-form">
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label for="name-input">Name</label>
+                                <input type="text" class="form-control form-control-sm" id="name-input">
+                            </div>
                         </div>
-                        <!-- <div class="col-md-5">
-                            <label for="name-input">Fuzziness</label>
-                            <input type="text" class="form-control form-control-sm" disabled id="name-input" placeholder="Coming Soon">
-                        </div> -->
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-5">
-                            <select class="custom-select form-control form-control-sm" id="type-select">
-                                <option selected="">All types</option>
-                                <option value="Individual">Individual</option>
-                                <option value="Entity">Entity</option>
-                                <option value="Aircraft">Aircraft</option>
-                                <option value="Vessel">Vessel</option>
-                            </select>
+                        <div class="form-row">
+                            <div class="form-group col-md-5">
+                                <select class="custom-select form-control form-control-sm" id="type-select">
+                                    <option selected="">All types</option>
+                                    <option value="Individual">Individual</option>
+                                    <option value="Entity">Entity</option>
+                                    <option value="Aircraft">Aircraft</option>
+                                    <option value="Vessel">Vessel</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-7">
+                                <select class="custom-select form-control form-control-sm" id="program-select">
+                                    <option selected="">All programs</option>
+                                    <option value="561List">561List</option>
+                                    <option value="BALKANS">BALKANS</option>
+                                    <option value="BELARUS">BELARUS</option>
+                                    <option value="BURUNDI">BURUNDI</option>
+                                    <option value="CAR">CAR</option>
+                                    <option value="CUBA">CUBA</option>
+                                    <option value="CYBER2">CYBER2</option>
+                                    <option value="DARFUR">DARFUR</option>
+                                    <option value="DPRK">DPRK</option>
+                                    <option value="DPRK2">DPRK2</option>
+                                    <option value="DPRK3">DPRK3</option>
+                                    <option value="DPRK4">DPRK4</option>
+                                    <option value="DRCONGO">DRCONGO</option>
+                                    <option value="FSE-SY">FSE-SY</option>
+                                    <option value="FTO">FTO</option>
+                                    <option value="GLOMAG">GLOMAG</option>
+                                    <option value="HRIT-IR">HRIT-IR</option>
+                                    <option value="HRIT-SY">HRIT-SY</option>
+                                    <option value="IFSR">IFSR</option>
+                                    <option value="IRAN">IRAN</option>
+                                    <option value="IRAN-HR">IRAN-HR</option>
+                                    <option value="IRAN-TRA">IRAN-TRA</option>
+                                    <option value="IRAQ2">IRAQ2</option>
+                                    <option value="IRAQ3">IRAQ3</option>
+                                    <option value="IRGC">IRGC</option>
+                                    <option value="ISA">ISA</option>
+                                    <option value="LEBANON">LEBANON</option>
+                                    <option value="LIBYA2">LIBYA2</option>
+                                    <option value="LIBYA3">LIBYA3</option>
+                                    <option value="MAGNIT">MAGNIT</option>
+                                    <option value="NPWMD">NPWMD</option>
+                                    <option value="NSPLC">NSPLC</option>
+                                    <option value="SDGT">SDGT</option>
+                                    <option value="SDNT">SDNT</option>
+                                    <option value="SDNTK">SDNTK</option>
+                                    <option value="SDT">SDT</option>
+                                    <option value="SOMALIA">SOMALIA</option>
+                                    <option value="SOUTH SUDAN">SOUTH SUDAN</option>
+                                    <option value="SYRIA">SYRIA</option>
+                                    <option value="TCO">TCO</option>
+                                    <option value="UKRAINE-E013660">UKRAINE-E013660</option>
+                                    <option value="UKRAINE-E013661">UKRAINE-E013661</option>
+                                    <option value="UKRAINE-E013662">UKRAINE-E013662</option>
+                                    <option value="UKRAINE-E013685">UKRAINE-E013685</option>
+                                    <option value="VENEZUELA">VENEZUELA</option>
+                                    <option value="YEMEN">YEMEN</option>
+                                    <option value="ZIMBABWE">ZIMBABWE</option>
+                                </select>
+                            </div>
+                        </div><!-- /form-row -->
+
+                        <h5 id="more-filters-header">Additional Filters</h5>
+
+                        <div class="search-rows">
+                            <!-- Populated by Javascript -->
                         </div>
-                        <div class="form-group col-md-7">
-                            <select class="custom-select form-control form-control-sm" id="program-select">
-                                <option selected="">All programs</option>
-                                <option value="561List">561List</option>
-                                <option value="BALKANS">BALKANS</option>
-                                <option value="BELARUS">BELARUS</option>
-                                <option value="BURUNDI">BURUNDI</option>
-                                <option value="CAR">CAR</option>
-                                <option value="CUBA">CUBA</option>
-                                <option value="CYBER2">CYBER2</option>
-                                <option value="DARFUR">DARFUR</option>
-                                <option value="DPRK">DPRK</option>
-                                <option value="DPRK2">DPRK2</option>
-                                <option value="DPRK3">DPRK3</option>
-                                <option value="DPRK4">DPRK4</option>
-                                <option value="DRCONGO">DRCONGO</option>
-                                <option value="FSE-SY">FSE-SY</option>
-                                <option value="FTO">FTO</option>
-                                <option value="GLOMAG">GLOMAG</option>
-                                <option value="HRIT-IR">HRIT-IR</option>
-                                <option value="HRIT-SY">HRIT-SY</option>
-                                <option value="IFSR">IFSR</option>
-                                <option value="IRAN">IRAN</option>
-                                <option value="IRAN-HR">IRAN-HR</option>
-                                <option value="IRAN-TRA">IRAN-TRA</option>
-                                <option value="IRAQ2">IRAQ2</option>
-                                <option value="IRAQ3">IRAQ3</option>
-                                <option value="IRGC">IRGC</option>
-                                <option value="ISA">ISA</option>
-                                <option value="LEBANON">LEBANON</option>
-                                <option value="LIBYA2">LIBYA2</option>
-                                <option value="LIBYA3">LIBYA3</option>
-                                <option value="MAGNIT">MAGNIT</option>
-                                <option value="NPWMD">NPWMD</option>
-                                <option value="NSPLC">NSPLC</option>
-                                <option value="SDGT">SDGT</option>
-                                <option value="SDNT">SDNT</option>
-                                <option value="SDNTK">SDNTK</option>
-                                <option value="SDT">SDT</option>
-                                <option value="SOMALIA">SOMALIA</option>
-                                <option value="SOUTH SUDAN">SOUTH SUDAN</option>
-                                <option value="SYRIA">SYRIA</option>
-                                <option value="TCO">TCO</option>
-                                <option value="UKRAINE-E013660">UKRAINE-E013660</option>
-                                <option value="UKRAINE-E013661">UKRAINE-E013661</option>
-                                <option value="UKRAINE-E013662">UKRAINE-E013662</option>
-                                <option value="UKRAINE-E013685">UKRAINE-E013685</option>
-                                <option value="VENEZUELA">VENEZUELA</option>
-                                <option value="YEMEN">YEMEN</option>
-                                <option value="ZIMBABWE">ZIMBABWE</option>
-                            </select>
+                        <div class="search-row-error-alert">
+                                <!-- Populated by Javascript if error -->
                         </div>
-                    </div><!-- /form-row -->
+                        <div class="form-group search-button-group">
+                            <button type="submit" class="btn btn-primary btn-sm search-button">Search</button>
+                        </div>
+                    </form>
 
-                    <h5 id="more-filters-header">Additional Filters</h5>
-
-                    <div class="search-rows">
-                        <!-- Populated by Javascript -->
+                    <div class="mt-auto" id="footer">
+                        <p>Made by <a href="https://archerimpact.com">Archer</a> in collaboration with <a href="https://c4ads.org">C4ADS</a>.</p>
                     </div>
-                    <div class="search-row-error-alert">
-                            <!-- Populated by Javascript if error -->
-                    </div>
-                    <div class="form-group search-button-group">
-                        <button type="submit" class="btn btn-primary btn-sm search-button">Search</button>
-                    </div>
-                </form>
-
-                <div id="footer">
-                    <p>Made by <a href="https://archerimpact.com">Archer</a> in collaboration with <a href="https://c4ads.org">C4ADS</a>.</p>
-                </div>
-            </div><!-- /left-col -->
+                </div><!-- /left-col -->
+            </div>
 
             <div class="col-lg-8 col-md-12 page-col right-col">
                 <h3 class="col-header text-center" id="results-header">Results</h3>
