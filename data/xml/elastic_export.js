@@ -123,17 +123,42 @@ for (var i = 0; i < data.length; i++) {
     requests.push(data[i]);
 }
 
-let errors = 0
-client.bulk({
-    body: requests
-}, (err, response) => {
-    if (err) {
-        errors += 0;
-        console.log(err);
+async function delete_sdn_index() {
+    try {
+        console.log('Deleting SDN index...');
+        client.indices.delete({
+            index: 'sdn',
+        });
     }
-});
-
-if (errors > 0) {
-    // restart and try again. Log and notify.
-    console.log(errors + ' errors occured during the export.');
+    catch (error) {
+        console.log('Error deleting SDN index: ' + error);
+    }
 }
+
+async function bulk_add(reqs) {
+    let errors = 0
+
+    try {
+        const result = await client.bulk({
+            body: reqs
+        });
+
+        result.items.forEach(i => {
+            if (i.index.error) {
+                console.log(JSON.stringify(i));
+            }
+        })
+
+        return result;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+async function reload_sdn_index(reqs) {
+    await delete_sdn_index();
+    await bulk_add(reqs);
+}
+
+reload_sdn_index(requests);

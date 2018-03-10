@@ -44,9 +44,12 @@ class Date:
 			self.month = date_xml[1].text
 			self.day = date_xml[2].text
 		else:
-			self.year = str(y)
+			self.year = str(y) if y is not None else None
 			self.month = None
 			self.day = None
+
+        if (not self.year) or (self.year and self.month and not self.day):
+            print('ERROR: Invalid date found.')
 
 
 	def __str__(self):
@@ -54,15 +57,15 @@ class Date:
 		if self.year is not None:
 			ret += (self.year)
 
-			if self.month is not None:
-				ret += ('-' + self.month)
-
-				if self.day is not None:
-					ret += ('-' + self.day)
-				else:
-					print('ERROR: There was a year and month without a day.')
+		if self.month and len(self.month) == 1:
+			ret += ('-0' + self.month)
 		else:
-			print('ERROR: There was no year.')
+			ret += ('-' + self.month)
+
+		if self.day and len(self.day) == 1:
+			ret += ('-0' + self.day)
+		else:
+			ret += ('-' + self.day)
 
 		return ret
 
