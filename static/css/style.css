@@ -10,8 +10,8 @@ html, body {
     overflow-y: scroll;
     height: 90%;        /* should be overwritten by Javascript */
     padding-top: 3em;
-    padding-right: 2em;
-    padding-left: 2em;
+    padding-right: 1.5em;
+    padding-left: 1.5em;
 }
 
 nav.navbar {
@@ -63,6 +63,16 @@ img#c4ads-logo {
     height: 100%;
 }
 
+.col-header {
+    margin-bottom: 0;
+}
+
+.flex-column > hr {
+    /* fix flex not rendering hr properly */
+    margin-left: 0;
+    margin-right: 0;
+}
+
 /*********** Results Column ***********/
 hr.no-bottom-margin {
     margin-bottom: 0;
@@ -106,6 +116,10 @@ hr.no-bottom-margin {
 
 .card-body {
     padding-top: 0;
+    padding-bottom: 0;
+    margin-left: 1.25rem; /* match bootstrap */
+    margin-bottom: 2em;
+    border-left: 1px solid #e5e5e5;
 }
 
 small.card-sdn-type {
@@ -122,6 +136,7 @@ h5.card-detail-header {
 
 .real-link {
     text-decoration: underline;
+    color: inherit;
 }
 
 .real-link:focus {
@@ -129,7 +144,11 @@ h5.card-detail-header {
 }
 
 .real-link:hover {
-    opacity: 0.5;
+    opacity: 0.9;
+}
+
+.link-in-explorer {
+    color: #6a86b5;
 }
 
 .table-sm td, .table-sm th {

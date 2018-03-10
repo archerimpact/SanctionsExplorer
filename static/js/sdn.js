@@ -120,7 +120,11 @@ $(document).ready(() => {
 let temporarily_change_text = (selector, text) => {
     let original = $(selector).text();
     $(selector).text(text);
-    setTimeout(() => $(selector).text(original), 2000);
+    $(selector).addClass('link-in-explorer');
+    setTimeout(() => {
+        $(selector).text(original);
+        $(selector).removeClass('link-in-explorer');
+    }, 2000);
 };
 let append_search_row = (id, fields) => $('.search-rows').append(searchRow({'id': id, 'fields': fields}));
 let generate_card = (data) => window.card(data);
