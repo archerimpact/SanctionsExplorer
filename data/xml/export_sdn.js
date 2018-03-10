@@ -2,34 +2,34 @@ const fs = require('fs');
 const path = require('path');
 const exporter = require(path.join(__dirname, 'elastic_export.js'));
 
-var entries = JSON.parse(fs.readFileSync(path.join(__dirname, 'latest.json'), 'utf8'));
+const entries = JSON.parse(fs.readFileSync(path.join(__dirname, 'latest.json'), 'utf8'));
 
-let transform = data => {
-    // Augment the data with these fields
-    data.identity_id = data.identity.id
-    data.primary_display_name = data.identity.primary.display_name;
-    data.programs = [];
-    data.all_display_names = [];
-    data.doc_id_numbers = [];
-    data.linked_profile_ids = [];
-    data.linked_profile_names = [];
+const transform = entry => {
+    // Augment the entry with these fields
+    entry.identity_id = entry.identity.id
+    entry.primary_display_name = entry.identity.primary.display_name;
+    entry.programs = [];
+    entry.all_display_names = [];
+    entry.doc_id_numbers = [];
+    entry.linked_profile_ids = [];
+    entry.linked_profile_names = [];
 
     programs = new Set();
-    data.sanctions_entries.forEach(entry => {
+    entry.sanctions_entries.forEach(entry => {
         entry.program.forEach(program => {
             programs.add(program);
         });
     });
-    data.programs = Array.from(programs);
+    entry.programs = Array.from(programs);
 
-    data.linked_profiles.forEach(p => {
-        data.linked_profile_ids.push(p.linked_id);
-        data.linked_profile_names.push(p.linked_name.display_name);
+    entry.linked_profiles.forEach(p => {
+        entry.linked_profile_ids.push(p.linked_id);
+        entry.linked_profile_names.push(p.linked_name.display_name);
     });
 
-    data.all_display_names.push(data.primary_display_name);
-    data.identity.aliases.forEach(alias => {
-        data.all_display_names.push(alias.display_name);
+    entry.all_display_names.push(entry.primary_display_name);
+    entry.identity.aliases.forEach(alias => {
+        entry.all_display_names.push(alias.display_name);
         if (alias.date_period !== null) {
             console.log('ERROR: OFAC has started associating date periods with aliases.  These will not be rendered.');
         }
@@ -44,12 +44,12 @@ let transform = data => {
         }
     });
 
-    Object.keys(data.features).forEach(f_key => {
+    Object.keys(entry.features).forEach(f_key => {
         let formatted_key = f_key.split(' ').map(w => w.toLowerCase()).join('_');    // e.g. 'Citizenship Country' -> 'citizenship_country'
 
         let combined_info = [];
 
-        data.features[f_key].forEach(entry => {
+        entry.features[f_key].forEach(entry => {
             if (entry.details) {
                 combined_info.push(entry.details);
             }
@@ -63,12 +63,12 @@ let transform = data => {
             }
         });
 
-        data[formatted_key] = combined_info;
+        entry[formatted_key] = combined_info;
     });
 
-    data.documents.forEach(doc => {
+    entry.documents.forEach(doc => {
         // for searchability
-        data.doc_id_numbers.push(doc.id_number);
+        entry.doc_id_numbers.push(doc.id_number);
          // for website display
         if (doc.validity != 'Valid' && doc.validity != 'Fraudulent') {
             console.log('WARNING: An invalid document status appeared (normally Valid or Fraudulent): ' + doc.validity);
@@ -102,9 +102,9 @@ let transform = data => {
             headers.push(date);
         });
 
-        data.document_headers = headers
+        entry.document_headers = headers
     });
-    return data;
+    return entry;
 }
 
 exporter.reload_index(entries, transform, 'sdn', 'entries');

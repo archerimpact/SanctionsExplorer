@@ -57,6 +57,8 @@ $(document).ready(() => {
         }
         query = add_elastic_params(query);
         console.log(query);
+
+        history.pushState(null, null, '/sdn');
         search(event, window.searchRoute, query, display_query, '#search-results', 'OVERWRITE');
     }
 
@@ -66,6 +68,8 @@ $(document).ready(() => {
         };
         query = add_elastic_params(query);
         console.log(query);
+
+        history.pushState(null, null, '/sdn');
         search(event, window.searchRoute, query, display_query, '#search-results', 'OVERWRITE');
     }
 
