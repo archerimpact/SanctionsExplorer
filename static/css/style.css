@@ -58,7 +58,7 @@ img#c4ads-logo {
 
 }
 
-.flex-column {
+.left-flex-col {
     flex: 1 1 auto;
     height: 100%;
 }
