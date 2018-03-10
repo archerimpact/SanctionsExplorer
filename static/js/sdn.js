@@ -57,7 +57,7 @@ $(document).ready(() => {
         }
         query = add_elastic_params(query);
         console.log(query);
-        search(event, window.searchRoute, query, display_query, '#search-results');
+        search(event, window.searchRoute, query, display_query, '#search-results', 'OVERWRITE');
     }
 
     if (getParameterByName('id')) {
@@ -66,7 +66,7 @@ $(document).ready(() => {
         };
         query = add_elastic_params(query);
         console.log(query);
-        search(event, window.searchRoute, query, display_query, '#search-results');
+        search(event, window.searchRoute, query, display_query, '#search-results', 'OVERWRITE');
     }
 
     $(document).on('click', '.collapse-link', event => {

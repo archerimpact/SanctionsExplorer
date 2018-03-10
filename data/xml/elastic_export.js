@@ -6,7 +6,7 @@ const client = new es.Client({
     // log: 'trace'
 });
 
-var data = JSON.parse(fs.readFileSync(path.join(__dirname, 'v9.json'), 'utf8'));
+var data = JSON.parse(fs.readFileSync(path.join(__dirname, 'latest.json'), 'utf8'));
 
 let requests = [];
 
