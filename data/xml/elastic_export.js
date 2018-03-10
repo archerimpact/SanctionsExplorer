@@ -5,6 +5,8 @@ const client = new es.Client({
     host: 'localhost:9200',
     // log: 'trace'
 });
+const INDEX_NAME = 'sdn';
+const TYPE_NAME = 'entry';
 
 var data = JSON.parse(fs.readFileSync(path.join(__dirname, 'latest.json'), 'utf8'));
 
@@ -114,8 +116,8 @@ for (var i = 0; i < data.length; i++) {
 
     let es_index_statement = {
         index: {
-            _index: 'sdn',
-            _type: 'entry',
+            _index: INDEX_NAME,
+            _type: TYPE_NAME,
             _id: i
         }
     };
@@ -123,11 +125,11 @@ for (var i = 0; i < data.length; i++) {
     requests.push(data[i]);
 }
 
-async function delete_sdn_index() {
+async function delete_index(name) {
     try {
-        console.log('Deleting SDN index...');
+        console.log('Deleting ' + name + 'index...');
         client.indices.delete({
-            index: 'sdn',
+            index: name,
         });
     }
     catch (error) {
@@ -139,6 +141,7 @@ async function bulk_add(reqs) {
     let errors = 0
 
     try {
+        console.log('Bulk loading...')
         const result = await client.bulk({
             body: reqs
         });
@@ -156,9 +159,17 @@ async function bulk_add(reqs) {
     }
 }
 
-async function reload_sdn_index(reqs) {
-    await delete_sdn_index();
+async function create_index(name) {
+    console.log('Creating ' + name + ' index...');
+    await client.indices.create({
+        index: name
+    });
+}
+
+async function reload_index(name, reqs) {
+    await delete_index(INDEX_NAME);
+    await create_index(INDEX_NAME);
     await bulk_add(reqs);
 }
 
-reload_sdn_index(requests);
+reload_index(INDEX_NAME, requests);

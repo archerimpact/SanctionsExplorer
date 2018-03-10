@@ -48,23 +48,23 @@ class Date:
 			self.month = None
 			self.day = None
 
-        if (not self.year) or (self.year and self.month and not self.day):
-            print('ERROR: Invalid date found.')
+		if (not self.year) or (self.year and self.month and not self.day):
+			print('ERROR: Invalid date found.')
 
 
 	def __str__(self):
-		ret = ""
+		ret = " "
 		if self.year is not None:
 			ret += (self.year)
 
 		if self.month and len(self.month) == 1:
 			ret += ('-0' + self.month)
-		else:
+		elif self.month:
 			ret += ('-' + self.month)
 
 		if self.day and len(self.day) == 1:
 			ret += ('-0' + self.day)
-		else:
+		elif self.day:
 			ret += ('-' + self.day)
 
 		return ret
