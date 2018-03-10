@@ -96,12 +96,18 @@ $(document).ready(() => {
         let id = $(event.target).attr('data-id');
         $('#placeholderModal').modal('show');
         if ($('.modal .card-body-' + id).length == 0) {
+            if (!$(event.target).text().includes('Link Explorer')) {
+                temporarily_change_text(event.target, 'Added to Link Explorer!');
+            }
             let query = {
                 'fixed_ref': parseInt(id)
             };
             query = add_elastic_params(query);
             console.log(query);
             search(event, window.searchRoute, query, display_query, '#entity-modal-body', 'MODAL');
+        }
+        else if (!$(event.target).text().includes('Link Explorer')) {
+            temporarily_change_text(event.target, 'Already in Link Explorer!');
         }
     });
 
@@ -111,6 +117,11 @@ $(document).ready(() => {
 
 });
 
+let temporarily_change_text = (selector, text) => {
+    let original = $(selector).text();
+    $(selector).text(text);
+    setTimeout(() => $(selector).text(original), 2000);
+};
 let append_search_row = (id, fields) => $('.search-rows').append(searchRow({'id': id, 'fields': fields}));
 let generate_card = (data) => window.card(data);
 let get_search_row_ids = () => $('.search-row').map((index, elem) => elem.id);
