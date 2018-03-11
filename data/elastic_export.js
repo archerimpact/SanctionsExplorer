@@ -16,7 +16,7 @@ async function delete_index(name) {
 
 function construct_body(operations, transform, index_name, index_type) {
     let body = [];
-    for (var i = 0; i < operations.length; i++) {
+    for (let i = 0; i < operations.length; i++) {
         let es_index_statement = {
             index: {
                 _index: index_name,
