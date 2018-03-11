@@ -107,4 +107,4 @@ const transform = entry => {
     return entry;
 }
 
-exporter.reload_index(entries, transform, 'sdn', 'entries');
+exporter.reload_index(entries, transform, 'sdn', 'entry');

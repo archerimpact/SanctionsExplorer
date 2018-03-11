@@ -5,6 +5,8 @@ data/**/*.xlsx
 data/**/*.txt
 data/update_files/*
 
+.DS_Store
+
 ######### Node .gitignore: #########
 # Logs
 logs

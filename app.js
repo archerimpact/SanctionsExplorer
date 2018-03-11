@@ -3,7 +3,7 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
-const es = require("elasticsearch");
+const es = require('elasticsearch');
 const client = new es.Client({
     host:'localhost:9200'
 });
@@ -11,8 +11,8 @@ const client = new es.Client({
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
 
-app.listen(8080, "127.0.0.1", () => {
-    console.log("Server has started");
+app.listen(8080, '127.0.0.1', () => {
+    console.log('Server has started');
 });
 
 app.get('/', (req, res) => {
@@ -34,9 +34,7 @@ app.get('/press-releases', (req, res) => {
 
 app.get('/search/press-releases', function(req, res) {
     let text = req.query.query;
-    console.log(JSON.stringify(req.query));
-
-    let es_query = {size: 50, from: 0};
+    let es_query = { size: 50, from: 0 };
 
     if (req.query.size) {
         es_query.size = req.query.size;
@@ -65,88 +63,90 @@ app.get('/search/press-releases', function(req, res) {
 });
 
 
-function search_ES(query, res) {
+async function search_ES(query, res) {
     console.log(JSON.stringify(query));
-    client.search(query, (error, results) => {
-        if (error) {
-            console.log(error);
-            res.status(400).end();
+    try {
+        const results = await client.search(query);
+        let response = [];
+        for (let i in results.hits.hits) {
+            response.push(results.hits.hits[i]['_source']);
         }
-        else {
-            let response = [];
-            for (var i in results.hits.hits) {
-                response.push(results.hits.hits[i]['_source']);
-            }
-            res.json({
-                'response': response,
-                'num_results': results.hits.total
-            });
-        }
-    });
-
+        res.json({
+            'response': response,
+            'num_results': results.hits.total
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(400).end();
+    }
 }
 
 
 app.get('/search/sdn', function(req, res) {
     const keywords =  [
-        "title",
-        "birthdate",
-        "place_of_birth",
-        "location",
-        "website",
-        "additional_sanctions_information_-_",
-        "vessel_call_sign",
-        "vessel_flag",
-        "vessel_owner",
-        "vessel_tonnage",
-        "vessel_gross_tonnage",
-        "vessel_type",
-        "nationality_country",
-        "citizenship_country",
-        "gender",
-        "website",
-        "email_address",
-        "swift/bic",
-        "ifca_determination_-_",
-        "aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n",
-        "aircraft_manufacturer's_serial_number_(msn)",
-        "aircraft_manufacture_date",
-        "aircraft_model",
-        "aircraft_operator",
-        "bik_(ru)",
-        "un/locode",
-        "aircraft_tail_number",
-        "previous_aircraft_tail_number",
-        "micex_code",
-        "nationality_of_registration",
-        "d-u-n-s_number",
-        "identity_id",
-        "primary_display_name",
-        "all_display_names",
-        "programs",
-        "linked_profile_names",
-        "linked_profile_ids",
-        "doc_id_numbers",
-        "fixed_ref",
+        'title',
+        'birthdate',
+        'place_of_birth',
+        'location',
+        'website',
+        'additional_sanctions_information_-_',
+        'vessel_call_sign',
+        'vessel_flag',
+        'vessel_owner',
+        'vessel_tonnage',
+        'vessel_gross_tonnage',
+        'vessel_type',
+        'nationality_country',
+        'citizenship_country',
+        'gender',
+        'website',
+        'email_address',
+        'swift/bic',
+        'ifca_determination_-_',
+        'aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n',
+        'aircraft_manufacturer\'s_serial_number_(msn)',
+        'aircraft_manufacture_date',
+        'aircraft_model',
+        'aircraft_operator',
+        'bik_(ru)',
+        'un/locode',
+        'aircraft_tail_number',
+        'previous_aircraft_tail_number',
+        'micex_code',
+        'nationality_of_registration',
+        'd-u-n-s_number',
+        'identity_id',
+        'primary_display_name',
+        'all_display_names',
+        'programs',
+        'linked_profile_names',
+        'linked_profile_ids',
+        'doc_id_numbers',
+        'fixed_ref',
+        'party_sub_type',
     ];
-    const fuzziness = {"programs": "0", "doc_id_numbers": "0", "birthdate": "0", "fixed_ref": "NONE"};
+    const fuzziness = {
+        'programs': '0',
+        'doc_id_numbers': '0',
+        'birthdate': '0',
+        'fixed_ref': 'NONE',
+        'party_sub_type': '0'
+    };
 
-    var es_query = {size: 50, from: 0};
-    var search_query = {bool:{must:[]}};
-    console.log(req.query)
+    let es_query = { size: 50, from: 0 };
+    let search_query = { bool: { must:[] } };
+
     let create_match_phrase = (field, query_str) => {
-        let json = { 'match': {} };
-        var fuzz_setting = "AUTO";
+        let json = { match: {} };
+        let fuzz_setting = 'AUTO';
         if (fuzziness[field] != null) {
-            console.log('custom fuzz of ' + fuzziness[field]);
             fuzz_setting = fuzziness[field];
         }
         json.match[field] = {
             'query': query_str,
-            //'fuzziness': fuzz_setting,
             'operator': 'and',
         };
-	if (fuzziness[field] != 'NONE') {
+        if (fuzziness[field] != 'NONE') {
             json.match[field].fuzziness = fuzz_setting;
         }
         return json;
@@ -160,7 +160,7 @@ app.get('/search/sdn', function(req, res) {
         es_query.from = req.query.from;
     }
 
-   for (var i = 0; i < keywords.length; i++) {
+   for (let i = 0; i < keywords.length; i++) {
         if (req.query[keywords[i]] != null) {
             let match_phrase = create_match_phrase(keywords[i], req.query[keywords[i]])
             search_query.bool.must.push(match_phrase)
@@ -216,12 +216,12 @@ app.get('/search/sdn/all_fields', function(req, res){
 	else{
 		search_query.multi_match.query = req.query.search_term;
 	}
-	
+
 	let es_query = {};
 	es_query.query = search_query;
 	es_query.size =50;
 	es_query.from =0;
-	
+
 	if (req.query.size) {
 		es_query.size = req.query.size;
 	}
@@ -244,15 +244,15 @@ app.get('/search/sdn/country', function(req, res){
 	}
 
 	var country_to_program = new Map([["Cuba":["CUBA"]],
-		  			  ["Syria":["SYRIA", "HRIT-SY", "FSE-SY"]],
+						["Syria":["SYRIA", "HRIT-SY", "FSE-SY"]],
 					  ["Iraq":["IRAQ2","IRAQ"]],
 					  ["Iran":["IRAN", "IRAN-TRA", "IRAN-HR", "IFSR", "HRIT-IR", "IRGC", "ISA"]],
 					  ["Zimbabwe":["ZIMBABWE"]],
-		 			  ["Balkans":["BALKANS"]],
+					   ["Balkans":["BALKANS"]],
 					  ["Congo":["DRCONGO"]],
 					  ["Darfur":["DARFUR"]],
 					  ["North Korea":["DPRK", "DPRK2", "DPRK3", "DPRK4"]],
-		  			  ["Palestine":["NS-PLC"]],
+						["Palestine":["NS-PLC"]],
 					  ["Belarus":["BELARUS"]],
 					  ["Lebanon":["LEBANON"]],
 					  ["Somalia":["SOMALIA"]],
@@ -276,7 +276,7 @@ app.get('/search/sdn/country', function(req, res){
 	}
 
 	search_query.constant_score.filter.terms.programs = country_to_programs.get(req.query.country);
-	
+
 	let es_query = {}
 	es_query.size =50;
 	es_query.from =0;
@@ -289,9 +289,9 @@ app.get('/search/sdn/country', function(req, res){
 		es_query.from = req.query.from;
 	}
 	let full_query = {
-		             index:'sdn',
-		             body: es_query,
-		        };
+					 index:'sdn',
+					 body: es_query,
+				};
 
 	search_ES(full_query, res);
 
