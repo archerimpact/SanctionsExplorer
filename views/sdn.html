@@ -48,8 +48,12 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-4 col-md-12 page-col left-col">
+                <div class="d-flex flex-row">
+                    <h3 class="col-header mr-auto">SDN Search</h3>
+                    <img src="../img/open-iconic-svg/info.svg" class="col-icon" id="search-info-icon">
+                    <!--<img src="../img/open-iconic-svg/wrench.svg" class="col-icon" id="search-settings-icon">-->
+                </div>
                 <div class="d-flex flex-column left-flex-col">
-                    <h3 class="col-header">SDN Search</h3>
                     <hr>
                     <form class="search-form">
                         <div class="form-row">
@@ -142,8 +146,13 @@
             </div>
 
             <div class="col-lg-8 col-md-12 page-col right-col">
-                <h3 class="col-header text-center" id="results-header">Results</h3>
-                <!-- <a><small class="float-right" id="collapse-all"> Collapse</small></a> <a><small class="float-right" id="expand-all"> Expand</small></a> -->
+                <div class="d-flex flex-row">
+                    <h3 class="col-header text-left mr-auto" id="results-header">Results</h3>
+                    <img src="../img/open-iconic-svg/print.svg" class="col-icon" id="results-print-icon">
+                    <!--<img src="../img/open-iconic-svg/share.svg" class="col-icon" id="results-share-icon">-->
+                    <img src="../img/open-iconic-svg/plus.svg" class="col-icon" id="results-plus-icon">
+                    <img src="../img/open-iconic-svg/minus.svg" class="col-icon" id="results-minus-icon">
+                </div>
                 <p class="print-view-filters text-center d-none d-print-block">
                     <!-- Populated by Javascript; only shown for printing -->
                 </p>
@@ -394,13 +403,13 @@
     </script>
 
     <!-- placeholder modal -->
-    <div class="modal modal-lg entity-modal fade" id="placeholderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal modal-lg entity-modal fade" id="links-modal" tabindex="-1">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
             <h5 class="modal-title">Link Explorer</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
             </button>
           </div>
           <div class="modal-body" id="entity-modal-body">
@@ -408,6 +417,25 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-primary" data-dismiss="modal" id="clear-modal-body">Clear All</button>
+            <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal fade" id="search-info-modal" tabindex="-1">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Search Information</h5>
+            <button type="button" class="close" data-dismiss="modal">
+              <span>&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="entity-modal-body">
+              <p>Work in progress: This popup will eventually contain information on how best to fully utilize the new search functionality that we offer.</p>
+          </div>
+          <div class="modal-footer">
             <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
           </div>
         </div>

@@ -34,10 +34,15 @@ img#c4ads-logo {
     margin: auto;
 }
 
-.modal-dialog {
+.modal-lg .modal-dialog {
     max-width: 1000px;
 }
 
+.col-icon {
+    width: 1em;
+    margin-left: 25px;
+    cursor: hand;
+}
 
 /*********** Filter Column ***********/
 .left-col {
@@ -202,6 +207,10 @@ td.doc-info {
     }
 
     .next-page {            /* TODO figure out why this isn't hiding */
+        display: none;
+    }
+
+    .col-icon {
         display: none;
     }
 }
