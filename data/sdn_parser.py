@@ -1185,9 +1185,9 @@ def write_json(filename):
 		f.write(data)
 		f.close()
 
-def parse_to_file(filename):
+def parse_to_file(infile, outfile):
 	## First parse the file and get root
-	tree = etree.parse("update_files/sdn_advanced.xml")
+	tree = etree.parse(infile)
 	root = tree.getroot()
 
 	date_of_issue = Date(root[0])
@@ -1202,7 +1202,7 @@ def parse_to_file(filename):
 	add_profile_links(root[5])
 	print("DEBUG: Parsing sanctions entries...")
 	add_sanctions_entries(root[6])
-	write_json(filename)
+	write_json(outfile)
 
 if __name__ == '__main__':
 	parse_to_file('latest.json')
