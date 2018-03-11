@@ -85,6 +85,7 @@ async function search_ES(query, res) {
 app.get('/search/sdn', function(req, res) {
     const keywords =  [
         'title',
+	'countries',
         'birthdate',
         'place_of_birth',
         'location',
