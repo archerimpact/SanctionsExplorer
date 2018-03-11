@@ -80,4 +80,5 @@ async function reload_index(operations, transform, index_name, index_type) {
 
 module.exports = {
     reload_index: reload_index,
+    bulk_add: bulk_add,
 }

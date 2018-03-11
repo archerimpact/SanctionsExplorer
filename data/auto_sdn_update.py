@@ -6,15 +6,18 @@ from subprocess import run
 from os import path
 from sys import argv
 
-RSS_FEED_URL = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Documents/ofac.xml'
-SDN_XML_URL  = 'https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml'
-DIR          = path.dirname(path.realpath(__file__))
-NEW_RSS_FILE = DIR + '/update_files/rss_new.txt'
-OLD_RSS_FILE = DIR + '/update_files/rss_old.txt'
-SDN_XML_FILE = DIR + '/update_files/sdn_advanced.xml'
-SDN_JSON     = DIR + '/update_files/latest.json'
-EXPORT_SDN   = DIR + '/export_sdn.js'
-EXPORT_PRS   = DIR + '/export_prs.js'
+RSS_FEED_URL    = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Documents/ofac.xml'
+SDN_URL         = 'https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml'
+NONSDN_URL      = 'https://www.treasury.gov/ofac/downloads/sanctions/1.0/cons_advanced.xml'
+DIR             = path.dirname(path.realpath(__file__))
+NEW_RSS_FILE    = DIR + '/update_files/rss_new.txt'
+OLD_RSS_FILE    = DIR + '/update_files/rss_old.txt'
+SDN_XML_FILE    = DIR + '/update_files/sdn_advanced.xml'
+NONSDN_XML_FILE = DIR + '/update_files/non_sdn_advanced.xml'
+SDN_JSON        = DIR + '/update_files/sdn.json'
+NONSDN_JSON     = DIR + '/update_files/non_sdn.json'
+EXPORT_SDN      = DIR + '/export_sdn.js'
+EXPORT_PRS      = DIR + '/export_prs.js'
 
 def error(msg):
 	# send Twilio text
@@ -35,6 +38,15 @@ def run_nodejs(filename, task):
 	except Exception as e:
 		error('ERROR: Failed to ' + task + ': ' + str(e))
 
+def download_and_parse(url, xml, json):
+	try:
+		print('Downloading ' + url + '...')
+		urlretrieve(url, xml)
+		print('Parsing ' + xml + '...')
+		parse_to_file(xml, json)
+	except Exception as e:
+		error('Error while parsing: ' + str(e))
+
 
 #### SDN XML ####
 feed = parse(RSS_FEED_URL)
@@ -50,20 +62,9 @@ except:
 if unchanged and not force_update:
 	quit()
 
-print('Downloading new sanctions data...')
-try:
-	urlretrieve(SDN_XML_URL, SDN_XML_FILE)
-	print('Downloaded!')
-	print('Parsing...')
-	parse_to_file(SDN_XML_FILE, SDN_JSON)
-	print('Parsed!')
-except Exception as e:
-	error('Error while parsing: ' + str(e))
-
-# By now, we have the new SDN data in JSON format.
-
-run_nodejs(EXPORT_SDN, 'export SDN to Elastic')
-
+download_and_parse(SDN_URL,    SDN_XML_FILE,    SDN_JSON)
+download_and_parse(NONSDN_URL, NONSDN_XML_FILE, NONSDN_JSON)
+run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
 
 #### Press Releases ####
 # 3. Scrape latest press releases, placing into entries.json or some other intermediate file

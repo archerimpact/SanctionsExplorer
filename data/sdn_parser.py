@@ -1205,4 +1205,5 @@ def parse_to_file(infile, outfile):
 	write_json(outfile)
 
 if __name__ == '__main__':
-	parse_to_file('latest.json')
+	#parse_to_file('latest.json')
+	print('Call this program by using the auto-updating script.')

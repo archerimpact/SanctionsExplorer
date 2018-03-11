@@ -1,8 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-// const exporter = require(path.join(__dirname, 'elastic_export.js'));
+const exporter = require(path.join(__dirname, 'elastic_export.js'));
 
-const entries = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/latest.json'), 'utf8'));
+const sdn    = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/sdn.json'), 'utf8'));
+const nonsdn = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/non_sdn.json'), 'utf8'));
 
 const transform = entry => {
     // Augment the entry with these fields
@@ -22,8 +23,8 @@ const transform = entry => {
     entry.sanctions_entries.forEach(entry => {
         entry.program.forEach(program => {
             programs.add(program);
-            var program_country = program_to_country(program);
-            if(program_country != null){
+            let program_country = program_to_country(program);
+            if (program_country != null) {
                 countries.add(program_country);
             }
         });
@@ -69,8 +70,8 @@ const transform = entry => {
 
             if (entry.location) {
                 combined_info.push(entry.location['COMBINED']);
-                
-                if(entry.location["COUNTRY"]!=undefined){
+
+                if (entry.location["COUNTRY"]) {
                     countries.add(entry.location["COUNTRY"]);
                     // console.log(entry.location["COUNTRY"]);
                 }
@@ -124,22 +125,23 @@ const transform = entry => {
         'location',
         'nationality_country',
         'citizenship_country',
-        'nationality_of_registration'
-    ]
+        'nationality_of_registration',
+        'vessel_flag',
+    ];
 
-    country_fields.forEach(field =>{
-        if(entry[field] != null){
+    country_fields.forEach(field => {
+        if (entry[field] != null) {
             countries.add(entry[field][0])
         }
-    })
+    });
 
     entry.countries = Array.from(countries);
 
     return entry;
 }
 
-let program_to_country = program =>{
-    var dict = new Map([["CUBA", "Cuba"],
+let program_to_country = program => {
+    let dict = new Map([["CUBA", "Cuba"],
                         ["SYRIA", "Syria"],
                         ["HRIT-SY", "Syria"],
                         ["FSE-SY", "Syria"],
@@ -170,20 +172,12 @@ let program_to_country = program =>{
                         ["UKRAINE-E013661", "Ukraine"],
                         ["UKRAINE-EO13685", "Ukraine"],
                         ["SOUTH SUDAN", "South Sudan"],
-                        ["YEMEN", "Yemen"]],
-                        ["DRCONGO", "Congo"]);
+                        ["YEMEN", "Yemen"],
+                        ["DRCONGO", "Congo"]]);
 
-    if(dict.has(program)){
-        return dict.get(program)
-    }
-    else{
-        return null;
-    }
+    return dict.get(program);
 }
 
-entries.forEach(entry =>{
-    transform(entry);
-})
 
-
-exporter.reload_index(entries, transform, 'sdn', 'entry');
+exporter.reload_index(sdn, transform, 'sdn', 'entry');
+exporter.bulk_add(nonsdn, transform, 'sdn', 'entry');
