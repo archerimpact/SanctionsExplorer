@@ -135,6 +135,9 @@ $(document).ready(() => {
         $('#search-info-modal').modal('show');
     });
 
+    // enable tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+
 });
 
 let temporarily_change_text = (selector, text) => {
