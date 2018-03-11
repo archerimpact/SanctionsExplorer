@@ -27,13 +27,13 @@ function construct_body(operations, transform, index_name, index_type) {
             }
         };
         body.push(es_index_statement);
-        body.push(transform(op));
+        body.push(transform(operations[i]));
     }
     return body;
 }
 
-async function bulk_add(operations, index_name, index_type) {
-    let body = construct_body(operations, index_name, index_type);
+async function bulk_add(operations, transform, index_name, index_type) {
+    let body = construct_body(operations, transform, index_name, index_type);
 
     let errors = 0
 
