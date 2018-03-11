@@ -1,18 +1,16 @@
 const es = require('elasticsearch');
 const client = new es.Client({
     host: 'localhost:9200',
-    // log: 'trace'
+
 });
 
 async function delete_index(name) {
     try {
-        console.log('Deleting ' + name + ' index...');
-        client.indices.delete({
-            index: name,
-        });
+        console.log('DEBUG: Deleting ' + name + ' index...');
+        return await client.indices.delete({ index: name });
     }
     catch (error) {
-        console.log('Error deleting SDN index: ' + error);
+        console.log('ERROR: Could not delete ' + name + ' index: ' + error);
     }
 }
 
@@ -38,7 +36,7 @@ async function bulk_add(operations, transform, index_name, index_type) {
     let errors = 0
 
     try {
-        console.log('Bulk loading...')
+        console.log('DEBUG: Bulk loading...')
         const result = await client.bulk({
             body: body
         });
@@ -57,10 +55,14 @@ async function bulk_add(operations, transform, index_name, index_type) {
 }
 
 async function create_index(name) {
-    console.log('Creating ' + name + ' index...');
-    await client.indices.create({
-        index: name
-    });
+    console.log('DEBUG: Creating ' + name + ' index...');
+    let created = await client.indices.exists({ index: name });
+    if (!created) {
+        return await client.indices.create({ index: name });
+    }
+    else {
+        console.log('ERROR: Index ' + name + ' already existed; deletion failed.');
+    }
 }
 
 async function reload_index(operations, transform, index_name, index_type) {
@@ -68,13 +70,14 @@ async function reload_index(operations, transform, index_name, index_type) {
         await delete_index(index_name);
         await create_index(index_name);
         await bulk_add(operations, transform, index_name, index_type);
+        let stats = await client.indices.stats({ index: index_name });
+        let count = stats.indices[index_name].total.indexing.index_total;
+        console.log('DEBUG: ' + count + ' documents added.');
     } catch (error) {
         console.log('ERROR: ' + error);
     }
-
 }
 
 module.exports = {
     reload_index: reload_index,
-    // can add other connector functions in the future if necessary
 }
