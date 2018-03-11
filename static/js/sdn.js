@@ -15,7 +15,7 @@ $(document).ready(() => {
     });
 
     var id = 0;
-    let fields = construct_fields(['nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'birthdate', 'doc_id_numbers']);
+    let fields = construct_fields(['countries', 'nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'birthdate', 'doc_id_numbers']);
     append_search_row(id, fields);
     id++;
 
@@ -237,6 +237,7 @@ function construct_fields(fields) {
         'place_of_birth':                       'Place of Birth',
         'nationality_country':                  'Nationality',
         'citizenship_country':                  'Citizenship',
+        'countries':                            'Related to Country',
     };
 
     let retval = {};

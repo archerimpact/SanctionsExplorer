@@ -4,6 +4,7 @@ from urllib.request import urlretrieve
 from sdn_parser import parse_to_file
 from subprocess import run
 from os import path
+from sys import argv
 
 RSS_FEED_URL = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Documents/ofac.xml'
 SDN_XML_URL  = 'https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml'
@@ -38,12 +39,15 @@ def run_nodejs(filename, task):
 #### SDN XML ####
 feed = parse(RSS_FEED_URL)
 serialize_feed(feed, NEW_RSS_FILE)
+
+force_update = len(argv) > 1 and (argv[1] == '--force' or argv[1] == '-f')
+
 try:
 	unchanged = cmp(OLD_RSS_FILE, NEW_RSS_FILE)
 except:
 	unchanged = False
 
-if unchanged:
+if unchanged and not force_update:
 	quit()
 
 print('Downloading new sanctions data...')
