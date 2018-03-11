@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const exporter = require(path.join(__dirname, 'elastic_export.js'));
 
-const entries = JSON.parse(fs.readFileSync(path.join(__dirname, 'latest.json'), 'utf8'));
+const entries = JSON.parse(fs.readFileSync(path.join(__dirname, 'update_files/latest.json'), 'utf8'));
 
 const transform = entry => {
     // Augment the entry with these fields
