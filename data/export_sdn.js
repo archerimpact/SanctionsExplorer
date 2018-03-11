@@ -1,8 +1,8 @@
 const fs = require('fs');
 const path = require('path');
-const exporter = require(path.join(__dirname, 'elastic_export.js'));
+// const exporter = require(path.join(__dirname, 'elastic_export.js'));
 
-const entries = JSON.parse(fs.readFileSync(path.join(__dirname, 'update_files/latest.json'), 'utf8'));
+const entries = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/latest.json'), 'utf8'));
 
 const transform = entry => {
     // Augment the entry with these fields
@@ -13,13 +13,22 @@ const transform = entry => {
     entry.doc_id_numbers = [];
     entry.linked_profile_ids = [];
     entry.linked_profile_names = [];
+    // entry.countries = [];
 
     programs = new Set();
+
+    countries = new Set();
+
     entry.sanctions_entries.forEach(entry => {
         entry.program.forEach(program => {
             programs.add(program);
+            var program_country = program_to_country(program);
+            if(program_country != null){
+                countries.add(program_country);
+            }
         });
     });
+
     entry.programs = Array.from(programs);
 
     entry.linked_profiles.forEach(p => {
@@ -60,6 +69,11 @@ const transform = entry => {
 
             if (entry.location) {
                 combined_info.push(entry.location['COMBINED']);
+                
+                if(entry.location["COUNTRY"]!=undefined){
+                    countries.add(entry.location["COUNTRY"]);
+                    // console.log(entry.location["COUNTRY"]);
+                }
             }
         });
 
@@ -104,7 +118,72 @@ const transform = entry => {
 
         entry.document_headers = headers
     });
+
+    let country_fields = [
+        'place_of_birth',
+        'location',
+        'nationality_country',
+        'citizenship_country',
+        'nationality_of_registration'
+    ]
+
+    country_fields.forEach(field =>{
+        if(entry[field] != null){
+            countries.add(entry[field][0])
+        }
+    })
+
+    entry.countries = Array.from(countries);
+
     return entry;
 }
+
+let program_to_country = program =>{
+    var dict = new Map([["CUBA", "Cuba"],
+                        ["SYRIA", "Syria"],
+                        ["HRIT-SY", "Syria"],
+                        ["FSE-SY", "Syria"],
+                        ["IRAQ2", "Iraq"],
+                        ["IRAQ", "Iraq"],
+                        ["IRAN", "Iran"],
+                        ["IRAN-TRA", "Iran"],
+                        ["IFSR", "Iran"],
+                        ["HRIT-IR", "Iran"],
+                        ["IRGC", "Iran"],
+                        ["ISA", "Iran"],
+                        ["ZIMBABWE", "Zimbabwe"],
+                        ["BALKANS", "Balkans"],
+                        ["DARFUR", "Darfur"],
+                        ["DPRK", "North Korea"],
+                        ["DPRK2", "North Korea"],
+                        ["DPRK3", "North Korea"],
+                        ["DPRK4", "North Korea"],
+                        ["NS-PLC", "Palestine"],
+                        ["BELARUS", "Belarus"],
+                        ["LEBANON", "Lebanon"],
+                        ["SOMALIA", "Somalia"],
+                        ["CAR", "Central African Republic"],
+                        ["LIBYA2", "Lybia"],
+                        ["LIBYA3", "Lybia"],
+                        ["VENEZUELA", "Venezuela"],
+                        ["UKRAINE-EO13660", "Ukraine"],
+                        ["UKRAINE-E013661", "Ukraine"],
+                        ["UKRAINE-EO13685", "Ukraine"],
+                        ["SOUTH SUDAN", "South Sudan"],
+                        ["YEMEN", "Yemen"]],
+                        ["DRCONGO", "Congo"]);
+
+    if(dict.has(program)){
+        return dict.get(program)
+    }
+    else{
+        return null;
+    }
+}
+
+entries.forEach(entry =>{
+    transform(entry);
+})
+
 
 exporter.reload_index(entries, transform, 'sdn', 'entry');
