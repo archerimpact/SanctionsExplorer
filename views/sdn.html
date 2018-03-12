@@ -48,12 +48,11 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-4 col-md-12 page-col left-col">
-                <div class="d-flex flex-row">
-                    <h3 class="col-header mr-auto">SDN Search</h3>
-                    <img src="../img/open-iconic-svg/question-mark.svg" class="col-icon" id="search-info-icon" data-toggle="tooltip" data-placement="bottom" title="Info">
-                    <!--<img src="../img/open-iconic-svg/wrench.svg" class="col-icon" id="search-settings-icon">-->
-                </div>
                 <div class="d-flex flex-column left-flex-col">
+                    <div class="d-flex flex-row">
+                        <h3 class="col-header mr-auto">SDN Search</h3>
+                        <img src="../img/open-iconic-svg/question-mark.svg" class="col-icon" id="search-info-icon" data-toggle="tooltip" data-placement="bottom" title="Info">
+                    </div>
                     <hr>
                     <form class="search-form">
                         <div class="form-row">
@@ -153,9 +152,9 @@
                     <img src="../img/open-iconic-svg/plus.svg" class="col-icon" id="results-plus-icon" data-toggle="tooltip" data-placement="bottom" title="Expand all">
                     <img src="../img/open-iconic-svg/minus.svg" class="col-icon" id="results-minus-icon" data-toggle="tooltip" data-placement="bottom" title="Collapse all">
                 </div>
-                <p class="print-view-filters text-center d-none d-print-block">
+                <div id="print-view-filters" class="d-none d-print-block">
                     <!-- Populated by Javascript; only shown for printing -->
-                </p>
+                </div>
                 <hr class="no-bottom-margin">
                 <div class="loader">Loading...</div>
                 <div id="search-results">

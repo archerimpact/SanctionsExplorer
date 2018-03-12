@@ -6,7 +6,9 @@ $(document).ready(() => {
     window.searchRoute = window.addr + '/search/sdn';
 
     $('.search-button').click(event => {
-        search(event, window.searchRoute, collect_query_info(), display_query, '#search-results', 'OVERWRITE');
+        let query = collect_query_info();
+        update_filters_for_print(query);
+        search(event, window.searchRoute, query, display_query, '#search-results', 'OVERWRITE');
     });
 
     $('.next-page').click(event => {
@@ -158,6 +160,15 @@ let get_program_select = () => $('#program-select').val();
 let get_row_select = (id) => $('#' + id + '-select').val();
 let get_row_input = (id) => $('#' + id + '-input').val().trim();
 let append_to_results = (elem, divToUse) => $(divToUse).append(elem);
+let construct_filter_box = (field, value) => '<span class="filter-box badge badge-primary">' + field + ': ' + value + '</span>';
+let update_filters_for_print = (data) => {
+    $('.filter-box').remove();
+    let filter_elem = '';
+    $.each(data, (k,v) => {
+        filter_elem += construct_filter_box(api_to_ui(k), v);
+    });
+    $('#print-view-filters').html(filter_elem);
+}
 const empty_type_field = 'All types';
 const empty_program_field = 'All programs';
 const empty_select = 'Select field';
@@ -195,7 +206,7 @@ function collect_query_info() {
         }
     });
 
-    return add_elastic_params(query);
+    return query;
 }
 
 function add_elastic_params(query) {
@@ -225,10 +236,21 @@ function display_query(res, divToUse) {
 
 
 function construct_fields(fields) {
-    let api_to_ui = {
+    let retval = {};
+    for (var f in fields) {
+        let fieldname = fields[f]
+        if (api_to_ui(fieldname)) {
+            retval[fieldname] = api_to_ui(fieldname);
+        }
+    }
+    return retval;
+}
+
+function api_to_ui(api_field_name) {
+    let dict = {
         'identity_id':                          'ID',
         'primary_display_name':                 'Primary Display Name',
-        'all_display_names':                    'Names',
+        'all_display_names':                    'Name',
         'doc_id_numbers':                       'ID Numbers',
         'programs':                             'Programs',
         'location':                             'Location',
@@ -238,16 +260,9 @@ function construct_fields(fields) {
         'nationality_country':                  'Nationality',
         'citizenship_country':                  'Citizenship',
         'countries':                            'Related to Country',
+        'party_sub_type':                       'SDN Type',
     };
-
-    let retval = {};
-    for (var f in fields) {
-        let fieldname = fields[f]
-        if (fieldname in api_to_ui) {
-            retval[fieldname] = api_to_ui[fieldname];
-        }
-    }
-    return retval;
+    return dict[api_field_name];
 }
 
 // From https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript/901144#901144

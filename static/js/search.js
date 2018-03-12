@@ -41,7 +41,6 @@ let update_results_header = (num) => {
 }
 let display_loading_bar = (show) => show ? $('.loader').show() : $('.loader').hide();
 let change_next_page_text = (text) => $('.next-page').text(text);
-let update_filters_for_print = (data) => $('.print-view-filters').text(JSON.stringify(data));
 const error_alert = '<div class="alert alert-danger search-error-alert">There was an error. Please try again.</div>';
 
 

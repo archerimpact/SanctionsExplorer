@@ -93,6 +93,18 @@ hr.no-bottom-margin {
     width: 100%;
 }
 
+.filter-box {
+    /* border: solid 0px black; */
+    margin-left: 15px;
+    background-color: #555;
+    padding-top: 3px;
+    font-size: 14px;
+}
+
+#print-view-filters {
+    margin-top: 20px;
+}
+
 
 /*********** Cards ***********/
 .card {
