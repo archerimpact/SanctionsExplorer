@@ -14,26 +14,26 @@ async function delete_index(name) {
     }
 }
 
-function construct_body(operations, transform, index_name, index_type) {
+function construct_body(operations, transform, index_name, index_type, starting_from) {
     let body = [];
     for (let i = 0; i < operations.length; i++) {
+        let id = starting_from + i;
         let es_index_statement = {
             index: {
                 _index: index_name,
                 _type: index_type,
-                _id: i
+                _id: id,
             }
         };
         body.push(es_index_statement);
         body.push(transform(operations[i]));
     }
+    console.log('body lengt is ' + body.length);
     return body;
 }
 
-async function bulk_add(operations, transform, index_name, index_type) {
-    let body = construct_body(operations, transform, index_name, index_type);
-
-    let errors = 0
+async function bulk_add(operations, transform, index_name, index_type, starting_from) {
+    let body = construct_body(operations, transform, index_name, index_type, starting_from);
 
     try {
         console.log('DEBUG: Bulk loading...')
@@ -45,7 +45,7 @@ async function bulk_add(operations, transform, index_name, index_type) {
             if (i.index.error) {
                 console.log(JSON.stringify(i));
             }
-        })
+        });
 
         return result;
     }
@@ -65,14 +65,17 @@ async function create_index(name) {
     }
 }
 
+async function indexing_stats(name) {
+    let stats = await client.indices.stats({ index: name });
+    let count = stats.indices[name].total.indexing.index_total;
+    return count;
+}
+
 async function reload_index(operations, transform, index_name, index_type) {
     try {
         await delete_index(index_name);
         await create_index(index_name);
-        await bulk_add(operations, transform, index_name, index_type);
-        let stats = await client.indices.stats({ index: index_name });
-        let count = stats.indices[index_name].total.indexing.index_total;
-        console.log('DEBUG: ' + count + ' documents added.');
+        await bulk_add(operations, transform, index_name, index_type, 0);
     } catch (error) {
         console.log('ERROR: ' + error);
     }
@@ -81,4 +84,7 @@ async function reload_index(operations, transform, index_name, index_type) {
 module.exports = {
     reload_index: reload_index,
     bulk_add: bulk_add,
+    delete_index: delete_index,
+    create_index: create_index,
+    indexing_stats: indexing_stats,
 }

@@ -1,10 +1,11 @@
 from feedparser import parse
 from filecmp import cmp
 from urllib.request import urlretrieve
-from sdn_parser import parse_to_file
+import sdn_parser
 from subprocess import run
 from os import path
 from sys import argv
+import importlib
 
 RSS_FEED_URL    = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Documents/ofac.xml'
 SDN_URL         = 'https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml'
@@ -43,7 +44,7 @@ def download_and_parse(url, xml, json):
 		print('Downloading ' + url + '...')
 		urlretrieve(url, xml)
 		print('Parsing ' + xml + '...')
-		parse_to_file(xml, json)
+		sdn_parser.parse_to_file(xml, json)
 	except Exception as e:
 		error('Error while parsing: ' + str(e))
 
@@ -63,6 +64,7 @@ if unchanged and not force_update:
 	quit()
 
 download_and_parse(SDN_URL,    SDN_XML_FILE,    SDN_JSON)
+sdn_parser = importlib.reload(sdn_parser)		# TODO this is horrible and hacky and needs to be removed
 download_and_parse(NONSDN_URL, NONSDN_XML_FILE, NONSDN_JSON)
 run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
 

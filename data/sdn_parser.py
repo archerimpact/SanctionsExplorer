@@ -1202,7 +1202,9 @@ def parse_to_file(infile, outfile):
 	add_profile_links(root[5])
 	print("DEBUG: Parsing sanctions entries...")
 	add_sanctions_entries(root[6])
+	print(len(distinct_parties))
 	write_json(outfile)
+	#distinct_parties = {}		# TODO reset all the other globals (>_<) as well... or preferably just don't use globals? This will take a bit of refactoring.
 
 if __name__ == '__main__':
 	#parse_to_file('latest.json')

@@ -14,13 +14,14 @@ const transform = entry => {
     entry.doc_id_numbers = [];
     entry.linked_profile_ids = [];
     entry.linked_profile_names = [];
-    // entry.countries = [];
+    entry.countries = [];
 
     programs = new Set();
-
     countries = new Set();
+    lists = new Set();
 
     entry.sanctions_entries.forEach(entry => {
+        lists.add(list_to_acronym(entry.list));
         entry.program.forEach(program => {
             programs.add(program);
             let program_country = program_to_country(program);
@@ -29,6 +30,12 @@ const transform = entry => {
             }
         });
     });
+    if (!(lists.has('SDN') && lists.size == 1)) {
+        console.log(Array.from(lists));
+    }
+
+    entry.is_sdn = lists.has('SDN');
+    lists.delete('SDN');
 
     entry.programs = Array.from(programs);
 
@@ -73,7 +80,6 @@ const transform = entry => {
 
                 if (entry.location["COUNTRY"]) {
                     countries.add(entry.location["COUNTRY"]);
-                    // console.log(entry.location["COUNTRY"]);
                 }
             }
         });
@@ -120,21 +126,6 @@ const transform = entry => {
         entry.document_headers = headers
     });
 
-    let country_fields = [
-        'place_of_birth',
-        'location',
-        'nationality_country',
-        'citizenship_country',
-        'nationality_of_registration',
-        'vessel_flag',
-    ];
-
-    country_fields.forEach(field => {
-        if (entry[field] != null) {
-            countries.add(entry[field][0])
-        }
-    });
-
     entry.countries = Array.from(countries);
 
     return entry;
@@ -172,8 +163,8 @@ let program_to_country = program => {
         'SOUTH SUDAN': 'South Sudan',
         'SYRIA': 'Syria',
         'UKRAINE-EO13660': 'Ukraine',
-        'UKRAINE-E013661': 'Ukraine',
-        'UKRAINE-E013662': 'Ukraine',
+        'UKRAINE-EO13661': 'Ukraine',
+        'UKRAINE-EO13662': 'Ukraine',
         'UKRAINE-EO13685': 'Ukraine',
         'VENEZUELA': 'Venezuela',
         'YEMEN': 'Yemen',
@@ -182,7 +173,31 @@ let program_to_country = program => {
 
     return dict[program];
 }
+let list_to_acronym = l => {
+    if (l.endsWith(' List')) {
+        l = l.slice(0, -1 * ' List'.length);
+    }
 
+    const dict = {
+        'Sectoral Sanctions Identifications': 'SSI',
+        'Non-SDN Palestinian Legislative Council': 'NSPLC',
+        'Executive Order 13599': 'EO13599',
+        'Part 561': '561List',
+        'Consolidated': 'Non-SDN'
+    }
 
-exporter.reload_index(sdn, transform, 'sdn', 'entry');
-exporter.bulk_add(nonsdn, transform, 'sdn', 'entry');
+    return dict[l] || l;
+}
+
+async function load_sdn() {
+    await exporter.delete_index('sdn');
+    await exporter.create_index('sdn');
+    await exporter.bulk_add(sdn,    transform, 'sdn', 'entry', 0);
+    let count = await exporter.indexing_stats('sdn');
+    console.log('DEBUG: ' + count + ' documents indexing.');
+    await exporter.bulk_add(nonsdn, transform, 'sdn', 'entry', 100000);     // TODO maybe pick a different indexing scheme.
+    let count_new = await exporter.indexing_stats('sdn');
+    console.log('DEBUG: ' + count_new + ' documents indexing.');
+}
+
+load_sdn();
