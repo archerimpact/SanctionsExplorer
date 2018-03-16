@@ -1,0 +1,35 @@
+.inverted {
+    filter: invert(100%);
+}
+
+#large-archer-logo {
+    max-height: 10em;
+}
+
+#large-c4ads-logo {
+    max-height: 5.5em;
+    height: auto;
+}
+
+#one-search-row {
+    margin-left: 20%;
+    margin-right: 20%;
+    margin-top: 3em;
+    margin-bottom: 5em;
+}
+
+.vertical-center {
+    min-height: 100%;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.cont {
+    width: 100%;
+}
+
+body {
+    background-image: url('../img/p6.png');
+    background-repeat: repeat;
+}

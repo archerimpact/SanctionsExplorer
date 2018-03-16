@@ -2,6 +2,7 @@
 html, body {
     margin: 0;
     height: 100%;
+    color: #919aa1;        /* Lux default */
     /*overflow: hidden;*/
 }
 
@@ -9,8 +10,8 @@ html, body {
     overflow-y: scroll;
     height: 90%;        /* should be overwritten by Javascript */
     padding-top: 3em;
-    padding-right: 2em;
-    padding-left: 2em;
+    padding-right: 1.5em;
+    padding-left: 1.5em;
 }
 
 nav.navbar {
@@ -26,9 +27,22 @@ img#archer-logo {
 }
 
 img#c4ads-logo {
-    height: 4em;
+    width: 5em;
 }
 
+.modal-lg {
+    margin: auto;
+}
+
+.modal-lg .modal-dialog {
+    max-width: 1000px;
+}
+
+.col-icon {
+    width: 1em;
+    margin-left: 25px;
+    cursor: hand;
+}
 
 /*********** Filter Column ***********/
 .left-col {
@@ -45,6 +59,24 @@ img#c4ads-logo {
     padding-left: 5px;    /* match form row below */
 }
 
+#footer {
+
+}
+
+.left-flex-col {
+    flex: 1 1 auto;
+    height: 100%;
+}
+
+.col-header {
+    margin-bottom: 0;
+}
+
+.flex-column > hr {
+    /* fix flex not rendering hr properly */
+    margin-left: 0;
+    margin-right: 0;
+}
 
 /*********** Results Column ***********/
 hr.no-bottom-margin {
@@ -63,6 +95,18 @@ hr.no-bottom-margin {
     display: none;
     margin-top: 2em;
     width: 100%;
+}
+
+.filter-box {
+    /* border: solid 0px black; */
+    margin-left: 15px;
+    background-color: #555;
+    padding-top: 3px;
+    font-size: 14px;
+}
+
+#print-view-filters {
+    margin-top: 20px;
 }
 
 
@@ -89,6 +133,10 @@ hr.no-bottom-margin {
 
 .card-body {
     padding-top: 0;
+    padding-bottom: 0;
+    margin-left: 1.25rem; /* match bootstrap */
+    margin-bottom: 2em;
+    border-left: 1px solid #e5e5e5;
 }
 
 small.card-sdn-type {
@@ -100,18 +148,12 @@ small.card-sdn-type {
 h5.card-detail-header {
     font-size: 14px;
     margin-top: 1em;
-    letter-spacing: 1px;
-}
-
-.card-detail-info {
-    font-size: 14px;
-    text-transform: none;
-    letter-spacing: 1px;
-    color: #646b70;
+    letter-spacing: 2px;
 }
 
 .real-link {
     text-decoration: underline;
+    color: inherit;
 }
 
 .real-link:focus {
@@ -119,11 +161,20 @@ h5.card-detail-header {
 }
 
 .real-link:hover {
-    opacity: 0.5;
+    opacity: 0.9;
 }
 
-.table-sm td {
+.link-in-explorer {
+    color: #6a86b5;
+}
+
+.table-sm td, .table-sm th {
     padding: 0.25em;
+    text-transform: none;
+}
+
+.table-sm th {
+    border-top: 0;
 }
 
 table {
@@ -144,6 +195,13 @@ td.doc-info {
     text-align: start;
 }
 
+.inline-info {
+    padding-left: 2em;
+    color: #919aa1;
+    text-transform: none;
+    font-size: 14px;
+}
+
 
 /*********** Print Formatting ***********/
 @media print {
@@ -161,6 +219,10 @@ td.doc-info {
     }
 
     .next-page {            /* TODO figure out why this isn't hiding */
+        display: none;
+    }
+
+    .col-icon {
         display: none;
     }
 }
