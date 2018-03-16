@@ -69,7 +69,7 @@ def sanitize(text):
 		text = text[sectionStart:]
 		sectionEnd = text.find(">")
 		text = text[sectionEnd + 1:]
-	return newText
+	print("*****************");print(newText);print("*****************");return newText
 
 
 def parseHtml2001(pr_result):
@@ -83,14 +83,14 @@ def parseHtml2001(pr_result):
 	content = pr_content[div_loc + 4:]
 	while (div_open != 0):
 		if content.find("<div") != -1 and content.find("</div") != -1:
-			if content.find("<div") < content.find("</div"):
+			if(content.find("<div") < content.find("</div")):
 				div_open += 1
 				content = content[content.find("<div") + 4:]
 			else:
 				div_open -= 1
 				content = content[content.find("</div") + 5:]
 		else:
-			break
+			print(div_open);break
 	end = pr_content.find(content)
 	body = pr_content[div_loc:end + 1]
 
