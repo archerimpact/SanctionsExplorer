@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 import datetime
 import re
-import urlparse
+from urllib.parse import urljoin
 import os
 
 # conn = sqlite3.connect('prx.db')
@@ -73,14 +73,14 @@ def sanitize(text):
 
 
 def parseHtml2001(pr_result):
-	print('a')
-	div_loc = pr_result.content.find("<div class=\"content\">")
-	if pr_result.content.find("<div class=\"content-slim\">") != -1:
-		div_loc = pr_result.content.find("<div class=\"content-slim\">")
+	pr_content = pr_result.content.decode("utf-8")
+	div_loc = pr_content.find("<div class=\"content\">")
+	if pr_content.find("<div class=\"content-slim\">") != -1:
+		div_loc = pr_content.find("<div class=\"content-slim\">")
 	if div_loc == -1:
-		div_loc = pr_result.content.find("<div id=\"centerblock\">")
+		div_loc = pr_content.find("<div id=\"centerblock\">")
 	div_open = 1
-	content = pr_result.content[div_loc + 4:]
+	content = pr_content[div_loc + 4:]
 	while (div_open != 0):
 		if content.find("<div") != -1 and content.find("</div") != -1:
 			if content.find("<div") < content.find("</div"):
@@ -89,9 +89,10 @@ def parseHtml2001(pr_result):
 			else:
 				div_open -= 1
 				content = content[content.find("</div") + 5:]
-
-	end = pr_result.content.find(content)
-	body = pr_result.content[div_loc:end + 1]
+                else:
+                    break
+	end = pr_content.find(content)
+	body = pr_content[div_loc:end + 1]
 
 	temp = body[:]
 	# temp = temp.replace("<div></div>", "\n")
@@ -193,7 +194,7 @@ for url in urls:
 				for pr_link in pr_links:
 					pr_url = pr_link.get('href')
 					if is_relative_url(pr_url):
-						pr_url = urlparse.urljoin(url, pr_url)
+						pr_url = urljoin(url, pr_url)
 					print(pr_url)
 					
 					if pr_url.find("2001-2009.state.gov") != -1 or pr_url == "https://www.treasury.gov/press-center/press-releases/Documents/1102_abo_ghaith.pdf":
@@ -212,7 +213,7 @@ for url in urls:
 				for d_link in date_links:
 					d_url = d_link.get('href')
 					if is_relative_url(d_url):
-						d_url = urlparse.urljoin(url, d_url)
+						d_url = urljoin(url, d_url)
 					d_result = requests.get(d_url)
 					if d_result.status_code == 200:
 						d_content = extract_text(d_result.content)
@@ -234,7 +235,7 @@ for tup in tup_list:
 	col = 1
 	file.write("******************* Entry " + str(row) + " *******************\n")
 	file.write(str(tup[0]) + "\n")
-	file.write(tup[1].encode('utf-8').strip() + "\n")
+	file.write(tup[1] + "\n")
 	file.write(tup[2] + "\n")
 	file.write(tup[4] + "\n\n")
 	# for t in tup:
