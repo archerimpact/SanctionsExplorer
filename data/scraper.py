@@ -70,7 +70,7 @@ def sanitize(text):
 		sectionEnd = text.find(">")
 		text = text[sectionEnd + 1:]
 
-	if newText = "":
+	if (newText == ""):
 		newText = text
 	return newText
 
