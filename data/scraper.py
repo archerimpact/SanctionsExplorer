@@ -5,12 +5,7 @@ import datetime
 import re
 from urllib.parse import urljoin
 import os
-
-# conn = sqlite3.connect('prx.db')
-# c = conn.cursor()
-
-# c.execute('''CREATE TABLE pr4
-#              (pr_date text, name text, link text, content text, html text, type text)''')
+import json
 
 now = datetime.datetime.now()
 current_year = now.year
@@ -162,7 +157,7 @@ def parseHtml2001(pr_result):
 	# 		p_text += temp[:stop]
 
 	# print ("******\n")
-	
+
 	# if p_text == "":
 	# 	while (temp.find("<div") != -1):
 	# 		toAdd = temp[temp.find("<div"):]
@@ -176,7 +171,7 @@ def parseHtml2001(pr_result):
 
 	# p_text = p_text.replace("<br>", "\n")
 	# p_text = p_text.replace("<br />", "\n")
-	
+
 	# while (p_text.find("<") != -1):
 	# 	p_text = p_text[:p_text.find("<")] + p_text[p_text.find(">") + 1:]
 
@@ -204,7 +199,7 @@ for url in urls:
 					if is_relative_url(pr_url):
 						pr_url = urljoin(url, pr_url)
 					print(pr_url)
-					
+
 					if pr_url.find("2001-2009.state.gov") != -1 or pr_url == "https://www.treasury.gov/press-center/press-releases/Documents/1102_abo_ghaith.pdf":
 						skips += 1
 						print("skip " + str(skips))
@@ -233,28 +228,13 @@ for url in urls:
 						# html = str(soup.find("div", {"id": "t-content-main-content"}))
 						tup_list.append( (curr_date, name, d_url, d_content, html, 'd') )
 
-# wb = Workbook()
-# ws = wb.active
-col = 1
-row = 1
-
-file = open("all.txt", "w")
+jsondata = []
 for tup in tup_list:
-	col = 1
-	file.write("******************* Entry " + str(row) + " *******************\n")
-	file.write(str(tup[0]) + "\n")
-	file.write(tup[1] + "\n")
-	file.write(tup[2] + "\n")
-	file.write(tup[4] + "\n\n")
-	# for t in tup:
-	# 	ws.cell(row=row, column=col).value = tup[col - 1]
-	# 	col += 1
-	row += 1
+	entry = {}
+	entry['date'], entry['title'], entry['link'], entry['nothing'], entry['content'], entry['d'] = tup
+	jsondata.append(entry)
 
-# wb.template = False
-# wb.save("2002a.xlsx")
-file.close()
-
-# c.executemany('INSERT INTO pr4 VALUES (?,?,?,?,?,?)', tup_list)
-# conn.commit()
-# conn.close()
+with open('2018_press_releases.json', 'w') as f:
+	data = json.dumps(jsondata)
+	f.write(data)
+	f.close()
