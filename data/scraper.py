@@ -7,27 +7,6 @@ from urllib.parse import urljoin
 import os
 import json
 
-now = datetime.datetime.now()
-current_year = now.year
-
-#url_template_one = "https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/ofac-actions-{}.aspx"
-#url_template_two = "https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/{}.aspx"
-url_current = "https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/OFAC-Recent-Actions.aspx"
-
-
-# create tups of form (date, link, content, type)
-tup_list = []
-
-
-urls = []
-urls.append(url_current)
-
-#for year in [2001, 2002]:
-#	urls.append(url_template_two.format(year))
-#for year in range(2003, current_year):
-#	urls.append(url_template_one.format(year))
-
-
 def is_press_release(text):
 	return text == 'Press Release' or text == 'Press Release 1' or text == "Press Release 2"
 
@@ -177,64 +156,89 @@ def parseHtml2001(pr_result):
 
 	return p_text.replace("&quot;", "\"")
 
-skips = 0
-i = 0
-for url in urls:
-	print (url)
-	result = requests.get(url)
-	if result.status_code == 200:
-		content = result.content
-		soup = BeautifulSoup(content, 'html.parser')
-		table_rows = soup.findAll('tr')
-		for row in table_rows:
-			links = row.findAll('a')
-			pr_links = [link for link in links if is_press_release(link.text)]
-			date_links = [link for link in links if is_date(link.text)]
-			if len(date_links) > 0:
-				curr_date = re.search(r'\d{2}\/\d{2}\/\d{4}', date_links[0].text).group(0)
-				cell = row.findAll('td')[-1]
-				name = remove_link(cell.get_text())
-				for pr_link in pr_links:
-					pr_url = pr_link.get('href')
-					if is_relative_url(pr_url):
-						pr_url = urljoin(url, pr_url)
-					print(pr_url)
+def scrape_urls(urls):
+	tup_list = []
 
-					if pr_url.find("2001-2009.state.gov") != -1 or pr_url == "https://www.treasury.gov/press-center/press-releases/Documents/1102_abo_ghaith.pdf":
-						skips += 1
-						print("skip " + str(skips))
-						continue
-					pr_result = requests.get(pr_url)
-					if pr_result.status_code == 200:
-						#print(pr_result.content)
-						# soup = BeautifulSoup(d_result.content)
-						# html = str(soup.find("div", {"id": "t-content-main-content"}))
-						html = parseHtml2001(pr_result)
-						pr_content = extract_text(pr_result.content)
-						pr_content = ""
-						tup_list.append( (curr_date, name, pr_url, pr_content, html, 'pr') )
-				for d_link in date_links:
-					d_url = d_link.get('href')
-					if is_relative_url(d_url):
-						d_url = urljoin(url, d_url)
-					d_result = requests.get(d_url)
-					if d_result.status_code == 200:
-						d_content = extract_text(d_result.content)
-						d_content = d_content.replace("\n", "")
-						d_content = ""
-						html = parseHtml2001(d_result)
-						#print(d_content)
-						# soup = BeautifulSoup(d_result.content)
-						# html = str(soup.find("div", {"id": "t-content-main-content"}))
-						tup_list.append( (curr_date, name, d_url, d_content, html, 'd') )
+	skips = 0
+	i = 0
+	for url in urls:
+		print (url)
+		result = requests.get(url)
+		if result.status_code == 200:
+			content = result.content
+			soup = BeautifulSoup(content, 'html.parser')
+			table_rows = soup.findAll('tr')
+			for row in table_rows:
+				links = row.findAll('a')
+				pr_links = [link for link in links if is_press_release(link.text)]
+				date_links = [link for link in links if is_date(link.text)]
+				if len(date_links) > 0:
+					curr_date = re.search(r'\d{2}\/\d{2}\/\d{4}', date_links[0].text).group(0)
+					cell = row.findAll('td')[-1]
+					name = remove_link(cell.get_text())
+					for pr_link in pr_links:
+						pr_url = pr_link.get('href')
+						if is_relative_url(pr_url):
+							pr_url = urljoin(url, pr_url)
+						print(pr_url)
 
-jsondata = []
-for tup in tup_list:
-	entry = {}
-	entry['date'], entry['title'], entry['link'], entry['nothing'], entry['content'], entry['d'] = tup
-	jsondata.append(entry)
+						if pr_url.find("2001-2009.state.gov") != -1 or pr_url == "https://www.treasury.gov/press-center/press-releases/Documents/1102_abo_ghaith.pdf":
+							skips += 1
+							print("skip " + str(skips))
+							continue
+						pr_result = requests.get(pr_url)
+						if pr_result.status_code == 200:
+							#print(pr_result.content)
+							# soup = BeautifulSoup(d_result.content)
+							# html = str(soup.find("div", {"id": "t-content-main-content"}))
+							html = parseHtml2001(pr_result)
+							pr_content = extract_text(pr_result.content)
+							pr_content = ""
+							tup_list.append( (curr_date, name, pr_url, pr_content, html, 'pr') )
+					for d_link in date_links:
+						d_url = d_link.get('href')
+						if is_relative_url(d_url):
+							d_url = urljoin(url, d_url)
+						d_result = requests.get(d_url)
+						if d_result.status_code == 200:
+							d_content = extract_text(d_result.content)
+							d_content = d_content.replace("\n", "")
+							d_content = ""
+							html = parseHtml2001(d_result)
+							#print(d_content)
+							# soup = BeautifulSoup(d_result.content)
+							# html = str(soup.find("div", {"id": "t-content-main-content"}))
+							tup_list.append( (curr_date, name, d_url, d_content, html, 'd') )
 
-with open('2018_press_releases.json', 'w') as f:
-	data = json.dumps(jsondata)
-	f.write(data)
-	f.close()
+	jsondata = []
+	for tup in tup_list:
+		entry = {}
+		entry['date'], entry['title'], entry['link'], entry['nothing'], entry['content'], entry['d'] = tup
+		jsondata.append(entry)
+
+	return jsondata
+
+
+def scrape_and_write_prs(years, outfile):
+	now = datetime.datetime.now()
+	current_year = now.year
+
+	#url_template_one = "https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/ofac-actions-{}.aspx"
+	#url_template_two = "https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/{}.aspx"
+	url_current = "https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/OFAC-Recent-Actions.aspx"
+
+	urls = []
+	if years == '2018':
+		urls.append(url_current)
+
+	#for year in [2001, 2002]:
+	#	urls.append(url_template_two.format(year))
+	#for year in range(2003, current_year):
+	#	urls.append(url_template_one.format(year))
+
+	jsondata = scrape_urls(urls)
+
+	with open(outfile, 'w') as f:
+		data = json.dumps(jsondata)
+		f.write(data)
+		f.close()

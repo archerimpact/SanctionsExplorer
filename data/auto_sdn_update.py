@@ -1,11 +1,13 @@
 from feedparser import parse
 from filecmp import cmp
 from urllib.request import urlretrieve
-import sdn_parser
 from subprocess import run
 from os import path
 from sys import argv
 import importlib
+
+import sdn_parser
+import scraper
 
 RSS_FEED_URL    = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Documents/ofac.xml'
 SDN_URL         = 'https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml'
@@ -17,6 +19,7 @@ SDN_XML_FILE    = DIR + '/update_files/sdn_advanced.xml'
 NONSDN_XML_FILE = DIR + '/update_files/non_sdn_advanced.xml'
 SDN_JSON        = DIR + '/update_files/sdn.json'
 NONSDN_JSON     = DIR + '/update_files/non_sdn.json'
+PR_JSON_2018    = DIR + '/update_files/2018_press_releases.json'
 EXPORT_SDN      = DIR + '/export_sdn.js'
 EXPORT_PRS      = DIR + '/export_prs.js'
 
@@ -70,6 +73,7 @@ run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
 
 #### Press Releases ####
 # 3. Scrape latest press releases, placing into entries.json or some other intermediate file
+scraper.scrape_and_write_prs('2018', PR_JSON_2018)
 
 # 4. Call export_prs.js, which consumes entries.json and imports into Elastic
 run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
