@@ -4,12 +4,12 @@ $(document).ready(() => {
     window.pr_card = get_template('#pr-card-template');
 
     $('#press-release-button').click(event => {
-        search(event, addr + '/search/press-releases', collect_pr_query(), display_pr_query, '#search-results');
+        search(event, addr + '/search/press-releases', collect_pr_query(), display_pr_query, '#search-results', 'OVERWRITE');
     });
 
     $('.next-page').click(event => {
         window.lastQuery.from += window.lastQuery.size;
-        search(event, addr + '/search/press-releases', window.lastQuery, display_pr_query, '#search-results', true);
+        search(event, addr + '/search/press-releases', window.lastQuery, display_pr_query, '#search-results', 'APPEND');
     });
 });
 
