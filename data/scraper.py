@@ -61,6 +61,7 @@ def remove_link(text):
 
 def sanitize(text):
 	newText = ""
+
 	while (text.find("<") != -1):
 		sectionStart = text.find("<")
 		newText += text[:sectionStart]
@@ -70,8 +71,6 @@ def sanitize(text):
 		sectionEnd = text.find(">")
 		text = text[sectionEnd + 1:]
 
-	if (newText == ""):
-		newText = text
 	return newText
 
 
@@ -93,7 +92,10 @@ def parseHtml2001(pr_result):
 				div_open -= 1
 				content = content[content.find("</div") + 5:]
 		else:
-			print(div_open);break
+			if(content.find("</div") != -1):
+				div_open -= 1
+				content = content[content.find("</div") + 5]
+				
 	end = pr_content.find(content)
 	body = pr_content[div_loc:end + 1]
 
