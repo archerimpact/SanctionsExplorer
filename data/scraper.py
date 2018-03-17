@@ -95,7 +95,10 @@ def parseHtml2001(pr_result):
 			if(content.find("</div") != -1):
 				div_open -= 1
 				content = content[content.find("</div") + 5]
-				
+			else:
+				print (div_open)
+				break
+
 	end = pr_content.find(content)
 	body = pr_content[div_loc:end + 1]
 
