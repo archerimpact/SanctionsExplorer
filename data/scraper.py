@@ -69,7 +69,10 @@ def sanitize(text):
 		text = text[sectionStart:]
 		sectionEnd = text.find(">")
 		text = text[sectionEnd + 1:]
-	print("*****************");print(newText);print("*****************");return newText
+
+	if newText = "":
+		newText = text
+	return newText
 
 
 def parseHtml2001(pr_result):
