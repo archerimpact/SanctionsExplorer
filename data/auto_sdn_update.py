@@ -29,11 +29,11 @@ PR_MATCHES_FILE = DIR + '/update_files/matches.json'
 
 def error(msg):
 	# send Twilio text
-	print('ERROR: ' + str(msg))
+	print('<Updater> ERROR: ' + str(msg))
 	quit()
 
 def debug(msg):
-	print('DEBUG: ' + str(msg))
+	print('<Updater> DEBUG: ' + str(msg))
 
 def serialize_feed(feed, filename):
 	try:
