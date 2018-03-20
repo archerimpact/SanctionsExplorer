@@ -16,15 +16,18 @@ NONSDN_URL      = 'https://www.treasury.gov/ofac/downloads/sanctions/1.0/cons_ad
 DIR             = path.dirname(path.realpath(__file__))
 NEW_RSS_FILE    = DIR + '/update_files/rss_new.txt'
 OLD_RSS_FILE    = DIR + '/update_files/rss_old.txt'
+
 SDN_XML_FILE    = DIR + '/update_files/sdn_advanced.xml'
 NONSDN_XML_FILE = DIR + '/update_files/non_sdn_advanced.xml'
+
 SDN_JSON        = DIR + '/update_files/sdn.json'
 NONSDN_JSON     = DIR + '/update_files/non_sdn.json'
-PR_JSON_2018    = DIR + '/update_files/2018_press_releases.json'
+PR_JSON_2018    = DIR + '/update_files/press_releases.json'
+PR_MATCHES_FILE = DIR + '/update_files/matches.json'
+
 EXPORT_SDN      = DIR + '/export_sdn.js'
 EXPORT_PRS      = DIR + '/export_prs.js'
 EXPORT_MATCHES  = DIR + '/export_pr_matches.js'
-PR_MATCHES_FILE = DIR + '/update_files/matches.json'
 
 
 def error(msg):

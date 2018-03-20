@@ -161,7 +161,7 @@ def scrape_urls(urls):
 	skips = 0
 	i = 0
 	for url in urls:
-		print (url)
+		# print (url)
 		result = requests.get(url)
 		if result.status_code == 200:
 			content = result.content
@@ -179,11 +179,11 @@ def scrape_urls(urls):
 						pr_url = pr_link.get('href')
 						if is_relative_url(pr_url):
 							pr_url = urljoin(url, pr_url)
-						print(pr_url)
+						# print(pr_url)
 
 						if pr_url.find("2001-2009.state.gov") != -1 or pr_url == "https://www.treasury.gov/press-center/press-releases/Documents/1102_abo_ghaith.pdf":
 							skips += 1
-							print("skip " + str(skips))
+							# print("skip " + str(skips))
 							continue
 						pr_result = requests.get(pr_url)
 						if pr_result.status_code == 200:
