@@ -235,12 +235,16 @@ def scrape_and_write_prs(outfile, all_years=False):
 			urls.append(url_template_one.format(year))
 
 	jsondata = scrape_urls(urls)
-
-	with open(outfile, 'rw') as f:
+	data = []
+	with open(outfile, 'r') as f:
 		# loads the file and filters all entries from the current year
-		prev_years_data = list(filter(lambda e: CURR_YEAR not in e['date'], json.load(f)))
-		combined_data = prev_years_data.extend(jsondata)
-		f.write(json.dumps(combined_data))
+		data = list(filter(lambda e: str(CURR_YEAR) not in e['date'], json.load(f)))
+		f.close()
+
+	data.extend(jsondata)
+
+	with open(outfile, 'w') as f:
+		f.write(json.dumps(data))
 		f.close()
 
 def scrape_all_years(outfile):

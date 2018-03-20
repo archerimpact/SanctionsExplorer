@@ -29,8 +29,11 @@ PR_MATCHES_FILE = DIR + '/update_files/matches.json'
 
 def error(msg):
 	# send Twilio text
-	print(msg)
+	print('ERROR: ' + str(msg))
 	quit()
+
+def debug(msg):
+	print('DEBUG: ' + str(msg))
 
 def serialize_feed(feed, filename):
 	try:
@@ -44,19 +47,18 @@ def run_nodejs(filename, task):
 	try:
 		run(['node', filename])
 	except Exception as e:
-		error('ERROR: Failed to ' + task + ': ' + str(e))
+		error('Failed to ' + task + ': ' + str(e))
 
 def download_and_parse(url, xml, json):
 	try:
-		print('Downloading ' + url + '...')
+		debug('Downloading ' + url + '...')
 		urlretrieve(url, xml)
-		print('Parsing ' + xml + '...')
+		debug('Parsing ' + xml + '...')
 		sdn_parser.parse_to_file(xml, json)
 	except Exception as e:
-		error('Error while parsing: ' + str(e))
+		error('While parsing ' + str(e) + ', ')
 
 
-#### SDN XML ####
 feed = parse(RSS_FEED_URL)
 serialize_feed(feed, NEW_RSS_FILE)
 
@@ -73,19 +75,25 @@ if unchanged and not force_update:
 download_and_parse(SDN_URL, SDN_XML_FILE, SDN_JSON)
 sdn_parser = importlib.reload(sdn_parser)                       # TODO this is horrible and hacky and needs to be removed
 download_and_parse(NONSDN_URL, NONSDN_XML_FILE, NONSDN_JSON)
+
+debug('Exporting SDN to Elastic...')
 run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
 
-#### Press Releases ####
 # Scrape latest press releases, placing into an intermediate JSON file
+debug('Scraping press releases from 2018...')
 scraper.scrape_2018(PR_JSON_2018)
 
 # Call export_prs.js, which imports the JSON into Elastic
+debug('Exporting press releases to Elastic...')
 run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
 
 # Call the PR matching program, which downloads a list of names from Elastic,
 #    matches with press release content, creates an intermediate JSON file,
 #    and writes the result to the Elastic SDN index.
+debug('Matching SDN entities with press release data...')
 pr_match.write_matches(PR_MATCHES_FILE)
+
+debug('Exporting matches to Elastic...')
 run_nodejs(EXPORT_MATCHES, 'export PR matches to Elastic')
 
 # If we've successfully made it this far, we write this for next time.
