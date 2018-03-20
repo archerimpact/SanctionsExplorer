@@ -83,7 +83,80 @@ async function search_ES(query, res) {
 
 
 app.get('/search/sdn', function(req, res) {
-    const keywords =  [
+    const fuzziness = {
+        'programs': '0',
+        'doc_id_numbers': '0',
+        'birthdate': '0',
+        'fixed_ref': 'NONE',
+        'party_sub_type': '0'
+    };
+
+    let es_query = { size: 50, from: 0 };
+    let search_query;
+
+    let create_match_phrase = (field, query_str) => {
+        let json = { match: {} };
+        let fuzz_setting = 'AUTO';
+        if (fuzziness[field] != null) {
+            fuzz_setting = fuzziness[field];
+        }
+        json.match[field] = {
+            'query': query_str,
+            'operator': 'and',
+        };
+        if (fuzziness[field] != 'NONE') {
+            json.match[field].fuzziness = fuzz_setting;
+        }
+        return json;
+    };
+
+    if (req.query.size) {
+        es_query.size = req.query.size;
+    }
+
+    if(req.query.from){
+        es_query.from = req.query.from;
+    }
+
+    if (Object.keys(req.query).includes('all_fields')) {
+        search_query = {
+            'multi_match': {
+                query: req.query['all_fields'],
+                type: 'best_fields',
+                fuzziness: 'AUTO',
+                fields: get_searchall_keywords(),
+            }
+        };
+    }
+    else {
+        search_query = { bool: { must:[] } };
+
+        const keywords = get_keywords();
+        for (let i = 0; i < keywords.length; i++) {
+            if (req.query[keywords[i]] != null) {
+                let match_phrase = create_match_phrase(keywords[i], req.query[keywords[i]])
+                search_query.bool.must.push(match_phrase)
+            }
+            /*if(keywords[i] == "all_display_names"){
+                let match_phrase = create_match_phrase("primary_display_name", req.query[keywords[i]]);
+                match_phrase.match["primary_display_name"].boost = 2;
+                search_query.bool.must.push(match_phrase)
+            }*/
+        }
+    }
+
+    es_query.query = search_query;
+    let full_query = {
+        index: 'sdn',
+        body: es_query,
+    };
+
+    search_ES(full_query, res);
+});
+
+
+function get_keywords() {
+    return [
         'title',
         'countries',
         'birthdate',
@@ -126,133 +199,28 @@ app.get('/search/sdn', function(req, res) {
         'fixed_ref',
         'party_sub_type',
     ];
-    const fuzziness = {
-        'programs': '0',
-        'doc_id_numbers': '0',
-        'birthdate': '0',
-        'fixed_ref': 'NONE',
-        'party_sub_type': '0'
-    };
+}
 
-    let es_query = { size: 50, from: 0 };
-    let search_query = { bool: { must:[] } };
+function get_searchall_keywords() {
+    exclude_fields = [
+        'primary_display_name',
+        'all_display_names',
+        'vessel_tonnage',
+        'vessel_gross_tonnage',
+        'un/locode',
+        'identity_id',
+        'linked_profile_ids',
+        'fixed_ref',
+    ];
 
-    let create_match_phrase = (field, query_str) => {
-        let json = { match: {} };
-        let fuzz_setting = 'AUTO';
-        if (fuzziness[field] != null) {
-            fuzz_setting = fuzziness[field];
-        }
-        json.match[field] = {
-            'query': query_str,
-            'operator': 'and',
-        };
-        if (fuzziness[field] != 'NONE') {
-            json.match[field].fuzziness = fuzz_setting;
-        }
-        return json;
-    };
+    let modified = get_keywords().filter(k => !exclude_fields.includes(k));
 
-    if (req.query.size) {
-        es_query.size = req.query.size;
-    }
+    add_fields = [
+        'primary_display_name^4',
+        'all_display_names^2',
+    ]
+    modified.push(...add_fields);
 
-    if(req.query.from){
-        es_query.from = req.query.from;
-    }
+    return modified;
 
-   for (let i = 0; i < keywords.length; i++) {
-        if (req.query[keywords[i]] != null) {
-            let match_phrase = create_match_phrase(keywords[i], req.query[keywords[i]])
-            search_query.bool.must.push(match_phrase)
-        }
-	if(keywords[i] == "all_display_names"){
-		let match_phrase = create_match_phrase("primary_display_name", req.query[keywords[i]]);
-		match_phrase.match["primary_display_name"].boost = 2;
-		search_query.bool.must.push(match_phrase)
-	}
-    }
-  
-
-    es_query.query = search_query;
-    let full_query = {
-        index: 'sdn',
-        body: es_query,
-    };
-
-    search_ES(full_query, res);
-});
-
-app.get('/search/sdn/all_fields', function(req, res){
-	let search_query = {
-		"multi_match":{
-			"query":"",
-			"fields":["countries",
-				  "vessel_call_sign",
-				  "vessel_flag",
-				  "vessel_owner",
-				 // "vessel_tonnage",
-				 // "vessel_gross_tonnage",
-				  "vessel_type",
-				 // "d-u-n-s_number",
-				  //"identity_id",
-				  "primary_display_name^3",
-				  "all_display_names^2",
-				  "programs",
-				  //"doc_id_numbers",
-				  //"linked_profile_ids",
-				  "linked_profile_names",
-				  "location",
-				  "title",
-				  "birthdate",
-				  "place_of_birth",
-				  "additional_sanctions_information_-_",
-				  "nationality_country",
-				  "citizenship_country",
-				  "website",
-				  "email_address",
-				  //"swift/bic",
-				  //"ifca_determination_-_",
-				  //"aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n)",
-				  //"aircraft_manufacturer\s_serial_number_(msn)",
-				  "aircraft_manufacture_date",
-				  "aircraft_model",
-				  "aircraft_operator",
-				  //"bik_(ru)",
-				  //"un/locode",
-				  //"aircraft_tail_number",
-				  //"previous_aircraft_tail_number",
-				  //"micex_code",
-				  "nationality_of_registration"]
-				  //"d-u-n-s_number"]
-		}
-	};
-
-	if(req.query.search_term == null){
-		res.status(400).send("No input provided");
-	}
-	else{
-		search_query.multi_match.query = req.query.search_term;
-	}
-
-	let es_query = {};
-	es_query.query = search_query;
-	es_query.size =50;
-	es_query.from =0;
-
-	if (req.query.size) {
-		es_query.size = req.query.size;
-	}
-
-	if(req.query.from){
-		es_query.from = req.query.from;
-	}
-
-	let full_query = {
-		index:'sdn',
-		body: es_query,
-	};
-	console.log(JSON.stringify(full_query));
-	search_ES(full_query, res);
-});
-
+}

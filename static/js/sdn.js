@@ -4,7 +4,6 @@ $(document).ready(() => {
     window.card = get_template('#card-template');
     window.searchRow = get_template('#search-row-template');
     window.searchRoute = window.addr + '/search/sdn';
-    window.searchRouteAll = window.addr + '/search/sdn/all_fields';
 
     $('.search-button').click(event => {
         let query = collect_query_info();
@@ -56,14 +55,12 @@ $(document).ready(() => {
 
     if (getParameterByName('searchall')) {
         let query = {
-            'search_term': getParameterByName('searchall'),       // should be changed to `all_fields` once Elastic supports it.
+            'all_fields': getParameterByName('searchall'),
         }
         query = add_elastic_params(query);
-        console.log(query);
 
         history.pushState(null, null, '/sdn');
-
-        search(event, window.searchRouteAll, query, display_query, '#search-results', 'OVERWRITE');
+        search(event, window.searchRoute, query, display_query, '#search-results', 'OVERWRITE');
     }
 
     if (getParameterByName('id')) {
@@ -137,6 +134,14 @@ $(document).ready(() => {
 
     $(document).on('click', '#search-info-icon', event => {
         $('#search-info-modal').modal('show');
+    });
+
+    $(document).on('click', '#modal-plus-icon', event => {
+        $('#entity-modal-body .collapse').collapse('show');
+    });
+
+    $(document).on('click', '#modal-minus-icon', event => {
+        $('#entity-modal-body .collapse').collapse('hide');
     });
 
     // enable tooltips

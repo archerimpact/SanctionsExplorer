@@ -409,18 +409,22 @@
         </div>
     </script>
 
-    <!-- placeholder modal -->
+    <!-- Link Explorer modal -->
     <div class="modal modal-lg entity-modal fade" id="links-modal" tabindex="-1">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title">Link Explorer</h5>
+              <div class="d-flex flex-row">
+                <h5 class="modal-title text-left mr-auto" id="results-header">Link Explorer</h5>
+                <img src="../img/open-iconic-svg/plus.svg" class="col-icon" id="modal-plus-icon" data-toggle="tooltip" data-placement="bottom" title="Expand all">
+                <img src="../img/open-iconic-svg/minus.svg" class="col-icon" id="modal-minus-icon" data-toggle="tooltip" data-placement="bottom" title="Collapse all">
+              </div>
             <button type="button" class="close" data-dismiss="modal">
               <span>&times;</span>
             </button>
           </div>
           <div class="modal-body" id="entity-modal-body">
-              <!-- Populated with Javascript (hopefully) -->
+            <!-- Populated with Javascript -->
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-outline-primary" data-dismiss="modal" id="clear-modal-body">Clear All</button>

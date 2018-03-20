@@ -9,7 +9,7 @@ $(document).ready(() => {
     $('#collapse-all').click(() => $('.card .collapse').collapse('hide'));
     $('#expand-all').click(() => $('.card .collapse').collapse('show'));
 
-    window.addr = 'http://sdn.archerimpact.com'//window.location.protocol + '//' + window.location.host;
+    window.addr = window.location.protocol + '//' + window.location.host;
     window.requesting = null;
 });
 
