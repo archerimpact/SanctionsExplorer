@@ -16,28 +16,36 @@ const transform = entry => {
     entry.linked_profile_names = [];
     entry.countries = [];
 
-    programs = new Set();
+    programs  = new Set();
     countries = new Set();
-    lists = new Set();
+    lists     = new Set();
 
     entry.sanctions_entries.forEach(entry => {
         lists.add(list_to_acronym(entry.list));
         entry.program.forEach(program => {
-            programs.add(program);
-            let program_country = program_to_country(program);
-            if (program_country != null) {
-                countries.add(program_country);
+            if (program) {
+                programs.add(program);
+                let program_country = program_to_country(program);
+                if (program_country != null) {
+                    countries.add(program_country);
+                }
             }
         });
     });
-    if (!(lists.has('SDN') && lists.size == 1)) {
-        console.log(Array.from(lists));
+    entry.programs = Array.from(programs).sort();
+
+    entry.sdn_display = '';
+    if (lists.delete('Non-SDN')) {
+        if (lists.delete('SDN')) {
+            entry.sdn_display += '[SDN] ';
+            entry.is_sdn = lists.has('SDN');    // denote that this is an SDN entry for future purposes (might be useful)
+        }
+        entry.sdn_display += '[Non-SDN';
+        if (lists.size) {
+            entry.sdn_display += ': ' + Array.from(lists).sort().join(', ');
+        }
+        entry.sdn_display += ']';
     }
-
-    entry.is_sdn = lists.has('SDN');
-    lists.delete('SDN');
-
-    entry.programs = Array.from(programs);
 
     entry.linked_profiles.forEach(p => {
         entry.linked_profile_ids.push(p.linked_id);
