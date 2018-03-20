@@ -8,6 +8,7 @@ import importlib
 
 import sdn_parser
 import scraper
+import pr_match
 
 RSS_FEED_URL    = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Documents/ofac.xml'
 SDN_URL         = 'https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml'
@@ -22,6 +23,9 @@ NONSDN_JSON     = DIR + '/update_files/non_sdn.json'
 PR_JSON_2018    = DIR + '/update_files/2018_press_releases.json'
 EXPORT_SDN      = DIR + '/export_sdn.js'
 EXPORT_PRS      = DIR + '/export_prs.js'
+PR_MATCHES_FILE = DIR + '/update_files/matches.json'
+EXPORT_MATCHES  = DIR + '/update_parser.js'
+
 
 def error(msg):
 	# send Twilio text
@@ -66,21 +70,23 @@ except:
 if unchanged and not force_update:
 	quit()
 
-download_and_parse(SDN_URL,    SDN_XML_FILE,    SDN_JSON)
-sdn_parser = importlib.reload(sdn_parser)		# TODO this is horrible and hacky and needs to be removed
+download_and_parse(SDN_URL, SDN_XML_FILE, SDN_JSON)
+sdn_parser = importlib.reload(sdn_parser)                       # TODO this is horrible and hacky and needs to be removed
 download_and_parse(NONSDN_URL, NONSDN_XML_FILE, NONSDN_JSON)
 run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
 
 #### Press Releases ####
-# 3. Scrape latest press releases, placing into entries.json or some other intermediate file
-scraper.scrape_and_write_prs('2018', PR_JSON_2018)
+# Scrape latest press releases, placing into an intermediate JSON file
+scraper.scrape_2018(PR_JSON_2018)
 
-# 4. Call export_prs.js, which consumes entries.json and imports into Elastic
+# Call export_prs.js, which imports the JSON into Elastic
 run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
 
-# 5. Call the PR matching program, which downloads a list of names from Elastic,
-#    matches with `content` entries in entries.json, and writes the result to the Elastic SDN index.
-
+# Call the PR matching program, which downloads a list of names from Elastic,
+#    matches with press release content, creates an intermediate JSON file,
+#    and writes the result to the Elastic SDN index.
+pr_match.write_matches(PR_MATCHES_FILE)
+run_nodejs(EXPORT_MATCHES, 'export PR matches to Elastic')
 
 # If we've successfully made it this far, we write this for next time.
 serialize_feed(feed, OLD_RSS_FILE)

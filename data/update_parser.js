@@ -1,10 +1,11 @@
 const fs = require('fs');
+const path = require('path');
 const es = require('elasticsearch');
 const client = new es.Client({
 	host: 'localhost:9200'
 });
 
-fs.readFile('entries.json', "utf8", function(err, data) {
+fs.readFile(path.join(__dirname, 'update_files/matches.json'), 'utf8', function(err, data) {
 	if (err) throw err;
 	let obj = JSON.parse(data);
 	let keys = Object.keys(obj);

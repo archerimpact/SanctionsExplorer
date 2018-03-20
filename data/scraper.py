@@ -1,7 +1,6 @@
 import sqlite3
 from bs4 import BeautifulSoup
 import requests
-import datetime
 import re
 from urllib.parse import urljoin
 import os
@@ -219,22 +218,21 @@ def scrape_urls(urls):
 	return jsondata
 
 
-def scrape_and_write_prs(years, outfile):
-	now = datetime.datetime.now()
-	current_year = now.year
+def scrape_and_write_prs(outfile, all_years=False):
+	CURR_YEAR = 2018
 
-	#url_template_one = "https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/ofac-actions-{}.aspx"
-	#url_template_two = "https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/{}.aspx"
-	url_current = "https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/OFAC-Recent-Actions.aspx"
+	url_template_one = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/ofac-actions-{}.aspx'
+	url_template_two = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/{}.aspx'
+	url_current      = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/OFAC-Recent-Actions.aspx'
 
 	urls = []
-	if years == '2018':
-		urls.append(url_current)
+	urls.append(url_current)
 
-	#for year in [2001, 2002]:
-	#	urls.append(url_template_two.format(year))
-	#for year in range(2003, current_year):
-	#	urls.append(url_template_one.format(year))
+	if all_years:
+		for year in [2001, 2002]:
+			urls.append(url_template_two.format(year))
+		for year in range(2003, CURR_YEAR):
+			urls.append(url_template_one.format(year))
 
 	jsondata = scrape_urls(urls)
 
@@ -242,3 +240,11 @@ def scrape_and_write_prs(years, outfile):
 		data = json.dumps(jsondata)
 		f.write(data)
 		f.close()
+
+def scrape_all_years(outfile):
+	scrape_and_write_prs(outfile, all_years=True)
+
+def scrape_2018(outfile):
+	scrape_and_write_prs(outfile, all_years=False)
+
+scrape_all_years('all.json')
