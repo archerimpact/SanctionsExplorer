@@ -14,29 +14,56 @@ async function delete_index(name) {
     }
 }
 
-function construct_body(operations, transform, index_name, index_type, starting_from) {
+async function bulk_add(operations, transform, index_name, index_type, starting_from) {
     let body = [];
     for (let i = 0; i < operations.length; i++) {
         let id = starting_from + i;
-        let es_index_statement = {
+        let index_statement = {
             index: {
                 _index: index_name,
                 _type: index_type,
-                _id: id,
+                _id: parseInt(id),
             }
         };
-        body.push(es_index_statement);
+        body.push(index_statement);
         body.push(transform(operations[i]));
     }
-    console.log('body lengt is ' + body.length);
-    return body;
-}
-
-async function bulk_add(operations, transform, index_name, index_type, starting_from) {
-    let body = construct_body(operations, transform, index_name, index_type, starting_from);
 
     try {
         console.log('DEBUG: Bulk loading...')
+        const result = await client.bulk({
+            body: body
+        });
+
+        result.items.forEach(i => {
+            if (i.index.error) {
+                console.log(JSON.stringify(i));
+            }
+        });
+
+        return result;
+    }
+    catch (error) {
+        console.log(error);
+    }
+}
+
+async function bulk_update(operations, index_name, index_type) {
+    let body = [];
+    operations.forEach(op => {
+        let update_statement = {
+            update: {
+                _index: index_name,
+                _type: index_type,
+                _id: parseInt(op.id),
+            }
+        };
+        body.push(update_statement);
+        body.push(op.body);
+    });
+
+    try {
+        console.log('DEBUG: Bulk updating...')
         const result = await client.bulk({
             body: body
         });
@@ -84,6 +111,7 @@ async function reload_index(operations, transform, index_name, index_type) {
 module.exports = {
     reload_index: reload_index,
     bulk_add: bulk_add,
+    bulk_update: bulk_update,
     delete_index: delete_index,
     create_index: create_index,
     indexing_stats: indexing_stats,

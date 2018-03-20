@@ -1,28 +1,18 @@
 const fs = require('fs');
 const path = require('path');
-const es = require('elasticsearch');
-const client = new es.Client({
-	host: 'localhost:9200'
+const exporter = require(path.join(__dirname, 'elastic_export.js'));
+const entries = JSON.parse(fs.readFileSync(path.join(__dirname, 'update_files/matches.json'), 'utf8'));
+
+let operations = [];
+Object.keys(entries).forEach(id => {
+	operations.push({
+		id: id,
+		body: {
+			doc: {
+				pr_data: entries[id],
+			}
+		}
+	});
 });
 
-fs.readFile(path.join(__dirname, 'update_files/matches.json'), 'utf8', function(err, data) {
-	if (err) throw err;
-	let obj = JSON.parse(data);
-	let keys = Object.keys(obj);
-	for( var entry in obj) {
-		//console.log(obj[entry]);
-		client.update({
-			index: 'sdn',
-			type: 'entry',
-			id: entry,
-			body: {
-				doc: {
-					pr_data: obj[entry]
-				}
-			}
-		}, function(err, response) {
-			console.log("update");
-		});
-		//console.log(obj[entry]);
-	}
-});
+exporter.bulk_update(operations, 'sdn', 'entry');
