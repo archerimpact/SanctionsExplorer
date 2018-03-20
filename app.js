@@ -166,7 +166,13 @@ app.get('/search/sdn', function(req, res) {
             let match_phrase = create_match_phrase(keywords[i], req.query[keywords[i]])
             search_query.bool.must.push(match_phrase)
         }
+	if(keywords[i] == "all_display_names"){
+		let match_phrase = create_match_phrase("primary_display_name", req.query[keywords[i]]);
+		match_phrase.match["primary_display_name"].boost = 2;
+		search_query.bool.must.push(match_phrase)
+	}
     }
+  
 
     es_query.query = search_query;
     let full_query = {
@@ -176,14 +182,25 @@ app.get('/search/sdn', function(req, res) {
 
     search_ES(full_query, res);
 });
-/*
+
 app.get('/search/sdn/all_fields', function(req, res){
 	let search_query = {
 		"multi_match":{
 			"query":"",
-			"fields":["programs",
-				  "doc_id_numbers",
-				  "linked_profile_ids",
+			"fields":["countries",
+				  "vessel_call_sign",
+				  "vessel_flag",
+				  "vessel_owner",
+				 // "vessel_tonnage",
+				 // "vessel_gross_tonnage",
+				  "vessel_type",
+				 // "d-u-n-s_number",
+				  //"identity_id",
+				  "primary_display_name^3",
+				  "all_display_names^2",
+				  "programs",
+				  //"doc_id_numbers",
+				  //"linked_profile_ids",
 				  "linked_profile_names",
 				  "location",
 				  "title",
@@ -194,20 +211,20 @@ app.get('/search/sdn/all_fields', function(req, res){
 				  "citizenship_country",
 				  "website",
 				  "email_address",
-				  "swift/bic",
-				  "ifca_determination_-_",
-				  "aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n)",
-				  "aircraft_manufacturer's_serial_number_(msn)",
+				  //"swift/bic",
+				  //"ifca_determination_-_",
+				  //"aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n)",
+				  //"aircraft_manufacturer\s_serial_number_(msn)",
 				  "aircraft_manufacture_date",
 				  "aircraft_model",
 				  "aircraft_operator",
-				  "bik_(ru)",
-				  "un/locode",
-				  "aircraft_tail_number",
-				  "previous_aircraft_tail_number",
-				  "micex_code",
-				  "nationality_of_registration",
-				  "d-u-n-s_number"]
+				  //"bik_(ru)",
+				  //"un/locode",
+				  //"aircraft_tail_number",
+				  //"previous_aircraft_tail_number",
+				  //"micex_code",
+				  "nationality_of_registration"]
+				  //"d-u-n-s_number"]
 		}
 	};
 
@@ -235,7 +252,7 @@ app.get('/search/sdn/all_fields', function(req, res){
 		index:'sdn',
 		body: es_query,
 	};
-
+	console.log(JSON.stringify(full_query));
 	search_ES(full_query, res);
 });
-*/
+
