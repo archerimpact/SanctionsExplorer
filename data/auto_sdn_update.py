@@ -23,8 +23,8 @@ NONSDN_JSON     = DIR + '/update_files/non_sdn.json'
 PR_JSON_2018    = DIR + '/update_files/2018_press_releases.json'
 EXPORT_SDN      = DIR + '/export_sdn.js'
 EXPORT_PRS      = DIR + '/export_prs.js'
+EXPORT_MATCHES  = DIR + '/export_pr_matches.js'
 PR_MATCHES_FILE = DIR + '/update_files/matches.json'
-EXPORT_MATCHES  = DIR + '/update_parser.js'
 
 
 def error(msg):

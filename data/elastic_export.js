@@ -69,7 +69,7 @@ async function bulk_update(operations, index_name, index_type) {
         });
 
         result.items.forEach(i => {
-            if (i.index.error) {
+            if (i.update.error) {
                 console.log(JSON.stringify(i));
             }
         });
