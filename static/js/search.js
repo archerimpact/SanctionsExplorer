@@ -19,7 +19,7 @@ let clear_search_results = () => $('#search-results').empty();
 let display_search_results = (show) => show ? $('#search-results').show() : $('#search-results').hide();
 let disable_search_buttons = (disable) => disable ? $('.btn-sm').addClass('disabled') : $('.btn-sm').removeClass('disabled');
 let update_results_header = (num) => {
-    if (num !== null) {
+    if (num) {
         $('#results-header').text('Results (' + num + ')')
         if (num > 50) {
             if ($('#too-many-results').length === 0) {

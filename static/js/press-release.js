@@ -16,6 +16,12 @@ $(document).ready(() => {
 let generate_pr_card = (data) => window.pr_card(data);
 let get_search_input = () => $('#press-release-input').val().trim();
 let append_to_results = (elem) => $('#search-results').append(elem);
+let construct_filter_box = (value) => '<span class="filter-box badge badge-primary">' + value + '</span>';
+let update_filters_for_print = (data) => {
+    $('.filter-box').remove();
+    let filter_elem = construct_filter_box(data.query);
+    $('#print-view-filters').html(filter_elem);
+};
 
 /*
  * EVERYTHING BELOW THIS POINT SHOULD NOT REFERENCE THE DOM, SPECIFIC IDs/CLASSES, etc.
@@ -40,5 +46,5 @@ function display_pr_query(res) {
         append_to_results(generate_pr_card(value));
     });
 
-    update_results_header(res['num_results']);
+    return res['num_results'];
 }
