@@ -7,8 +7,8 @@ from sys import argv
 import importlib
 
 import sdn_parser
-import scraper
-import pr_match
+import pr_scraper
+import match_sdn_pr
 
 RSS_FEED_URL    = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Documents/ofac.xml'
 SDN_URL         = 'https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml'
@@ -84,7 +84,7 @@ run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
 
 # Scrape latest press releases, placing into an intermediate JSON file
 debug('Scraping press releases from 2018...')
-scraper.scrape_2018(PR_JSON_2018)
+pr_scraper.scrape_2018(PR_JSON_2018)
 
 # Call export_prs.js, which imports the JSON into Elastic
 debug('Exporting press releases to Elastic...')
@@ -94,7 +94,7 @@ run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
 #    matches with press release content, creates an intermediate JSON file,
 #    and writes the result to the Elastic SDN index.
 debug('Matching SDN entities with press release data...')
-pr_match.write_matches(PR_MATCHES_FILE)
+match_sdn_pr.write_matches(PR_MATCHES_FILE)
 
 debug('Exporting matches to Elastic...')
 run_nodejs(EXPORT_MATCHES, 'export PR matches to Elastic')

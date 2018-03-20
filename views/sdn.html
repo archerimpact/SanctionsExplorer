@@ -177,19 +177,22 @@
         <div class="card">
             <div class="card-header">
                 <a href="#" class="collapse-link" data-id="{{= it.fixed_ref }}">
-                    {{=it.primary_display_name}}
+                    {{= it.primary_display_name }}
                 </a>
                 <small class="card-sdn-type">
-                    ({{=it.party_sub_type}})
+                    ({{= it.party_sub_type }})
                 </small>
 
                 <div class="float-right" style="margin-left: 10px;">
-                    {{=it.programs.join(' / ')}}
+                    {{? it.sdn_display }}
+                        {{= it.sdn_display }}
+                    {{?}}
+                    {{= it.programs.join(' / ') }}
                 </div>
             </div>
             <div class="collapse hide card-body-{{=it.fixed_ref }}">
                 <div class="card-body">
-                    {{? it.identity.aliases.length > 0}}
+                    {{? it.identity.aliases.length > 0 }}
                         <h5 class="card-detail-header">Aliases</h5>
                         <table class="table table-sm">
                             <thead>

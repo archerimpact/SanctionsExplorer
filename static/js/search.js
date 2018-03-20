@@ -9,7 +9,7 @@ $(document).ready(() => {
     $('#collapse-all').click(() => $('.card .collapse').collapse('hide'));
     $('#expand-all').click(() => $('.card .collapse').collapse('show'));
 
-    window.addr = window.location.protocol + '//' + window.location.host;
+    window.addr = 'http://sdn.archerimpact.com'//window.location.protocol + '//' + window.location.host;
     window.requesting = null;
 });
 
@@ -19,7 +19,7 @@ let clear_search_results = () => $('#search-results').empty();
 let display_search_results = (show) => show ? $('#search-results').show() : $('#search-results').hide();
 let disable_search_buttons = (disable) => disable ? $('.btn-sm').addClass('disabled') : $('.btn-sm').removeClass('disabled');
 let update_results_header = (num) => {
-    if (num) {
+    if (num != null) {
         $('#results-header').text('Results (' + num + ')')
         if (num > 50) {
             if ($('#too-many-results').length === 0) {
