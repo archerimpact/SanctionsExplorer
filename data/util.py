@@ -16,6 +16,7 @@ def read_json(outfile):
 
 
 def log(owner):
+    owner_tag = f'<{owner}>'
     def f(msg, level):
-        print(f'<{owner}> {level.upper()}: {msg}.')
+        print(f'{owner_tag:<14}{level.upper()}: {msg}.')
     return f

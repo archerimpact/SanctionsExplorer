@@ -1,6 +1,8 @@
 const fs = require('fs');
 const path = require('path');
 const exporter = require(path.join(__dirname, 'elastic_export.js'));
+const util = require(path.join(__dirname, 'util.js'));
+const log = util.log('sdn_export');
 
 const sdn    = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/sdn.json'), 'utf8'));
 const nonsdn = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/non_sdn.json'), 'utf8'));
@@ -56,7 +58,7 @@ const transform = entry => {
     entry.identity.aliases.forEach(alias => {
         entry.all_display_names.push(alias.display_name);
         if (alias.date_period !== null) {
-            console.log('ERROR: OFAC has started associating date periods with aliases.  These will not be rendered.');
+            log('OFAC has started associating date periods with aliases.  These will not be rendered.', 'error');
         }
         delete alias.date_period;
 
@@ -100,7 +102,7 @@ const transform = entry => {
         entry.doc_id_numbers.push(doc.id_number);
          // for website display
         if (doc.validity != 'Valid' && doc.validity != 'Fraudulent') {
-            console.log('WARNING: An invalid document status appeared (normally Valid or Fraudulent): ' + doc.validity);
+            log('An invalid document status appeared (normally Valid or Fraudulent): ' + doc.validity, 'warning');
         }
         headers = []
 
@@ -202,10 +204,10 @@ async function load_sdn() {
     await exporter.create_index('sdn');
     await exporter.bulk_add(sdn,    transform, 'sdn', 'entry', 0);
     let count = await exporter.indexing_stats('sdn');
-    console.log('DEBUG: ' + count + ' documents indexing.');
+    log(count + ' documents indexing', 'debug');
     await exporter.bulk_add(nonsdn, transform, 'sdn', 'entry', 100000);     // TODO maybe pick a different indexing scheme.
     let count_new = await exporter.indexing_stats('sdn');
-    console.log('DEBUG: ' + count_new + ' documents indexing.');
+    log(count_new + ' documents indexing', 'debug');
 }
 
 load_sdn();

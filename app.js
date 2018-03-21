@@ -34,6 +34,7 @@ app.get('/press-releases', (req, res) => {
 
 app.get('/search/press-releases', function(req, res) {
     let text = req.query.query;
+    console.log(text);
     let es_query = { size: 50, from: 0 };
 
     if (req.query.size) {
@@ -64,7 +65,7 @@ app.get('/search/press-releases', function(req, res) {
 
 
 async function search_ES(query, res) {
-    console.log(JSON.stringify(query));
+    //console.log(JSON.stringify(query));
     try {
         const results = await client.search(query);
         let response = [];
@@ -83,6 +84,7 @@ async function search_ES(query, res) {
 
 
 app.get('/search/sdn', function(req, res) {
+    console.log(JSON.stringify(req.query));
     const fuzziness = {
         'programs': '0',
         'doc_id_numbers': '0',
@@ -148,7 +150,7 @@ app.get('/search/sdn', function(req, res) {
             query: search_query,
         }
     };
-    
+
     search_ES(full_query, res);
 });
 

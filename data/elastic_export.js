@@ -1,16 +1,18 @@
+const path = require('path');
 const es = require('elasticsearch');
 const client = new es.Client({
     host: 'localhost:9200',
-
 });
+const util = require(path.join(__dirname, 'util.js'));
+const log = util.log('es_export');
 
 async function delete_index(name) {
     try {
-        console.log('DEBUG: Deleting ' + name + ' index...');
+        log('Deleting ' + name + ' index...', 'debug');
         return await client.indices.delete({ index: name });
     }
     catch (error) {
-        console.log('ERROR: Could not delete ' + name + ' index: ' + error);
+        log('Could not delete ' + name + ' index: ' + error, 'error');
     }
 }
 
@@ -30,21 +32,21 @@ async function bulk_add(operations, transform, index_name, index_type, starting_
     }
 
     try {
-        console.log('DEBUG: Bulk loading...')
+        log('Bulk loading...', 'debug');
         const result = await client.bulk({
             body: body
         });
 
         result.items.forEach(i => {
             if (i.index.error) {
-                console.log(JSON.stringify(i));
+                log(JSON.stringify(i), 'error');
             }
         });
 
         return result;
     }
     catch (error) {
-        console.log(error);
+        log(error, 'error');
     }
 }
 
@@ -63,32 +65,32 @@ async function bulk_update(operations, index_name, index_type) {
     });
 
     try {
-        console.log('DEBUG: Bulk updating...')
+        log('Bulk updating...', 'debug');
         const result = await client.bulk({
             body: body
         });
 
         result.items.forEach(i => {
             if (i.update.error) {
-                console.log(JSON.stringify(i));
+                log(JSON.stringify(i), 'error');
             }
         });
 
         return result;
     }
     catch (error) {
-        console.log(error);
+        log(error, 'error');
     }
 }
 
 async function create_index(name) {
-    console.log('DEBUG: Creating ' + name + ' index...');
+    log('Creating ' + name + ' index...', 'debug');
     let created = await client.indices.exists({ index: name });
     if (!created) {
         return await client.indices.create({ index: name });
     }
     else {
-        console.log('ERROR: Index ' + name + ' already existed; deletion failed.');
+        log('Index ' + name + ' already existed; deletion failed', 'error');
     }
 }
 
@@ -104,7 +106,7 @@ async function reload_index(operations, transform, index_name, index_type) {
         await create_index(index_name);
         await bulk_add(operations, transform, index_name, index_type, 0);
     } catch (error) {
-        console.log('ERROR: ' + error);
+        log(error, 'error');
     }
 }
 
