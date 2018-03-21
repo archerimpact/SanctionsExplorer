@@ -1,3 +1,5 @@
+import json
+
 def write_json(outfile, data):
     with open(outfile, 'w') as f:
         f.write(json.dumps(data))
@@ -8,7 +10,7 @@ def write_json(outfile, data):
 def read_json(outfile):
     ret = None
     with open(outfile, 'r') as f:
-        json.load(f)
+        ret = json.load(f)
         f.close()
     return ret
 

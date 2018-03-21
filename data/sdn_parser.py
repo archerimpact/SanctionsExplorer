@@ -1179,7 +1179,7 @@ def list_to_json_list(lst):
 	else:
 		return []
 
-def write_json(outfile):
+def write(outfile):
 	parties = list(distinct_parties.values())
 	return util.write_json(outfile, [json.loads(str(i)) for i in parties])
 
@@ -1201,7 +1201,7 @@ def parse_to_file(infile, outfile):
 	log('Parsing sanctions entries...', 'debug')
 	add_sanctions_entries(root[6])
 	log(str(len(distinct_parties)) + ' entries parsed', 'debug')
-	write_json(outfile)
+	write(outfile)
 	#distinct_parties = {}		# TODO reset all the other globals (>_<) as well... or preferably just don't use globals? This will take a bit of refactoring.
 
 if __name__ == '__main__':
