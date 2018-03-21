@@ -131,11 +131,13 @@ app.get('/search/sdn', function(req, res) {
                 let match_phrase = create_match_phrase(keywords[i], req.query[keywords[i]])
                 search_query.bool.must.push(match_phrase)
             }
-            /*if(keywords[i] == "all_display_names"){
+            if(keywords[i] == "all_display_names"){
+		console.log("Found all display names");
                 let match_phrase = create_match_phrase("primary_display_name", req.query[keywords[i]]);
                 match_phrase.match["primary_display_name"].boost = 2;
                 search_query.bool.must.push(match_phrase)
-            }*/
+		console.log(JSON.stringify(search_query));
+            }
         }
     }
 
