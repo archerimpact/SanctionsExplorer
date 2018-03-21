@@ -1,6 +1,8 @@
 import requests
 import urllib
 import json
+import util
+log = util.log('matcher')
 
 def write_pr_matches(outfile):
     data = {}
@@ -21,7 +23,7 @@ def write_pr_matches(outfile):
             }
             data[sdn_id].append(pr_elem)
 
-    write_json(outfile, data)
+    util.write_json(outfile, data)
 
 
 def write_ofac_id_matches(outfile):
@@ -36,23 +38,18 @@ def write_ofac_id_matches(outfile):
 
         data[sdn_id] = ofac_website_id
 
-    write_json(outfile, data)
+    util.write_json(outfile, data)
 
 
 def get_names_from_elastic():
     scandata = {'_source': ['primary_display_name'], 'size': '10000'}
     scan = requests.get('http://localhost:9200/sdn/_search', json=scandata)
     if scan.status_code != 200:
-        print('ERROR: Failed to obtain all SDN primary names.')
+        log('Failed to obtain all SDN primary names', 'error')
 
-    print('DEBUG: Successfully obtained all SDN primary names.')
+    log('Successfully obtained all SDN primary names', 'debug')
     return scan.json()['hits']['hits']
 
-
-def write_json(outfile, data):
-    with open(outfile, 'w') as f:
-        f.write(json.dumps(data))
-        f.close()
 
 def query_pr_content(query):
     url_template = 'http://localhost:9200/pr/pr/_search'
@@ -63,4 +60,4 @@ def query_pr_content(query):
     if response.status_code == 200:
         return response.json()
     else:
-        print('ERROR: Failed to query a PR in Elastic (error ' + response.status_code + ')')
+        log('Failed to query a PR in Elastic (error ' + response.status_code + ')', 'error')

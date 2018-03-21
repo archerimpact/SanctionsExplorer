@@ -2,6 +2,9 @@ from lxml import etree
 import json
 from copy import deepcopy
 
+import util
+log = util.log('parser')
+
 xml_namespace = {"ofac" : "{http://www.un.org/sanctions/1.0}"}
 
 # Notes
@@ -49,7 +52,7 @@ class Date:
 			self.day = None
 
 		if (not self.year) or (self.year and self.month and not self.day):
-			print('ERROR: Invalid date found.')
+			log('Invalid date found', 'error')
 
 
 	def __str__(self):
@@ -88,7 +91,7 @@ class DateBoundary:
 			   return Date(None, y=from_date.year)
 
 		else:
-			print('ERROR: DateBoundary was not condensable: ' + str(from_date) + ', ' + str(to_date))
+			log('DateBoundary was not condensable: ' + str(from_date) + ', ' + str(to_date), 'error')
 			return None
 
 
@@ -102,7 +105,7 @@ class DateBoundary:
 		self.condensed_date = self.condense_boundary(self.date_from, self.date_to)
 
 		if self.year_fixed or self.month_fixed or self.day_fixed:
-			print('FUTURE_WARNING: OFAC is beginning to use year_/month_/day_fixed fields.')
+			log('OFAC is beginning to use year_/month_/day_fixed fields', 'warning')
 
 		# if str(self.date_from) != str(self.date_to):
 			# print(str(self.date_from) + ' to ' + str(self.date_to) + ' condensed to ' + str(self.condense_boundary(self.date_from, self.date_to)))
@@ -150,7 +153,7 @@ class DatePeriod:
 			return str(from_boundary.year) + ' to ' + str(to_boundary.year)
 
 		else:
-			print('WARNING: A DatePeriod did not condense nicely: ' + str(from_boundary) + ' to ' + str(to_boundary))
+			log('A DatePeriod did not condense nicely: ' + str(from_boundary) + ' to ' + str(to_boundary), 'warning')
 			return str(from_boundary) + ' to ' + str(to_boundary)
 
 
@@ -164,7 +167,7 @@ class DatePeriod:
 		#self.duration_maximum =  None 			# a Duration Object, not currently used in xml
 
 		if self.year_fixed != 'false' or self.month_fixed != 'false' or self.day_fixed != 'false':
-			print('FUTURE_WARNING: OFAC is beginning to use year_/month_/day_fixed fields.')
+			log('OFAC is beginning to use year_/month_/day_fixed fields', 'warning')
 
 	def __str__(self):
 		return self.condense_and_stringify(self.start_boundary.condensed_date, self.end_boundary.condensed_date)
@@ -417,7 +420,7 @@ class Location:
 
 		# Checks that there are not conflicting country entries in this location
 		if (self.country is not None) and (self.country != 'None') and (str(self.location_parts.get('COUNTRY')) != 'None'):
-			print('WARNING: ' + str(self.country) + ' and ' + self.location_parts['COUNTRY'] + ' are listed as countries for the same location.')
+			log(str(self.country) + ' and ' + self.location_parts['COUNTRY'] + ' are listed as countries for the same location', 'warning')
 
 		if str(self.country) != 'None':
 			self.location_parts['COUNTRY'] = str(self.country)
@@ -438,8 +441,7 @@ class Location:
 
 		# Checks whether OFAC has added any new fields
 		if len(set(self.location_parts.keys() - set(order))) > 0:
-			print('FUTURE_WARNING: OFAC has added a new location part type.')
-			print(self.location_parts.keys())
+			log('OFAC has added a new location part type: ' + str(self.location_parts.keys()), 'warning')
 
 		for field in order:
 			if self.location_parts.get(field) is not None:
@@ -488,7 +490,7 @@ class IDRegDocument:
 				date_period = xml_approx_find(d, "DatePeriod")
 				date_period_obj = DatePeriod(date_period)
 				if date_type in ret:
-					print("ERROR: " + str(ret))
+					log('Parsing date failed: ' + str(ret), 'error')
 				ret[date_type] = str(date_period_obj)
 		return ret
 
@@ -629,7 +631,7 @@ class Feature:
 		elif self.details:
 			d['details'] = self.details
 		else:
-			print('WARNING: There was a feature without a location, date, or details.')
+			log('There was a feature without a location, date, or details', 'warning')
 
 		return json.dumps(d)
 
@@ -638,7 +640,7 @@ class Alias:
 	def parse_comment(self, xml):
 		elem = xml_approx_find(xml, "Comment")
 		if elem is not None and elem.text is not None:
-			print('DEBUG: ' + elem.text)
+			# print('DEBUG: ' + elem.text)
 			return elem.text
 		else:
 			return elem
@@ -646,7 +648,7 @@ class Alias:
 	def parse_date_period(self, xml):
 		elem = xml_approx_find(xml, "DatePeriod")
 		if elem is not None:
-			print('Date period wasnt none')
+			log('Date period wasn\'t none', 'warning')
 			return DatePeriod(elem)
 		else:
 			return elem
@@ -703,7 +705,7 @@ class Alias:
 	def construct_name_string(self, name_dict):
 		unknown_keys = set(name_dict.keys()) - set(['Entity Name', 'Aircraft Name', 'Vessel Name', 'First Name', 'Middle Name', 'Last Name', 'Maiden Name', 'Nickname', 'Patronymic', 'Matronymic'])
 		if len(unknown_keys) > 0:
-			print('ERROR: OFAC has added an unknown key(s): ' + str(unknown_keys))
+			log('OFAC has added an unknown key(s): ' + str(unknown_keys), 'error')
 
 		if 'Entity Name' in name_dict:
 			return name_dict['Entity Name'][0]
@@ -850,7 +852,7 @@ class Identity:
 				self.primary = a
 
 				if not a.is_primary:
-					print('ERROR: There was a name that isn\'t marked as primary.')
+					log('There was a name that isn\'t marked as primary', 'error')
 			else:
 				self.aliases.append(a)
 
@@ -902,7 +904,7 @@ class SanctionEntry:
 					ret.append(comment)
 
 				if sanctions_type == 'Block' and comment is not None:
-					print('FUTURE_WARNING: Sanctions Block now contains a comment (' + comment + ')')
+					log('Sanctions Block now contains a comment (' + comment + ')', 'warning')
 
 		return ret
 
@@ -1177,13 +1179,9 @@ def list_to_json_list(lst):
 	else:
 		return []
 
-def write_json(filename):
+def write_json(outfile):
 	parties = list(distinct_parties.values())
-
-	with open(filename, 'w') as f:
-		data = json.dumps([json.loads(str(i)) for i in parties])
-		f.write(data)
-		f.close()
+	return util.write_json(outfile, [json.loads(str(i)) for i in parties])
 
 def parse_to_file(infile, outfile):
 	## First parse the file and get root
@@ -1191,18 +1189,18 @@ def parse_to_file(infile, outfile):
 	root = tree.getroot()
 
 	date_of_issue = Date(root[0])
-	print("DEBUG: Making top-level reference lists...")
+	log('Making top-level reference lists...', 'debug')
 	make_lookup_lists(root[1])
 	make_location_list(root[2])
 	make_id_doc_list(root[3])
 	make_distinct_party_list(root[4])
-	print("DEBUG: Resolving documents to parties...")
+	log('Resolving documents to parties...', 'debug')
 	resolve_documents_to_parties()
-	print("DEBUG: Linking profiles...")
+	log('Linking profiles...', 'debug')
 	add_profile_links(root[5])
-	print("DEBUG: Parsing sanctions entries...")
+	log('Parsing sanctions entries...', 'debug')
 	add_sanctions_entries(root[6])
-	print(len(distinct_parties))
+	log(str(len(distinct_parties)) + ' entries parsed', 'debug')
 	write_json(outfile)
 	#distinct_parties = {}		# TODO reset all the other globals (>_<) as well... or preferably just don't use globals? This will take a bit of refactoring.
 

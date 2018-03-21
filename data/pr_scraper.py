@@ -6,6 +6,9 @@ from urllib.parse import urljoin
 import os
 import json
 
+import util
+log = util.log('pr_scraper')
+
 def is_press_release(text):
 	return text == 'Press Release' or text == 'Press Release 1' or text == "Press Release 2"
 
@@ -69,7 +72,7 @@ def parseHtml2001(pr_result):
 				div_open -= 1
 				content = content[content.find("</div") + 5]
 			else:
-				print (div_open)
+				#print (div_open)
 				break
 
 	end = pr_content.find(content)
@@ -234,18 +237,13 @@ def scrape_and_write_prs(outfile, all_years=False):
 		for year in range(2003, CURR_YEAR):
 			urls.append(url_template_one.format(year))
 
-	jsondata = scrape_urls(urls)
-	data = []
-	with open(outfile, 'r') as f:
-		# loads the file and filters all entries from the current year
-		data = list(filter(lambda e: str(CURR_YEAR) not in e['date'], json.load(f)))
-		f.close()
+	scraped_data = scrape_urls(urls)
+	old_data = util.read_json(outfile)
+	old_data = list(filter(lambda e: str(CURR_YEAR) not in e['date'], old_data))
+	old_data.extend(scraped_data)
 
-	data.extend(jsondata)
-
-	with open(outfile, 'w') as f:
-		f.write(json.dumps(data))
-		f.close()
+	if util.write_json(outfile, old_data):
+		log('Successfully wrote PRs to the outfile', 'debug')
 
 def scrape_all_years(outfile):
 	scrape_and_write_prs(outfile, all_years=True)

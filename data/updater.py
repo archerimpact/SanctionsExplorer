@@ -11,6 +11,9 @@ import pr_scraper
 import matcher
 import ofac_mapping
 
+import util
+log = util.log('updater')
+
 RSS_FEED_URL    = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Documents/ofac.xml'
 SDN_URL         = 'https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml'
 NONSDN_URL      = 'https://www.treasury.gov/ofac/downloads/sanctions/1.0/cons_advanced.xml'
@@ -32,27 +35,21 @@ EXPORT_PRS      = DIR + '/export_prs.js'
 EXPORT_MATCHES  = DIR + '/export_pr_matches.js'
 
 
-def error(msg):
-	# send Twilio text
-	print('<Updater> ERROR: ' + str(msg))
-	quit()
-
-def debug(msg):
-	print('<Updater> DEBUG: ' + str(msg))
-
 def serialize_feed(feed, filename):
 	try:
 		with open(filename, 'w') as f:
 			for item in feed['items']:
 				f.write(str(item['published']) + '\n')
 	except Exception as e:
-		error(e)
+		log(str(e), 'error')
+		quit()
 
 def run_nodejs(filename, task):
 	try:
 		run(['node', filename])
 	except Exception as e:
-		error('Failed to ' + task + ': ' + str(e))
+		log('Failed to ' + task + ': ' + str(e), 'error')
+		quit()
 
 def download_and_parse(url, xml, json):
 	try:
@@ -61,7 +58,8 @@ def download_and_parse(url, xml, json):
 		debug('Parsing ' + xml + '...')
 		sdn_parser.parse_to_file(xml, json)
 	except Exception as e:
-		error('While parsing ' + str(e) + ', ')
+		log('While parsing ' + str(e) + ', ', 'error')
+		quit()
 
 
 feed = parse(RSS_FEED_URL)
