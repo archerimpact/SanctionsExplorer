@@ -94,7 +94,7 @@ run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
 #    matches with press release content, creates an intermediate JSON file,
 #    and writes the result to the Elastic SDN index.
 debug('Matching SDN entities with press release data...')
-match_sdn_pr.write_matches(PR_MATCHES_FILE)
+match_sdn_pr.write_pr_matches(PR_MATCHES_FILE)
 
 debug('Exporting matches to Elastic...')
 run_nodejs(EXPORT_MATCHES, 'export PR matches to Elastic')

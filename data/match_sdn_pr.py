@@ -2,39 +2,65 @@ import requests
 import urllib
 import json
 
-def write_matches(outfile):
-	url_template = 'http://localhost:9200/pr/pr/_search'
-	headers = {'Content-Type': 'application/json'}
-	data = {'query': {'match_phrase': {'content' :{'query': '', 'slop': '3'}}}}
+def write_pr_matches(outfile):
+    data = {}
+    entries = get_names_from_elastic()
 
-	jsondata = {}
+    for elem in entries:
+        sdn_id = elem['_id']
+        name = elem['_source']['primary_display_name']
+        data[sdn_id] = []
 
-	scandata = {'_source': ['primary_display_name'], 'size': '10000'}
-	scan = requests.get('http://localhost:9200/sdn/_search', json=scandata)
-	if scan.status_code != 200:
-		print('ERROR: Failed to obtain all SDN primary names.')
+        result = query_pr_content(name)
+        for entry in result['hits']['hits']:
+            pr_elem = {
+                'pr_id': entry['_id'],
+                'link': entry['_source']['link'],
+                'date': entry['_source']['date'],
+                'title': entry['_source']['title'],
+            }
+            data[sdn_id].append(pr_elem)
 
-	print('DEBUG: Successfully obtained all SDN primary names.')
+    write_json(outfile, data)
 
-	for elem in scan.json()['hits']['hits']:
-		val = elem['_source']['primary_display_name']
-		sdnid = elem['_id']
-		jsondata[sdnid] = []
-		data['query']['match_phrase']['content']['query'] = val;
-		result = requests.get(url_template, json=data)
-		if result.status_code == 200:
-			for entry in result.json()['hits']['hits']:
-				pr_elem = {
-					'pr_id': entry['_id'],
-					'link': entry['_source']['link'],
-					'date': entry['_source']['date'],
-					'title': entry['_source']['title'],
-				}
-				jsondata[sdnid].append(pr_elem)
-		else:
-			print('fail')
 
-	with open(outfile, 'w') as f:
-		data = json.dumps(jsondata)
-		f.write(data)
-		f.close()
+def write_ofac_id_matches(outfile):
+    data = {}        # { sdn_id : ofac_website_id }
+    entries = get_names_from_elastic()
+    for entry in entries:
+        sdn_id = entry['_id']
+        name = entry['_source']['primary_display_name']
+
+        # TODO do some matching
+        ofac_website_id = 0
+
+        data[sdn_id] = ofac_website_id
+
+    write_json(outfile, data)
+
+
+def get_names_from_elastic():
+    scandata = {'_source': ['primary_display_name'], 'size': '10000'}
+    scan = requests.get('http://localhost:9200/sdn/_search', json=scandata)
+    if scan.status_code != 200:
+        print('ERROR: Failed to obtain all SDN primary names.')
+
+    print('DEBUG: Successfully obtained all SDN primary names.')
+    return scan.json()['hits']['hits']
+
+
+def write_json(outfile, data):
+    with open(outfile, 'w') as f:
+        f.write(json.dumps(data))
+        f.close()
+
+def query_pr_content(query):
+    url_template = 'http://localhost:9200/pr/pr/_search'
+    headers = {'Content-Type': 'application/json'}
+    data = {'query': {'match_phrase': {'content' :{'query': query, 'slop': '3'}}}}
+
+    response = requests.get(url_template, json=data)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        print('ERROR: Failed to query a PR in Elastic (error ' + response.status_code + ')')

@@ -231,11 +231,11 @@
                                     {{? it.document_headers && it.document_headers.includes('issuing_authority') }}
                                         <th class="muted-table-text">authorized by</th>
                                     {{?}}
-                                    {{? it.document_headers && it.document_headers.includes('Expiration Date') }}
-                                        <th class="muted-table-text">expires on</th>
-                                    {{?}}
                                     {{? it.document_headers && it.document_headers.includes('Issue Date') }}
                                         <th class="muted-table-text">issued on</th>
+                                    {{?}}
+                                    {{? it.document_headers && it.document_headers.includes('Expiration Date') }}
+                                        <th class="muted-table-text">expires on</th>
                                     {{?}}
                                 </tr>
                             </thead>
