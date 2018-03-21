@@ -101,13 +101,11 @@ hr.no-bottom-margin {
     /* border: solid 0px black; */
     margin-left: 15px;
     background-color: #555;
-    padding-top: 3px;
-    font-size: 14px;
+    font-size: .9em;
+    margin-top: 5px;        /* not an amazing vertical centering solution but it works? */
+    padding-top: .4em;
 }
 
-#print-view-filters {
-    margin-top: 20px;
-}
 
 
 /*********** Cards ***********/

@@ -6,7 +6,8 @@ $(document).ready(() => {
     window.searchRoute = window.addr + '/search/sdn';
 
     $('.search-button').click(event => {
-        send_search(collect_query_info());
+        let query = collect_query_info()
+        send_search(query);
         update_filters_for_print(query);
     });
 
@@ -163,14 +164,20 @@ let get_program_select = () => $('#program-select').val();
 let get_row_select = (id) => $('#' + id + '-select').val();
 let get_row_input = (id) => $('#' + id + '-input').val().trim();
 let append_to_results = (elem, divToUse) => $(divToUse).append(elem);
-let construct_filter_box = (field, value) => '<span class="filter-box badge badge-primary">' + field + ': ' + value + '</span>';
+let truncate_string = (str, length) => (str.length <= length) ? str : str = str.substring(0, length) + '..';
+let construct_filter_box = (field, value, visibility) => '<span class="filter-box badge badge-primary ' + visibility + '" data-toggle="tooltip" data-placement="bottom" title="' + field + '">' + value + '</span>';
 let update_filters_for_print = (data) => {
     $('.filter-box').remove();
     let filter_elem = '';
     $.each(data, (k,v) => {
-        filter_elem += construct_filter_box(api_to_ui(k), v);
+        let key = api_to_ui(k);
+        if (key) {
+            filter_elem += construct_filter_box(key, v, 'd-none d-print-block');
+            filter_elem += construct_filter_box(key, truncate_string(v, 12), 'd-block d-print-none');
+        }
     });
-    $('#print-view-filters').html(filter_elem);
+    $(filter_elem).insertAfter('#results-header');
+    $('[data-toggle="tooltip"]').tooltip();
 }
 let send_search = (query, mode) => {
     if (!mode) {
