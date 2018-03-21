@@ -112,6 +112,10 @@ $(document).ready(() => {
         $('#links-modal .modal-body').empty();
     });
 
+    $(document).on('click', '#results-link-explorer-icon', event => {
+        $('#links-modal').modal('show');
+    });
+
     $(document).on('click', '#results-plus-icon', event => {
         $('#search-results .collapse').collapse('show');
     });
