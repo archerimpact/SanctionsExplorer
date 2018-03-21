@@ -8,7 +8,8 @@ import importlib
 
 import sdn_parser
 import pr_scraper
-import match_sdn_pr
+import matcher
+import ofac_mapping
 
 RSS_FEED_URL    = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Documents/ofac.xml'
 SDN_URL         = 'https://www.treasury.gov/ofac/downloads/sanctions/1.0/sdn_advanced.xml'
@@ -23,7 +24,8 @@ NONSDN_XML_FILE = DIR + '/update_files/non_sdn_advanced.xml'
 SDN_JSON        = DIR + '/update_files/sdn.json'
 NONSDN_JSON     = DIR + '/update_files/non_sdn.json'
 PR_JSON_2018    = DIR + '/update_files/press_releases.json'
-PR_MATCHES_FILE = DIR + '/update_files/matches.json'
+PR_MATCHES      = DIR + '/update_files/pr_matches.json'
+OFAC_MATCHES    = DIR + '/update_files/ofac_id_matches.json'
 
 EXPORT_SDN      = DIR + '/export_sdn.js'
 EXPORT_PRS      = DIR + '/export_prs.js'
@@ -94,10 +96,16 @@ run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
 #    matches with press release content, creates an intermediate JSON file,
 #    and writes the result to the Elastic SDN index.
 debug('Matching SDN entities with press release data...')
-match_sdn_pr.write_pr_matches(PR_MATCHES_FILE)
+matcher.write_pr_matches(PR_MATCHES)
 
 debug('Exporting matches to Elastic...')
 run_nodejs(EXPORT_MATCHES, 'export PR matches to Elastic')
+
+# Match with IDs on the OFAC website
+#ofac_mapping.write_ofac_ids(OFAC_MATCHES_FILE)
+
+#debug('Matching SDN entities with their IDs on the OFAC website...')
+#matcher.write_ofac_id_matches(OFAC_MATCHES_FILE)
 
 # If we've successfully made it this far, we write this for next time.
 serialize_feed(feed, OLD_RSS_FILE)
