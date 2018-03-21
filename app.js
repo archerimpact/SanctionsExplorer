@@ -91,44 +91,36 @@ app.get('/search/sdn', function(req, res) {
         'party_sub_type': '0'
     };
 
-    let es_query = { size: 50, from: 0 };
     let search_query;
-
-    let create_match_phrase = (field, query_str) => {
-        let json = { match: {} };
-        let fuzz_setting = 'AUTO';
-        if (fuzziness[field] != null) {
-            fuzz_setting = fuzziness[field];
-        }
-        json.match[field] = {
-            'query': query_str,
-            'operator': 'and',
-        };
-        if (fuzziness[field] != 'NONE') {
-            json.match[field].fuzziness = fuzz_setting;
-        }
-        return json;
-    };
-
-    if (req.query.size) {
-        es_query.size = req.query.size;
-    }
-
-    if(req.query.from){
-        es_query.from = req.query.from;
-    }
 
     if (Object.keys(req.query).includes('all_fields')) {
         search_query = {
             'multi_match': {
                 query: req.query['all_fields'],
                 type: 'best_fields',
-                fuzziness: 'AUTO',
+                fuzziness: '1',
+                operator: 'and',
                 fields: get_searchall_keywords(),
             }
         };
     }
     else {
+        let create_match_phrase = (field, query_str) => {
+            let json = { match: {} };
+            let fuzz_setting = 'AUTO';
+            if (fuzziness[field] != null) {
+                fuzz_setting = fuzziness[field];
+            }
+            json.match[field] = {
+                'query': query_str,
+                'operator': 'and',
+            };
+            if (fuzziness[field] != 'NONE') {
+                json.match[field].fuzziness = fuzz_setting;
+            }
+            return json;
+        };
+
         search_query = { bool: { must:[] } };
 
         const keywords = get_keywords();
@@ -145,12 +137,18 @@ app.get('/search/sdn', function(req, res) {
         }
     }
 
-    es_query.query = search_query;
+    let size = req.query.size ? req.query.size : 50;
+    let from = req.query.from ? req.query.from : 0;
+
     let full_query = {
         index: 'sdn',
-        body: es_query,
+        body: {
+            size: size,
+            from: from,
+            query: search_query,
+        }
     };
-
+    
     search_ES(full_query, res);
 });
 
@@ -202,7 +200,7 @@ function get_keywords() {
 }
 
 function get_searchall_keywords() {
-    exclude_fields = [
+    let exclude_fields = [
         'primary_display_name',
         'all_display_names',
         'vessel_tonnage',
@@ -215,7 +213,7 @@ function get_searchall_keywords() {
 
     let modified = get_keywords().filter(k => !exclude_fields.includes(k));
 
-    add_fields = [
+    let add_fields = [
         'primary_display_name^4',
         'all_display_names^2',
     ]
