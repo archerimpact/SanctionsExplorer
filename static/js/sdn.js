@@ -6,14 +6,13 @@ $(document).ready(() => {
     window.searchRoute = window.addr + '/search/sdn';
 
     $('.search-button').click(event => {
-        let query = collect_query_info();
+        send_search(collect_query_info());
         update_filters_for_print(query);
-        search(event, window.searchRoute, query, display_query, '#search-results', 'OVERWRITE');
     });
 
     $('.next-page').click(event => {
         window.lastQuery.from += window.lastQuery.size;
-        search(event, window.searchRoute, window.lastQuery, display_query, '#search-results', 'APPEND');
+        send_search(window.lastQuery, 'APPEND');
     });
 
     var id = 0;
@@ -54,24 +53,17 @@ $(document).ready(() => {
     });
 
     if (getParameterByName('searchall')) {
-        let query = {
+        send_search({
             'all_fields': getParameterByName('searchall'),
-        }
-        query = add_elastic_params(query);
-
+        });
         history.pushState(null, null, '/sdn');
-        search(event, window.searchRoute, query, display_query, '#search-results', 'OVERWRITE');
     }
 
     if (getParameterByName('id')) {
-        let query = {
-            'fixed_ref': parseInt(getParameterByName('id')),       // should be changed to `all_fields` once Elastic supports it.
-        };
-        query = add_elastic_params(query);
-        console.log(query);
-
+        send_search({
+            'fixed_ref': parseInt(getParameterByName('id')),
+        });
         history.pushState(null, null, '/sdn');
-        search(event, window.searchRoute, query, display_query, '#search-results', 'OVERWRITE');
     }
 
     $(document).on('click', '.collapse-link', event => {
@@ -176,6 +168,13 @@ let update_filters_for_print = (data) => {
     });
     $('#print-view-filters').html(filter_elem);
 }
+let send_search = (query, mode) => {
+    if (!mode) {
+        mode = 'OVERWRITE';
+        query = add_elastic_params(query);
+    }
+    search(event, window.searchRoute, query, display_query, '#search-results', mode);
+};
 const empty_type_field = 'All types';
 const empty_program_field = 'All programs';
 const empty_select = 'Select field';
@@ -217,7 +216,7 @@ function collect_query_info() {
 }
 
 function add_elastic_params(query) {
-    if (!$.isEmptyObject(query)) {
+    if (Object.keys(query).length > 0) {
         query.size = 50;
         query.from = 0;
 
