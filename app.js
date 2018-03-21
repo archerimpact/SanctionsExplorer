@@ -125,20 +125,17 @@ app.get('/search/sdn', function(req, res) {
 
         search_query = { bool: { must:[] } };
 
-        const keywords = get_keywords();
-        for (let i = 0; i < keywords.length; i++) {
-            if (req.query[keywords[i]] != null) {
-                let match_phrase = create_match_phrase(keywords[i], req.query[keywords[i]])
-                search_query.bool.must.push(match_phrase)
+        Object.keys(req.query).forEach(k => {
+            let match_phrase = create_match_phrase(k, req.query[k])
+            search_query.bool.must.push(match_phrase);
+
+            if (k == "all_display_names") {
+                let boosted_primary_phrase = create_match_phrase("primary_display_name", req.query[k]);
+                boosted_primary_phrase.match["primary_display_name"].boost = 2;
+                search_query.bool.must.push(boosted_primary_phrase)
             }
-            if(keywords[i] == "all_display_names"){
-		console.log("Found all display names");
-                let match_phrase = create_match_phrase("primary_display_name", req.query[keywords[i]]);
-                match_phrase.match["primary_display_name"].boost = 2;
-                search_query.bool.must.push(match_phrase)
-		console.log(JSON.stringify(search_query));
-            }
-        }
+        });
+        console.log('=====> ' + JSON.stringify(search_query));
     }
 
     let size = req.query.size ? req.query.size : 50;
