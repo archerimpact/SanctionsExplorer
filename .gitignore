@@ -1,3 +1,6 @@
+# credentials
+data/credentials.* 
+
 # ignore data files
 data/**/*.xml
 data/**/*.json

@@ -1,4 +1,7 @@
 import json
+import rollbar
+import credentials
+rollbar.init(credentials.rollbar)
 
 def write_json(outfile, data):
     with open(outfile, 'w') as f:
@@ -18,5 +21,7 @@ def read_json(outfile):
 def log(owner):
     owner_tag = f'<{owner}>'
     def f(msg, level):
+        if level == 'error':
+            rollbar.report_message(msg)
         print(f'{owner_tag:<14}{level.upper()}: {msg}.')
     return f
