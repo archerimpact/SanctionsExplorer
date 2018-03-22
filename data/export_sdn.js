@@ -17,6 +17,8 @@ const transform = entry => {
     entry.linked_profile_ids = [];
     entry.linked_profile_names = [];
     entry.countries = [];
+    entry.aircraft_tags = [];
+    entry.vessel_tags = [];
 
     programs  = new Set();
     countries = new Set();
@@ -138,6 +140,36 @@ const transform = entry => {
 
     entry.countries = Array.from(countries);
 
+    // Create tags field for aircraft
+    let aircraft_fields = [ 'aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n',
+                            'aircraft_manufacturer\'s_serial_number_(msn)',
+                            // 'aircraft_manufacture_date',
+                            'aircraft_model',
+                            'aircraft_operator',
+                            'aircraft_tail_number',
+                            'previous_aircraft_tail_number'];
+
+    aircraft_fields.forEach(field=>{
+        if(entry[field]){
+            entry.aircraft_tags.push(String(entry[field]));
+        }
+    });
+
+    // Create tags field for vessels
+    let vessel_fields = ['vessel_call_sign',
+        'vessel_flag',
+        'vessel_owner',
+        'vessel_tonnage',
+        'vessel_gross_tonnage',
+        'vessel_type']
+
+    vessel_fields.forEach(field=>{
+        if(entry[field]){
+            entry.vessel_tags.push(String(entry[field]))
+        }
+
+    });
+
     return entry;
 }
 
@@ -211,3 +243,4 @@ async function load_sdn() {
 }
 
 load_sdn();
+
