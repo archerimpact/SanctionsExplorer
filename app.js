@@ -32,7 +32,7 @@ app.get('/press-releases', (req, res) => {
 });
 
 
-app.get('/search/press-releases', function(req, res) {
+app.get('/search/press-releases', async function(req, res) {
     let text = req.query.query;
     console.log(text);
     let es_query = { size: 50, from: 0 };
@@ -60,7 +60,13 @@ app.get('/search/press-releases', function(req, res) {
         body: es_query,
     };
 
-    search_ES(full_query, res);
+    let result = await search_ES(full_query, res);
+    if (result) {
+        return res.json(result);
+    }
+    else {
+        return res.status(400).end();
+    }
 });
 
 

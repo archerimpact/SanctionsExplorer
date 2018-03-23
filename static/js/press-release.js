@@ -16,6 +16,7 @@ $(document).ready(() => {
 let generate_pr_card = (data) => window.pr_card(data);
 let get_search_input = () => $('#press-release-input').val().trim();
 let append_to_results = (elem) => $('#search-results').append(elem);
+let clear_search_results = () => $('#search-results').empty();
 let construct_filter_box = (value) => '<span class="filter-box badge badge-primary">' + value + '</span>';
 let update_filters_for_print = (data) => {
     $('.filter-box').remove();
@@ -43,7 +44,7 @@ function collect_pr_query() {
 function display_pr_query(res) {
     let data = res.response;
     $.each(data, (index, value) => {
-        append_to_results(generate_pr_card(value));
+        append_to_results(generate_pr_card(value[0]));
     });
 
     return res['num_results'];
