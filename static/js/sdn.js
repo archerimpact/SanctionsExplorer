@@ -17,7 +17,7 @@ $(document).ready(() => {
     });
 
     let id = 0;
-    let fields = construct_fields(['countries', 'nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'birthdate', 'doc_id_numbers', 'location']);
+    let fields = construct_fields(['countries', 'nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'birthdate', 'doc_id_numbers', 'location', 'aircraft_tags', 'vessel_tags']);
     append_search_row(id, fields);
     id++;
 
@@ -301,7 +301,9 @@ function api_to_ui(api_field_name) {
         'citizenship_country':                  'Citizenship',
         'countries':                            'Related to Country',
         'party_sub_type':                       'SDN Type',
-        'location':                             'Location',
+        'location':                             'Location/Address',
+        'aircraft_tags':                        'Aircraft Info',
+        'vessel_tags':                          'Vessel Info',
     };
     return dict[api_field_name];
 }
