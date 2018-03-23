@@ -34,82 +34,43 @@ app.get('/press-releases', (req, res) => {
 
 app.get('/search/press-releases', async function(req, res) {
     let text = req.query.query;
-    console.log(text);
-    let es_query = { size: 50, from: 0 };
-
-    if (req.query.size) {
-        es_query.size = req.query.size;
-    }
-
-    if(req.query.from) {
-        es_query.from = req.query.from;
-    }
-
     let search_query = {
         bool: {
-            must: {
-                match: {
-                    content: {
-                        query: text,
-                        operator: 'and',
-                        fuzziness: 'AUTO',
+            must: [
+                {
+                    match: {
+                        content: {
+                            query: text,
+                            operator: 'and',
+                            fuzziness: 'AUTO',
+                        },
                     },
                 },
-            },
-            should: {
-                match_phrase: {
-                    content: {
-                        query: text,
-                        slop: 3,
-                        boost: 1000,
+            ],
+            should: [
+                {
+                    match_phrase: {
+                        content: {
+                            query: text,
+                            slop: 3,
+                            boost: 1000,
+                        },
                     },
                 },
-                match_phrase: {
-                    title: {
-                        query: text,
-                        slop: 3,
-                        boost: 1000,
+                {
+                    match_phrase: {
+                        title: {
+                            query: text,
+                            slop: 3,
+                            boost: 1000,
+                        },
                     },
                 },
-            },
+            ],
         },
     };
-
-    es_query.query = search_query;
-    let full_query = {
-        index: 'pr',
-        body: es_query,
-    };
-
-    let result = await search_ES(full_query, res);
-    if (result) {
-        return res.json(result);
-    }
-    else {
-        return res.status(400).end();
-    }
+    respond_with_search(req, res, search_query, 'pr');
 });
-
-
-async function search_ES(query, res) {
-    //console.log(JSON.stringify(query));
-    try {
-        const results = await client.search(query);
-        let response = [];
-        for (let i in results.hits.hits) {
-            let score = results.hits.hits[i]['_score'];
-            let source = results.hits.hits[i]['_source'];
-            response.push([source, score]);
-        }
-        return {
-            'response': response,
-            'num_results': results.hits.total,
-        };
-    } catch (error) {
-        console.log(error);
-        return null;
-    }
-}
 
 
 app.get('/search/sdn', async function(req, res) {
@@ -186,11 +147,16 @@ app.get('/search/sdn', async function(req, res) {
         console.log('=====> ' + JSON.stringify(search_query));
     }
 
+    respond_with_search(req, res, search_query, 'sdn');
+});
+
+
+async function respond_with_search(req, res, search_query, index) {
     let size = req.query.size ? req.query.size : 50;
     let from = req.query.from ? req.query.from : 0;
 
     let full_query = {
-        index: 'sdn',
+        index: index,
         body: {
             size: size,
             from: from,
@@ -205,7 +171,27 @@ app.get('/search/sdn', async function(req, res) {
     else {
         return res.status(400).end();
     }
-});
+}
+
+
+async function search_ES(query, res) {
+    try {
+        const results = await client.search(query);
+        let response = [];
+        for (let i in results.hits.hits) {
+            let score = results.hits.hits[i]['_score'];
+            let source = results.hits.hits[i]['_source'];
+            response.push([source, score]);
+        }
+        return {
+            'response': response,
+            'num_results': results.hits.total,
+        };
+    } catch (error) {
+        console.log(error);
+        return null;
+    }
+}
 
 
 function get_keywords() {
