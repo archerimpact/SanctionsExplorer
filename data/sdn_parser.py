@@ -1189,18 +1189,18 @@ def parse_to_file(infile, outfile):
 	root = tree.getroot()
 
 	date_of_issue = Date(root[0])
-	log('Making top-level reference lists...', 'debug')
+	log('Making top-level reference lists...', 'info')
 	make_lookup_lists(root[1])
 	make_location_list(root[2])
 	make_id_doc_list(root[3])
 	make_distinct_party_list(root[4])
-	log('Resolving documents to parties...', 'debug')
+	log('Resolving documents to parties...', 'info')
 	resolve_documents_to_parties()
-	log('Linking profiles...', 'debug')
+	log('Linking profiles...', 'info')
 	add_profile_links(root[5])
-	log('Parsing sanctions entries...', 'debug')
+	log('Parsing sanctions entries...', 'info')
 	add_sanctions_entries(root[6])
-	log(str(len(distinct_parties)) + ' entries parsed', 'debug')
+	log(str(len(distinct_parties)) + ' entries parsed', 'info')
 	write(outfile)
 	#distinct_parties = {}		# TODO reset all the other globals (>_<) as well... or preferably just don't use globals? This will take a bit of refactoring.
 

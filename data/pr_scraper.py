@@ -243,7 +243,7 @@ def scrape_and_write_prs(outfile, all_years=False):
 	old_data.extend(scraped_data)
 
 	if util.write_json(outfile, old_data):
-		log('Successfully wrote PRs to the outfile', 'debug')
+		log('Successfully wrote PRs to the outfile', 'info')
 
 def scrape_all_years(outfile):
 	scrape_and_write_prs(outfile, all_years=True)
