@@ -6,12 +6,13 @@ $(document).ready(() => {
     window.searchRoute = window.addr + '/search/sdn';
 
     $('.search-button').click(event => {
+        if (event) { event.preventDefault(); }
         let query = collect_query_info()
         send_search(query);
-        update_filters_for_print(query);
     });
 
     $('.next-page').click(event => {
+        if (event) { event.preventDefault(); }
         window.lastQuery.from += window.lastQuery.size;
         send_search(window.lastQuery, 'APPEND');
     });
@@ -68,9 +69,7 @@ $(document).ready(() => {
     }
 
     $(document).on('click', '.collapse-link', event => {
-        if (event) {
-            event.preventDefault();
-        }
+        if (event) { event.preventDefault(); }
         let id = $(event.target).attr('data-id');
         let inModal = false;
         $(event.target).parents().each((i,v) => {
@@ -87,9 +86,7 @@ $(document).ready(() => {
     });
 
     $(document).on('click', '.activate-modal', event => {
-        if (event) {
-            event.preventDefault();
-        }
+        if (event) { event.preventDefault(); }
         let id = $(event.target).attr('data-id');
         $('#links-modal').modal('show');
         if ($('#links-modal .card-body-' + id).length == 0) {
@@ -99,9 +96,7 @@ $(document).ready(() => {
             let query = {
                 'fixed_ref': parseInt(id)
             };
-            query = add_elastic_params(query);
-            console.log(query);
-            search(event, window.searchRoute, query, display_query, '#entity-modal-body', 'MODAL');
+            send_search(query, 'MODAL', '#entity-modal-body');
         }
         else if (!$(event.target).text().includes('Link Explorer')) {
             temporarily_change_text(event.target, 'Already in Link Explorer!');
@@ -162,33 +157,12 @@ let get_type_select = () => $('#type-select').val();
 let get_program_select = () => $('#program-select').val();
 let get_row_select = (id) => $('#' + id + '-select').val();
 let get_row_input = (id) => $('#' + id + '-input').val().trim();
-let append_to_results = (elem, divToUse) => $(divToUse).append(elem);
-let clear_search_results = () => {
-    $('#fuzzy-results').empty();
-    $('#exact-results').empty();
-    $('.results-header').hide();
-}
-let truncate_string = (str, length) => (str.length <= length) ? str : str = str.substring(0, length) + '..';
-let construct_filter_box = (field, value, visibility) => '<span class="filter-box badge badge-primary ' + visibility + '" data-toggle="tooltip" data-placement="bottom" title="' + field + '">' + value + '</span>';
-let update_filters_for_print = (data) => {
-    $('.filter-box').remove();
-    let filter_elem = '';
-    $.each(data, (k,v) => {
-        let key = api_to_ui(k);
-        if (key) {
-            filter_elem += construct_filter_box(key, v, 'd-none d-print-block');
-            filter_elem += construct_filter_box(key, truncate_string(v, 12), 'd-block d-print-none');
-        }
-    });
-    $(filter_elem).insertAfter('#results-header');
-    $('[data-toggle="tooltip"]').tooltip();
-}
-let send_search = (query, mode) => {
+let send_search = (query, mode, divToUse) => {
     if (!mode) {
         mode = 'OVERWRITE';
         query = add_elastic_params(query);
     }
-    search(event, window.searchRoute, query, display_query, null, mode);
+    search(window.searchRoute, query, mode, generate_card, divToUse);
 };
 const empty_type_field = 'All types';
 const empty_program_field = 'All programs';
@@ -228,50 +202,6 @@ function collect_query_info() {
     });
 
     return query;
-}
-
-function add_elastic_params(query) {
-    if (Object.keys(query).length > 0) {
-        query.size = 50;
-        query.from = 0;
-
-        window.lastQuery = query;
-        return query;
-    }
-    else {
-        return null;
-    }
-}
-
-
-function display_query(res, divToUse) {
-    let exact = document.createDocumentFragment();
-    let fuzzy = document.createDocumentFragment();
-    $.each(res.response, (index, value) => {
-        let e = document.createElement("div");
-        e.innerHTML = generate_card(value[0]);
-        if (value[1] > 1000) {
-            exact.appendChild(e);
-        }
-        else {
-            fuzzy.appendChild(e);
-        }
-    });
-
-    if (divToUse) {
-        append_to_results(exact, divToUse);
-    }
-    else {
-        if (exact.children.length > 0) {
-            append_to_results(exact, '#exact-results');
-            $('.exact-header').show();
-        }
-        if (fuzzy.children.length > 0) {
-            append_to_results(fuzzy, '#fuzzy-results');
-            $('.fuzzy-header').show();
-        }
-    }
-    return res['num_results'];
 }
 
 

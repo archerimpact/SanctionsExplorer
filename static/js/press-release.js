@@ -2,28 +2,29 @@
 
 $(document).ready(() => {
     window.pr_card = get_template('#pr-card-template');
+    window.searchRoute = window.addr + '/search/press-releases';
 
     $('#press-release-button').click(event => {
-        search(event, addr + '/search/press-releases', collect_pr_query(), display_pr_query, '#search-results', 'OVERWRITE');
+        if (event) { event.preventDefault(); }
+        send_search(collect_pr_query(), 'OVERWRITE');
     });
 
     $('.next-page').click(event => {
+        if (event) { event.preventDefault(); }
         window.lastQuery.from += window.lastQuery.size;
-        search(event, addr + '/search/press-releases', window.lastQuery, display_pr_query, '#search-results', 'APPEND');
+        send_search(window.lastQuery, 'APPEND');
     });
 });
 
 let generate_pr_card = (data) => window.pr_card(data);
 let get_search_input = () => $('#press-release-input').val().trim();
-let append_to_results = (elem) => $('#search-results').append(elem);
-let clear_search_results = () => $('#search-results').empty();
-let construct_filter_box = (value) => '<span class="filter-box badge badge-primary">' + value + '</span>';
-let update_filters_for_print = (data) => {
-    $('.filter-box').remove();
-    let filter_elem = construct_filter_box(data.query);
-    $('#print-view-filters').html(filter_elem);
-};
-
+let send_search = (query, mode, divToUse) => {
+    if (!mode) {
+        mode = 'OVERWRITE';
+        query = add_elastic_params(query);
+    }
+    search(window.searchRoute, query, mode, generate_pr_card, divToUse);
+}
 /*
  * EVERYTHING BELOW THIS POINT SHOULD NOT REFERENCE THE DOM, SPECIFIC IDs/CLASSES, etc.
  * CREATE A HELPER FUNCTION ABOVE FOR ONE EASY PLACE TO MAINTAIN DOM REFERENCES.
@@ -41,11 +42,9 @@ function collect_pr_query() {
     return query;
 }
 
-function display_pr_query(res) {
-    let data = res.response;
-    $.each(data, (index, value) => {
-        append_to_results(generate_pr_card(value[0]));
-    });
-
-    return res['num_results'];
+function api_to_ui(api_field_name) {
+    let dict = {
+        'query': 'Query',
+    }
+    return dict[api_field_name];
 }

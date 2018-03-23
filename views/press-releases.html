@@ -75,13 +75,20 @@
             </div><!-- /left-col -->
 
             <div class="col-lg-8 col-md-12 page-col right-col">
-                <h3 class="col-header" id="results-header">Results</h3>
-                <div id="print-view-filters" class="d-none d-print-block">
-                    <!-- Populated by Javascript; only shown for printing -->
+                <div class="d-flex flex-row" id="results-header-row">
+                    <h3 class="col-header text-left" id="results-header">Results</h3>
                 </div>
+
                 <hr class="no-bottom-margin">
                 <div class="loader">Loading...</div>
-                <div id="search-results">
+                <h5 class="results-header exact-header" id="exact-header">Exact Matches</h5>
+                <hr class="results-header exact-header no-bottom-margin">
+                <div class="search-results" id="exact-results">
+                    <!-- Populated with Javscript -->
+                </div>
+                <h5 class="results-header fuzzy-header" id="fuzzy-header">Near Matches</h5>
+                <hr class="results-header fuzzy-header no-bottom-margin">
+                <div class="search-results" id="fuzzy-results">
                     <!-- Populated with Javscript -->
                 </div>
                 <button class="next-page btn btn-outline-primary btn-md">Next Page</button>

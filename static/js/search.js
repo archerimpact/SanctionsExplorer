@@ -15,8 +15,13 @@ $(document).ready(() => {
 
 
 let get_template = (idstr) => $(idstr).html() ? doT.template($(idstr).html()) : null;
+let append_to_results = (elem, divToUse) => $(divToUse).append(elem);
+let clear_search_results = () => {
+    $('#fuzzy-results').empty();
+    $('#exact-results').empty();
+    $('.results-header').hide();
+}
 let display_search_results = (show) => show ? $('#search-results').show() : $('#search-results').hide();
-let disable_search_buttons = (disable) => disable ? $('.btn-sm').addClass('disabled') : $('.btn-sm').removeClass('disabled');
 let update_results_header = (num) => {
     if (num != null) {
         $('#results-header').text('Results (' + num + ')')
@@ -40,15 +45,30 @@ let update_results_header = (num) => {
 }
 let display_loading_bar = (show) => show ? $('.loader').show() : $('.loader').hide();
 let change_next_page_text = (text) => $('.next-page').text(text);
+let truncate_string = (str, length) => (str && str.length <= length) ? str : str = str.substring(0, length) + '..';
+let construct_filter_box = (field, value, visibility) => '<span class="filter-box badge badge-primary ' + visibility + '" data-toggle="tooltip" data-placement="bottom" title="' + field + '">' + value + '</span>';
+let update_filters_for_print = (data) => {
+    console.log(data);
+    $('.filter-box').remove();
+    let filter_elem = '';
+    $.each(data, (k,v) => {
+        let key = api_to_ui(k);
+        if (key) {
+            filter_elem += construct_filter_box(key, v, 'd-none d-print-block');
+            filter_elem += construct_filter_box(key, truncate_string(v, 12), 'd-block d-print-none');
+        }
+    });
+    console.log(filter_elem);
+    $(filter_elem).insertAfter('#results-header');
+    $('[data-toggle="tooltip"]').tooltip();
+}
+//let disable_search_buttons = (disable) => disable ? $('.btn-sm').addClass('disabled') : $('.btn-sm').removeClass('disabled');
+
 const error_alert = '<div class="alert alert-danger search-error-alert">There was an error. Please try again.</div>';
 
 
-function search(event, url, params, display_func, divToUse, mode) {
+function search(url, params, mode, card_generator,  divToUse) {
     // mode should be 'OVERWRITE', 'APPEND', or 'MODAL'.
-    if (event) {
-        event.preventDefault();
-    }
-
     if (requesting != null) {
         window.requesting.abort();
     }
@@ -77,7 +97,7 @@ function search(event, url, params, display_func, divToUse, mode) {
         if (mode == 'OVERWRITE') {
             clear_search_results();
         }
-        let num_results = display_func(data, divToUse);
+        let num_results = display_query(data, divToUse, card_generator);
         if (mode == 'OVERWRITE' || mode == 'APPEND') {
             update_results_header(num_results);
         }
@@ -99,4 +119,47 @@ function search(event, url, params, display_func, divToUse, mode) {
         // disable_search_buttons(false);
         window.requesting = null;
     });
+}
+
+function display_query(res, divToUse, card_generator) {
+    let exact = document.createDocumentFragment();
+    let fuzzy = document.createDocumentFragment();
+    $.each(res.response, (index, value) => {
+        let e = document.createElement("div");
+        e.innerHTML = card_generator(value[0]);
+        if (value[1] > 200) {
+            exact.appendChild(e);
+        }
+        else {
+            fuzzy.appendChild(e);
+        }
+    });
+
+    if (divToUse) {
+        append_to_results(exact, divToUse);
+    }
+    else {
+        if (exact.children.length > 0) {
+            append_to_results(exact, '#exact-results');
+            $('.exact-header').show();
+        }
+        if (fuzzy.children.length > 0) {
+            append_to_results(fuzzy, '#fuzzy-results');
+            $('.fuzzy-header').show();
+        }
+    }
+    return res['num_results'];
+}
+
+function add_elastic_params(query) {
+    if (Object.keys(query).length > 0) {
+        query.size = 50;
+        query.from = 0;
+
+        window.lastQuery = query;
+        return query;
+    }
+    else {
+        return null;
+    }
 }

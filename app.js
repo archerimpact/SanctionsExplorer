@@ -46,12 +46,33 @@ app.get('/search/press-releases', async function(req, res) {
     }
 
     let search_query = {
-        'match_phrase': {
-            'content': {
-                'query': text,
-                'slop': 3,
-            }
-        }
+        bool: {
+            must: {
+                match: {
+                    content: {
+                        query: text,
+                        operator: 'and',
+                        fuzziness: 'AUTO',
+                    },
+                },
+            },
+            should: {
+                match_phrase: {
+                    content: {
+                        query: text,
+                        slop: 3,
+                        boost: 1000,
+                    },
+                },
+                match_phrase: {
+                    title: {
+                        query: text,
+                        slop: 3,
+                        boost: 1000,
+                    },
+                },
+            },
+        },
     };
 
     es_query.query = search_query;
@@ -145,19 +166,22 @@ app.get('/search/sdn', async function(req, res) {
         };
 
         Object.keys(req.query).forEach(k => {
-            if (get_keywords().includes(k)) {
-                let must_phrase = create_match_phrase(k, req.query[k], true);
-                search_query.bool.must.push(must_phrase);
-
+            if (k == 'all_display_names') {
+                // There must be a fuzzy match in all_display_names.  Boost exact matches in all_display_names, and further boost exact matches in primary names.
+                let all_must       = create_match_phrase('all_display_names',    req.query[k], true);
+                let all_should     = create_match_phrase('all_display_names',    req.query[k], false, 1000);
+                let primary_should = create_match_phrase('primary_display_name', req.query[k], false, 2);
+                search_query.bool.must.push(all_must);
+                search_query.bool.should.push(all_should);
+                search_query.bool.should.push(primary_should);
+            }
+            else if (get_keywords().includes(k)) {
+                // There must be a fuzzy match.  Boost exact matches.
+                let must_phrase   = create_match_phrase(k, req.query[k], true);
                 let should_phrase = create_match_phrase(k, req.query[k], false, 1000);
+                search_query.bool.must.push(must_phrase);
                 search_query.bool.should.push(should_phrase);
             }
-
-            // if (k == "all_display_names") {
-            //     let boosted_primary_phrase = create_match_phrase("primary_display_name", req.query[k]);
-            //     boosted_primary_phrase.match["primary_display_name"].boost = 2;
-            //     search_query.bool.must.push(boosted_primary_phrase)
-            // }
         });
         console.log('=====> ' + JSON.stringify(search_query));
     }
