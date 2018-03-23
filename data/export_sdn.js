@@ -128,6 +128,7 @@ const transform = entry => {
 
         if (doc.issuing_authority != 'None') {
             headers.push('issuing_authority');
+            countries.add(doc.issuing_authority);
         }
         else {
             doc.issuing_authority = null;
@@ -153,7 +154,7 @@ const transform = entry => {
                             'previous_aircraft_tail_number'];
 
     aircraft_fields.forEach(field=>{
-        if(entry[field]){
+        if (entry[field]) {
             entry.aircraft_tags.push(String(entry[field]));
         }
     });
@@ -167,55 +168,59 @@ const transform = entry => {
         'vessel_type']
 
     vessel_fields.forEach(field=>{
-        if(entry[field]){
+        if (entry[field]) {
             entry.vessel_tags.push(String(entry[field]))
         }
 
     });
 
     // Fields not included: primary_display_name (included with all_display_names), linked_profile_ids (not relevant), fixed_ref
-    let all_fields = ['identity_id',
-                      'all_display_names',
-                      'programs',
-                      'doc_id_numbers',
-                      'linked_profile_names',
-                      'location',
-                      'title',
-                      'birthdate',
-                      'place_of_birth',
-                      'additional_sanctions_information_-_',
-                      'vessel_call_sign',
-                      'vessel_flag',
-                      'vessel_owner',
-                      'vessel_tonnage',
-                      'vessel_gross_registered_tonnage',
-                      'vessel_type',
-                      'nationality_country',
-                      'citizenship_country',
-                      'gender',
-                      'website',
-                      'email_address',
-                      'swift/bic',
-                      'ifca_determination_-_',
-                      'aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n)',
-                      'aircraft_manufacturer’s_serial_number_(msn)',
-                      'aircraft_manufacture_date',
-                      'aircraft_model',
-                      'aircraft_operator',
-                      'bik_(ru)',
-                      'un/locode',
-                      'aircraft_tail_number',
-                      'previous_aircraft_tail_number',
-                      'micex_code',
-                      'nationality_of_registration',
-                      'd-u-n-s_number',
-                      'party_sub_type' ];
-                      
+    let all_fields = [
+        'identity_id',
+        'all_display_names',
+        'programs',
+        'doc_id_numbers',
+        'linked_profile_names',
+        'location',
+        'title',
+        'birthdate',
+        'place_of_birth',
+        'additional_sanctions_information_-_',
+        'vessel_call_sign',
+        'vessel_flag',
+        'vessel_owner',
+        'vessel_tonnage',
+        'vessel_gross_registered_tonnage',
+        'vessel_type',
+        'nationality_country',
+        'citizenship_country',
+        'gender',
+        'website',
+        'email_address',
+        'swift/bic',
+        'ifca_determination_-_',
+        'aircraft_construction_number_(also_called_l/n_or_s/n_or_f/n)',
+        'aircraft_manufacturer’s_serial_number_(msn)',
+        'aircraft_manufacture_date',
+        'aircraft_model',
+        'aircraft_operator',
+        'bik_(ru)',
+        'un/locode',
+        'aircraft_tail_number',
+        'previous_aircraft_tail_number',
+        'micex_code',
+        'nationality_of_registration',
+        'd-u-n-s_number',
+        'party_sub_type',
+        'countries',
+    ];
+
     all_fields.forEach(field =>{
-        if(entry[field] && entry[field] != ""){
+        if (entry[field]) {
             entry.all_fields.push(String(entry[field]))
         }
     });
+    entry.all_fields.push(entry.sdn_display);
 
     return entry;
 }
@@ -292,4 +297,3 @@ async function load_sdn() {
 }
 
 load_sdn();
-
