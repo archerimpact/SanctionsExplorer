@@ -48,7 +48,7 @@ def serialize_feed(feed, filename):
 
 def run_nodejs(filename, task):
 	try:
-		log('Attempting to ' + task + "...", 'debug')
+		log('Attempting to ' + task + '...', 'info')
 		run(['node', filename])
 	except Exception as e:
 		log('Failed to ' + task + ': ', 'error')
@@ -57,7 +57,7 @@ def run_nodejs(filename, task):
 
 def download_and_parse(url, xml, json):
 	try:
-		log('Downloading ' + url + '...', 'debug')
+		log('Downloading ' + url + '...', 'info')
 		urlretrieve(url, xml)
 	except Exception as e:
 		log('While downloading:', 'error')
@@ -65,7 +65,7 @@ def download_and_parse(url, xml, json):
 		quit()
 
 	try:
-		log('Parsing ' + xml + '...', 'debug')
+		log('Parsing ' + xml + '...', 'info')
 		sdn_parser.parse_to_file(xml, json)
 	except Exception as e:
 		log('While parsing:' + str(e), 'error')
@@ -90,21 +90,21 @@ download_and_parse(SDN_URL, SDN_XML_FILE, SDN_JSON)
 sdn_parser = importlib.reload(sdn_parser)                       # TODO this is horrible and hacky and needs to be removed
 download_and_parse(NONSDN_URL, NONSDN_XML_FILE, NONSDN_JSON)
 
-log('Scraping press releases from 2018...', 'debug')
+log('Scraping press releases from 2018...', 'info')
 pr_scraper.scrape_2018(PR_JSON_2018)
 
-#log('Scraping IDs from the OFAC website...', 'debug')
+#log('Scraping IDs from the OFAC website...', 'info')
 #ofac_mapping.write_ofac_ids(OFAC_MATCHES_FILE)
 
 run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
 run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
 
 # Match SDN entities with the PRs they appear in
-log('Matching SDN entities with press release data...', 'debug')
+log('Matching SDN entities with press release data...', 'info')
 matcher.write_pr_matches(PR_MATCHES)
 run_nodejs(EXPORT_MATCHES, 'export PR matches to Elastic')
 
-#log('Matching SDN entities with their IDs on the OFAC website...', 'debug')
+#log('Matching SDN entities with their IDs on the OFAC website...', 'info')
 #matcher.write_ofac_id_matches(OFAC_MATCHES_FILE)
 #run_nodejs(EXPORT_IDS, 'export ID matches to Elastic')
 

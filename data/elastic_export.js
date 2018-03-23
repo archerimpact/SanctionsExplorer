@@ -8,7 +8,7 @@ const log = util.log('es_export');
 
 async function delete_index(name) {
     try {
-        log('Deleting ' + name + ' index...', 'debug');
+        log('Deleting ' + name + ' index...', 'info');
         return await client.indices.delete({ index: name });
     }
     catch (error) {
@@ -32,7 +32,7 @@ async function bulk_add(operations, transform, index_name, index_type, starting_
     }
 
     try {
-        log('Bulk loading...', 'debug');
+        log('Bulk loading...', 'info');
         const result = await client.bulk({
             body: body
         });
@@ -65,7 +65,7 @@ async function bulk_update(operations, index_name, index_type) {
     });
 
     try {
-        log('Bulk updating...', 'debug');
+        log('Bulk updating...', 'info');
         const result = await client.bulk({
             body: body
         });
@@ -84,7 +84,7 @@ async function bulk_update(operations, index_name, index_type) {
 }
 
 async function create_index(name) {
-    log('Creating ' + name + ' index...', 'debug');
+    log('Creating ' + name + ' index...', 'info');
     let created = await client.indices.exists({ index: name });
     if (!created) {
         return await client.indices.create({ index: name });

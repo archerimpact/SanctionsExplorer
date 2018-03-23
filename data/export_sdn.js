@@ -234,13 +234,14 @@ let list_to_acronym = l => {
 async function load_sdn() {
     await exporter.delete_index('sdn');
     await exporter.create_index('sdn');
-    await exporter.bulk_add(sdn,    transform, 'sdn', 'entry', 0);
+
+    await exporter.bulk_add(sdn, transform, 'sdn', 'entry', 0);
     let count = await exporter.indexing_stats('sdn');
-    log(count + ' documents indexing', 'debug');
+    log(count + ' documents indexing', 'info');
+
     await exporter.bulk_add(nonsdn, transform, 'sdn', 'entry', 100000);     // TODO maybe pick a different indexing scheme.
     let count_new = await exporter.indexing_stats('sdn');
-    log(count_new + ' documents indexing', 'debug');
+    log(count_new + ' documents indexing', 'info');
 }
 
 load_sdn();
-

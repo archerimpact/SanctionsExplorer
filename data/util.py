@@ -21,7 +21,6 @@ def read_json(outfile):
 def log(owner):
     owner_tag = f'<{owner}>'
     def f(msg, level):
-        if level == 'error':
-            rollbar.report_message(msg)
+        rollbar.report_message(msg, level.lower())
         print(f'{owner_tag:<14}{level.upper()}: {msg}.')
     return f

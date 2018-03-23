@@ -47,7 +47,7 @@ def get_names_from_elastic():
     if scan.status_code != 200:
         log('Failed to obtain all SDN primary names', 'error')
 
-    log('Successfully obtained all SDN primary names', 'debug')
+    log('Successfully obtained all SDN primary names', 'info')
     return scan.json()['hits']['hits']
 
 
