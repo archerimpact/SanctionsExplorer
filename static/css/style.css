@@ -9,7 +9,7 @@ html, body {
 .page-col {
     overflow-y: scroll;
     height: 90%;        /* should be overwritten by Javascript */
-    padding-top: 3em;
+    padding-top: 0;
     padding-right: 1.5em;
     padding-left: 1.5em;
 }
@@ -44,9 +44,25 @@ img#c4ads-logo {
     cursor: hand;
 }
 
+.sticky-header {
+    padding-top: 3em;
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
 /*********** Filter Column ***********/
 .left-col {
     background-color: #eeeeee;
+}
+
+.left-col .sticky-header {
+    background-color: #eeeeee;
+}
+
+.search-form {
+    margin-top: 1em;
 }
 
 .search-button-group {
@@ -79,17 +95,8 @@ img#c4ads-logo {
 }
 
 /*********** Results Column ***********/
-.right-col {
-    padding-top: 0;        /* need to set later for sticky Results bar */
-}
-
-.sticky-header {
-    padding-top: 3em;
-    position: -webkit-sticky; /* Safari */
-    position: sticky;
-    top: 0;
+.right-col .sticky-header {
     background-color: #ffffff;
-    z-index: 100;
 }
 
 #exact-header {
@@ -131,6 +138,14 @@ hr.no-bottom-margin {
     padding-top: .4em;
 }
 
+#all-fields-help {
+    margin-left: 0.75em;
+}
+
+#search-form-divider {
+    margin-top: 0;
+    margin-bottom: 1em;
+}
 
 
 /*********** Cards ***********/

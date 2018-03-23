@@ -55,10 +55,12 @@ $(document).ready(() => {
     });
 
     if (getParameterByName('searchall')) {
+        let q = getParameterByName('searchall')
         send_search({
-            'all_fields': getParameterByName('searchall'),
+            'all_fields': q,
         });
         history.pushState(null, null, '/sdn');
+        $('#all-fields-input').val(q);
     }
 
     if (getParameterByName('id')) {
@@ -152,6 +154,7 @@ let temporarily_change_text = (selector, text) => {
 let append_search_row = (id, fields) => $('.search-rows').append(searchRow({'id': id, 'fields': fields}));
 let generate_card = (data) => window.card(data);
 let get_search_row_ids = () => $('.search-row').map((index, elem) => elem.id);
+let get_all_fields_input = () => $('#all-fields-input').val().trim();
 let get_name_input = () => $('#name-input').val().trim();
 let get_type_select = () => $('#type-select').val();
 let get_program_select = () => $('#program-select').val();
@@ -178,8 +181,13 @@ const empty_select = 'Select field';
 function collect_query_info() {
     let query = {};
 
+    let all_fields = get_all_fields_input();
+    if (all_fields !== null && all_fields !== '') {
+        query['all_fields'] = all_fields;
+    }
+
     let name = get_name_input();
-    if (name !== null && name !== "") {
+    if (name !== null && name !== '') {
         query['all_display_names'] = name;
     }
 
@@ -234,6 +242,7 @@ function api_to_ui(api_field_name) {
         'location':                             'Location/Address',
         'aircraft_tags':                        'Aircraft Info',
         'vessel_tags':                          'Vessel Info',
+        'all_fields':                           'All Fields',
     };
     return dict[api_field_name];
 }

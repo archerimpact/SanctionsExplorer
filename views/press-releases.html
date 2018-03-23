@@ -54,9 +54,11 @@
         <div class="row">
             <div class="col-lg-4 col-md-12 page-col left-col">
                 <div class="d-flex flex-column left-flex-col">
-                    <h3 class="col-header" id="press-release-header">Press Releases</h3>
-                    <hr>
-                    <form>
+                    <div class="sticky-header">
+                        <h3 class="col-header" id="press-release-header">Press Releases</h3>
+                        <hr class="no-bottom-margin">
+                    </div>
+                    <form class="search-form">
                         <div class="form-row">
                             <div class="form-group col-lg-9 col-md-12">
                             <input type="text" class="form-control form-control-sm" id="press-release-input" placeholder="Search query">
@@ -75,7 +77,7 @@
             </div><!-- /left-col -->
 
             <div class="col-lg-8 col-md-12 page-col right-col">
-                <div class="ffixed">
+                <div class="sticky-header">
                     <div class="d-flex flex-row" id="results-header-row">
                         <h3 class="col-header text-left" id="results-header">Results</h3>
                     </div>

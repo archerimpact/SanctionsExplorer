@@ -54,16 +54,26 @@
         <div class="row">
             <div class="col-lg-4 col-md-12 page-col left-col">
                 <div class="d-flex flex-column left-flex-col">
-                    <div class="d-flex flex-row">
-                        <h3 class="col-header mr-auto">SDN Search</h3>
-                        <img src="../img/open-iconic-svg/question-mark.svg" class="col-icon" id="search-info-icon" data-toggle="tooltip" data-placement="bottom" title="Info">
+                    <div class="sticky-header">
+                        <div class="d-flex flex-row">
+                            <h3 class="col-header mr-auto">SDN Search</h3>
+                            <img src="../img/open-iconic-svg/question-mark.svg" class="col-icon" id="search-info-icon" data-toggle="tooltip" data-placement="bottom" title="Info">
+                        </div>
+                        <hr class="no-bottom-margin">
                     </div>
-                    <hr>
                     <form class="search-form">
                         <div class="form-row">
                             <div class="form-group col-md-12">
-                                <label for="name-input">Name</label>
-                                <input type="text" class="form-control form-control-sm" id="name-input">
+                                <input type="text" class="form-control form-control-sm" id="all-fields-input" placeholder="Search all fields" autofocus>
+                                <small id="all-fields-help" class="form-text text-muted">Search the entire SDN database for your query.</small>
+                            </div>
+                        </div>
+
+                        <h5 id="more-filters-header">Additional Filters</h5>
+
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <input type="text" class="form-control form-control-sm" id="name-input" placeholder="Name or Alias">
                             </div>
                         </div>
                         <div class="form-row">
@@ -130,7 +140,7 @@
                             </div>
                         </div><!-- /form-row -->
 
-                        <h5 id="more-filters-header">Additional Filters</h5>
+                        <hr id="search-form-divider">
 
                         <div class="search-rows">
                             <!-- Populated by Javascript -->
