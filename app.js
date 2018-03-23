@@ -85,67 +85,54 @@ app.get('/search/sdn', async function(req, res) {
 
     let search_query;
 
-    if (Object.keys(req.query).includes('all_fields')) {
-        search_query = {
-            'multi_match': {
-                query: req.query['all_fields'],
-                type: 'best_fields',
-                fuzziness: '1',
-                operator: 'and',
-                fields: get_searchall_keywords(),
-            }
-        };
-    }
-    else {
-        let create_match_phrase = (field, query_str, is_fuzzy, boost) => {
-            let json = { match: {} };
-            json.match[field] = {
-                'query': query_str,
-                'operator': 'and',
-            };
-
-            let fuzz_setting = 'AUTO';
-            if (is_fuzzy) {
-                if (fuzziness[field] != 'NONE') {
-                    let fuzz_setting = fuzziness[field] || 'AUTO';
-                    json.match[field].fuzziness = fuzz_setting;
-                }
-            }
-
-            if (boost != null) {
-                json.match[field].boost = boost;
-            }
-
-            return json;
+    let create_match_phrase = (field, query_str, is_fuzzy, boost) => {
+        let json = { match: {} };
+        json.match[field] = {
+            'query': query_str,
+            'operator': 'and',
         };
 
-        search_query = {
-            bool: {
-                must: [],
-                should: [],
-            },
-        };
+        let fuzz_setting = 'AUTO';
+        if (is_fuzzy) {
+            if (fuzziness[field] != 'NONE') {
+                let fuzz_setting = fuzziness[field] || 'AUTO';
+                json.match[field].fuzziness = fuzz_setting;
+            }
+        }
 
-        Object.keys(req.query).forEach(k => {
-            if (k == 'all_display_names') {
-                // There must be a fuzzy match in all_display_names.  Boost exact matches in all_display_names, and further boost exact matches in primary names.
-                let all_must       = create_match_phrase('all_display_names',    req.query[k], true);
-                let all_should     = create_match_phrase('all_display_names',    req.query[k], false, 1000);
-                let primary_should = create_match_phrase('primary_display_name', req.query[k], false, 2);
-                search_query.bool.must.push(all_must);
-                search_query.bool.should.push(all_should);
-                search_query.bool.should.push(primary_should);
-            }
-            else if (get_keywords().includes(k)) {
-                // There must be a fuzzy match.  Boost exact matches.
-                let must_phrase   = create_match_phrase(k, req.query[k], true);
-                let should_phrase = create_match_phrase(k, req.query[k], false, 1000);
-                search_query.bool.must.push(must_phrase);
-                search_query.bool.should.push(should_phrase);
-            }
-        });
-        console.log('=====> ' + JSON.stringify(search_query));
-    }
+        if (boost != null) {
+            json.match[field].boost = boost;
+        }
+
+        return json;
+    };
+
+    search_query = {
+        bool: {
+            must: [],
+            should: [],
+        },
+    };
+
+    Object.keys(req.query).forEach(k => {
+        if (k == 'all_display_names') {
+            // There must be a fuzzy match in all_display_names.  Boost exact matches in all_display_names, and further boost exact matches in primary names.
+            let all_must       = create_match_phrase('all_display_names',    req.query[k], true);
+            let all_should     = create_match_phrase('all_display_names',    req.query[k], false, 1000);
+            let primary_should = create_match_phrase('primary_display_name', req.query[k], false, 2);
+            search_query.bool.must.push(all_must);
+            search_query.bool.should.push(all_should);
+            search_query.bool.should.push(primary_should);
+        }
+        else if (get_keywords().includes(k)) {
+            // There must be a fuzzy match.  Boost exact matches.
+            let must_phrase   = create_match_phrase(k, req.query[k], true);
+            let should_phrase = create_match_phrase(k, req.query[k], false, 1000);
+            search_query.bool.must.push(must_phrase);
+            search_query.bool.should.push(should_phrase);
+        }
+    });
+    console.log('=====> ' + JSON.stringify(search_query));
 
     respond_with_search(req, res, search_query, 'sdn');
 });
@@ -239,29 +226,6 @@ function get_keywords() {
         'party_sub_type',
         'aircraft_tags',
         'vessel_tags',
+        'all_fields',
     ];
-}
-
-function get_searchall_keywords() {
-    let exclude_fields = [
-        'primary_display_name',
-        'all_display_names',
-        'vessel_tonnage',
-        'vessel_gross_tonnage',
-        'un/locode',
-        'identity_id',
-        'linked_profile_ids',
-        'fixed_ref',
-    ];
-
-    let modified = get_keywords().filter(k => !exclude_fields.includes(k));
-
-    let add_fields = [
-        'primary_display_name^4',
-        'all_display_names^2',
-    ]
-    modified.push(...add_fields);
-
-    return modified;
-
 }
