@@ -23,7 +23,7 @@ nav.navbar {
 }
 
 img#archer-logo {
-    width: 10em;
+    width: 16em;
 }
 
 img#c4ads-logo {
@@ -79,6 +79,18 @@ img#c4ads-logo {
 }
 
 /*********** Results Column ***********/
+#exact-header {
+    margin-top: 1em;
+}
+
+#fuzzy-header {
+    margin-top: 1em;
+}
+
+.results-header {
+    display: none;        /* will be displayed by Javascript when necessary */
+}
+
 hr.no-bottom-margin {
     margin-bottom: 0;
 }

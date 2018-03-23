@@ -70,20 +70,22 @@ async function search_ES(query, res) {
         const results = await client.search(query);
         let response = [];
         for (let i in results.hits.hits) {
-            response.push(results.hits.hits[i]['_source']);
+            let score = results.hits.hits[i]['_score'];
+            let source = results.hits.hits[i]['_source'];
+            response.push([source, score]);
         }
-        res.json({
+        return {
             'response': response,
-            'num_results': results.hits.total
-        });
+            'num_results': results.hits.total,
+        };
     } catch (error) {
-        console.log(error)
-        res.status(400).end();
+        console.log(error);
+        return null;
     }
 }
 
 
-app.get('/search/sdn', function(req, res) {
+app.get('/search/sdn', async function(req, res) {
     console.log(JSON.stringify(req.query));
     const fuzziness = {
         'programs': '0',
@@ -107,33 +109,49 @@ app.get('/search/sdn', function(req, res) {
         };
     }
     else {
-        let create_match_phrase = (field, query_str) => {
+        let create_match_phrase = (field, query_str, is_fuzzy, boost) => {
             let json = { match: {} };
-            let fuzz_setting = 'AUTO';
-            if (fuzziness[field] != null) {
-                fuzz_setting = fuzziness[field];
-            }
             json.match[field] = {
                 'query': query_str,
                 'operator': 'and',
             };
-            if (fuzziness[field] != 'NONE') {
-                json.match[field].fuzziness = fuzz_setting;
+
+            let fuzz_setting = 'AUTO';
+            if (is_fuzzy) {
+                if (fuzziness[field] != 'NONE') {
+                    let fuzz_setting = fuzziness[field] || 'AUTO';
+                    json.match[field].fuzziness = fuzz_setting;
+                }
             }
+
+            if (boost != null) {
+                json.match[field].boost = boost;
+            }
+
             return json;
         };
 
-        search_query = { bool: { must:[] } };
+        search_query = {
+            bool: {
+                must: [],
+                should: [],
+            },
+        };
 
         Object.keys(req.query).forEach(k => {
-            let match_phrase = create_match_phrase(k, req.query[k])
-            search_query.bool.must.push(match_phrase);
+            if (get_keywords().includes(k)) {
+                let must_phrase = create_match_phrase(k, req.query[k], true);
+                search_query.bool.must.push(must_phrase);
 
-            if (k == "all_display_names") {
-                let boosted_primary_phrase = create_match_phrase("primary_display_name", req.query[k]);
-                boosted_primary_phrase.match["primary_display_name"].boost = 2;
-                search_query.bool.must.push(boosted_primary_phrase)
+                let should_phrase = create_match_phrase(k, req.query[k], false, 1000);
+                search_query.bool.should.push(should_phrase);
             }
+
+            // if (k == "all_display_names") {
+            //     let boosted_primary_phrase = create_match_phrase("primary_display_name", req.query[k]);
+            //     boosted_primary_phrase.match["primary_display_name"].boost = 2;
+            //     search_query.bool.must.push(boosted_primary_phrase)
+            // }
         });
         console.log('=====> ' + JSON.stringify(search_query));
     }
@@ -150,7 +168,13 @@ app.get('/search/sdn', function(req, res) {
         }
     };
 
-    search_ES(full_query, res);
+    let result = await search_ES(full_query, res);
+    if (result) {
+        return res.json(result);
+    }
+    else {
+        return res.status(400).end();
+    }
 });
 
 
@@ -197,6 +221,8 @@ function get_keywords() {
         'doc_id_numbers',
         'fixed_ref',
         'party_sub_type',
+        'aircraft_tags',
+        'vessel_tags',
     ];
 }
 

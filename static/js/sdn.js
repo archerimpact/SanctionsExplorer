@@ -16,15 +16,15 @@ $(document).ready(() => {
         send_search(window.lastQuery, 'APPEND');
     });
 
-    var id = 0;
+    let id = 0;
     let fields = construct_fields(['countries', 'nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'birthdate', 'doc_id_numbers', 'location']);
     append_search_row(id, fields);
     id++;
 
     $(document).on('change', '.search-row-select', event => {
-        var needNewRow = true;
-        var dupeSelections = false;
-        var currentSelections = [];
+        let needNewRow = true;
+        let dupeSelections = false;
+        let currentSelections = [];
 
         $.each($('.search-row-select'), (index, value) => {
             if (value.value == empty_select) {
@@ -72,8 +72,7 @@ $(document).ready(() => {
             event.preventDefault();
         }
         let id = $(event.target).attr('data-id');
-        console.log(id);
-        var inModal = false;
+        let inModal = false;
         $(event.target).parents().each((i,v) => {
             if ($(v).hasClass('modal')) {
                 inModal = true;
@@ -83,7 +82,7 @@ $(document).ready(() => {
         if (inModal) {
             $('#links-modal .card-body-' + id).collapse('toggle');
         } else {
-            $('#search-results .card-body-' + id).collapse('toggle');
+            $('.search-results .card-body-' + id).collapse('toggle');
         }
     });
 
@@ -118,11 +117,11 @@ $(document).ready(() => {
     });
 
     $(document).on('click', '#results-plus-icon', event => {
-        $('#search-results .collapse').collapse('show');
+        $('.search-results .collapse').collapse('show');
     });
 
     $(document).on('click', '#results-minus-icon', event => {
-        $('#search-results .collapse').collapse('hide');
+        $('.search-results .collapse').collapse('hide');
     });
 
     $(document).on('click', '#results-print-icon', event => {
@@ -164,6 +163,11 @@ let get_program_select = () => $('#program-select').val();
 let get_row_select = (id) => $('#' + id + '-select').val();
 let get_row_input = (id) => $('#' + id + '-input').val().trim();
 let append_to_results = (elem, divToUse) => $(divToUse).append(elem);
+let clear_search_results = () => {
+    $('#fuzzy-results').empty();
+    $('#exact-results').empty();
+    $('.results-header').hide();
+}
 let truncate_string = (str, length) => (str.length <= length) ? str : str = str.substring(0, length) + '..';
 let construct_filter_box = (field, value, visibility) => '<span class="filter-box badge badge-primary ' + visibility + '" data-toggle="tooltip" data-placement="bottom" title="' + field + '">' + value + '</span>';
 let update_filters_for_print = (data) => {
@@ -184,7 +188,7 @@ let send_search = (query, mode) => {
         mode = 'OVERWRITE';
         query = add_elastic_params(query);
     }
-    search(event, window.searchRoute, query, display_query, '#search-results', mode);
+    search(event, window.searchRoute, query, display_query, null, mode);
 };
 const empty_type_field = 'All types';
 const empty_program_field = 'All programs';
@@ -241,20 +245,39 @@ function add_elastic_params(query) {
 
 
 function display_query(res, divToUse) {
-    let c = document.createDocumentFragment();
+    let exact = document.createDocumentFragment();
+    let fuzzy = document.createDocumentFragment();
     $.each(res.response, (index, value) => {
         let e = document.createElement("div");
-        e.innerHTML = generate_card(value);
-        c.appendChild(e);
+        e.innerHTML = generate_card(value[0]);
+        if (value[1] > 1000) {
+            exact.appendChild(e);
+        }
+        else {
+            fuzzy.appendChild(e);
+        }
     });
-    append_to_results(c, divToUse);
-    return res['num_results']
+
+    if (divToUse) {
+        append_to_results(exact, divToUse);
+    }
+    else {
+        if (exact.children.length > 0) {
+            append_to_results(exact, '#exact-results');
+            $('.exact-header').show();
+        }
+        if (fuzzy.children.length > 0) {
+            append_to_results(fuzzy, '#fuzzy-results');
+            $('.fuzzy-header').show();
+        }
+    }
+    return res['num_results'];
 }
 
 
 function construct_fields(fields) {
     let retval = {};
-    for (var f in fields) {
+    for (let f in fields) {
         let fieldname = fields[f]
         if (api_to_ui(fieldname)) {
             retval[fieldname] = api_to_ui(fieldname);
@@ -287,7 +310,7 @@ function api_to_ui(api_field_name) {
 function getParameterByName(name, url) {
     if (!url) url = window.location.href;
     name = name.replace(/[\[\]]/g, "\\$&");
-    var regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+    let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
         results = regex.exec(url);
     if (!results) return null;
     if (!results[2]) return '';
