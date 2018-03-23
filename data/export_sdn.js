@@ -215,7 +215,7 @@ const transform = entry => {
         }
     })
 
-    console.log(entry.all_fields);
+    //console.log(entry.all_fields);
 
     return entry;
 }
