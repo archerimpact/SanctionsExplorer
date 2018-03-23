@@ -9,7 +9,7 @@ $(document).ready(() => {
     $('#collapse-all').click(() => $('.card .collapse').collapse('hide'));
     $('#expand-all').click(() => $('.card .collapse').collapse('show'));
 
-    window.addr = window.location.protocol + '//' + window.location.host;
+    window.addr = 'https://sdn.archerimpact.com';//window.location.protocol + '//' + window.location.host;
     window.requesting = null;
 });
 
@@ -45,10 +45,9 @@ let update_results_header = (num) => {
 }
 let display_loading_bar = (show) => show ? $('.loader').show() : $('.loader').hide();
 let change_next_page_text = (text) => $('.next-page').text(text);
-let truncate_string = (str, length) => (str && str.length <= length) ? str : str = str.substring(0, length) + '..';
+let truncate_string = (str, length) => (str && str.length <= length) ? str : str = str.substring(0, length).trim() + '..';
 let construct_filter_box = (field, value, visibility) => '<span class="filter-box badge badge-primary ' + visibility + '" data-toggle="tooltip" data-placement="bottom" title="' + field + '">' + value + '</span>';
 let update_filters_for_print = (data) => {
-    console.log(data);
     $('.filter-box').remove();
     let filter_elem = '';
     $.each(data, (k,v) => {
@@ -58,7 +57,6 @@ let update_filters_for_print = (data) => {
             filter_elem += construct_filter_box(key, truncate_string(v, 12), 'd-block d-print-none');
         }
     });
-    console.log(filter_elem);
     $(filter_elem).insertAfter('#results-header');
     $('[data-toggle="tooltip"]').tooltip();
 }

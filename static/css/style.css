@@ -79,6 +79,19 @@ img#c4ads-logo {
 }
 
 /*********** Results Column ***********/
+.right-col {
+    padding-top: 0;        /* need to set later for sticky Results bar */
+}
+
+.sticky-header {
+    padding-top: 3em;
+    position: -webkit-sticky; /* Safari */
+    position: sticky;
+    top: 0;
+    background-color: #ffffff;
+    z-index: 100;
+}
+
 #exact-header {
     margin-top: 1em;
 }
