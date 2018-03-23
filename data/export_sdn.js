@@ -1,11 +1,12 @@
 const fs = require('fs');
 const path = require('path');
-const exporter = require(path.join(__dirname, 'elastic_export.js'));
-const util = require(path.join(__dirname, 'util.js'));
-const log = util.log('sdn_export');
+// const exporter = require(path.join(__dirname, 'elastic_export.js'));
+// const util = require(path.join(__dirname, 'util.js'));
+// const log = util.log('sdn_export');
 
-const sdn    = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/sdn.json'), 'utf8'));
-const nonsdn = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/non_sdn.json'), 'utf8'));
+// const sdn    = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/sdn.json'), 'utf8'));
+const sdn = JSON.parse(fs.readFileSync('sdn.json', 'utf8'));
+// const nonsdn = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/non_sdn.json'), 'utf8'));
 
 const transform = entry => {
     // Augment the entry with these fields
@@ -112,6 +113,7 @@ const transform = entry => {
         // TODO the nullification on 'None' logic should be moved to the XML parser.
         if (doc.issued_by != 'None') {
             headers.push('issued_by');
+            countries.add(doc.issued_by);
         }
         else {
             doc.issued_by = null;
@@ -119,6 +121,7 @@ const transform = entry => {
 
         if (doc.issued_in != 'None') {
             headers.push('issued_in');
+            countries.add(doc.issued_in["COUNTRY"])
         }
         else {
             doc.issued_in = null;
@@ -213,9 +216,7 @@ const transform = entry => {
         if(entry[field] && entry[field] != ""){
             entry.all_fields.push(String(entry[field]))
         }
-    })
-
-    //console.log(entry.all_fields);
+    });
 
     return entry;
 }
@@ -278,18 +279,22 @@ let list_to_acronym = l => {
     return dict[l] || l;
 }
 
-async function load_sdn() {
-    await exporter.delete_index('sdn');
-    await exporter.create_index('sdn');
+// async function load_sdn() {
+//     await exporter.delete_index('sdn');
+//     await exporter.create_index('sdn');
 
-    await exporter.bulk_add(sdn, transform, 'sdn', 'entry', 0);
-    let count = await exporter.indexing_stats('sdn');
-    log(count + ' documents indexing', 'info');
+//     await exporter.bulk_add(sdn, transform, 'sdn', 'entry', 0);
+//     let count = await exporter.indexing_stats('sdn');
+//     log(count + ' documents indexing', 'info');
 
-    await exporter.bulk_add(nonsdn, transform, 'sdn', 'entry', 100000);     // TODO maybe pick a different indexing scheme.
-    let count_new = await exporter.indexing_stats('sdn');
-    log(count_new + ' documents indexing', 'info');
-}
+//     await exporter.bulk_add(nonsdn, transform, 'sdn', 'entry', 100000);     // TODO maybe pick a different indexing scheme.
+//     let count_new = await exporter.indexing_stats('sdn');
+//     log(count_new + ' documents indexing', 'info');
+// }
 
-load_sdn();
+// load_sdn();
+
+sdn.forEach(entry =>{
+    transform(entry)
+});
 
