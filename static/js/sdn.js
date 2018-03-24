@@ -110,6 +110,7 @@ $(document).ready(() => {
     $(document).on('click', '#results-plus-icon',  event => $('.search-results .collapse').collapse('show'));
     $(document).on('click', '#results-minus-icon', event => $('.search-results .collapse').collapse('hide'));
     $(document).on('click', '#results-print-icon', event => print());
+    $(document).on('click', '#trash-icon',         event => clear_filters());
     $(document).on('click', '#search-info-icon',   event => $('#search-info-modal').modal('show'));
     $(document).on('click', '#modal-plus-icon',    event => $('#entity-modal-body .collapse').collapse('show'));
     $(document).on('click', '#modal-minus-icon',   event => $('#entity-modal-body .collapse').collapse('hide'));
@@ -134,8 +135,17 @@ let get_type_select      = () => $('#type-select').val();
 let get_program_select   = () => $('#program-select').val();
 let get_row              = (id) => [$('#' + id + '-select').val(), $('#' + id + '-input').val().trim()];
 let send_search          = (query, mode, divToUse) => {
-
     search(window.searchRoute, query, mode, window.card, divToUse);
+};
+let clear_filters        = () => {
+    $.each(get_search_row_ids(), (index, id) => {
+        $('#' + id + '-select').prop('selectedIndex', 0);
+        $('#' + id + '-input').val('');
+    });
+    $('#all-fields-input').val('');
+    $('#name-input').val('');
+    $('#type-select').prop('selectedIndex', 0);
+    $('#program-select').prop('selectedIndex', 0);
 };
 const empty_type    = 'All types';
 const empty_program = 'All programs';

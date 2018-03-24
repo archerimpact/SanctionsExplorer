@@ -18,12 +18,6 @@ $(document).ready(() => {
 
 let get_search_input = () => $('#press-release-input').val().trim();
 let send_search      = (query, mode, divToUse) => {
-    if (!mode) {
-        mode = 'OVERWRITE';
-    }
-    if (mode == 'OVERWRITE') {
-        query = add_elastic_params(query);
-    }
     search(window.searchRoute, query, mode, window.pr_card, divToUse);
 }
 const FILTER_SUMMARY_LENGTH = 24;

@@ -6,7 +6,6 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'UA-111936547-2');
     </script>
 
@@ -16,7 +15,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="https://cdn.rawgit.com/yahoo/xss-filters/master/dist/xss-filters.js" crossorigin="anonymous"></script>
+    <script src="https://cdn.rawgit.com/yahoo/xss-filters/master/dist/xss-filters.min.js" crossorigin="anonymous"></script>
     <script src="../static/js/doT.min.js" charset="utf-8"></script>
     <script src="../static/js/search.js"></script>
     <script src="../static/js/sdn.js"></script>
@@ -58,6 +57,7 @@
                     <div class="sticky-header">
                         <div class="d-flex flex-row">
                             <h3 class="col-header mr-auto">SDN Search</h3>
+                            <img src="../img/open-iconic-svg/trash.svg" class="col-icon" id="trash-icon" data-toggle="tooltip" data-placement="bottom" title="Clear Filters">
                             <img src="../img/open-iconic-svg/question-mark.svg" class="col-icon" id="search-info-icon" data-toggle="tooltip" data-placement="bottom" title="Info">
                         </div>
                         <hr class="no-bottom-margin">
@@ -215,199 +215,213 @@
             <div class="collapse hide card-body-{{=it.fixed_ref }}">
                 <div class="card-body">
                     {{? it.identity.aliases.length > 0 }}
-                        <h5 class="card-detail-header">Aliases</h5>
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th class="muted-table-text">name</th>
-                                    <th class="muted-table-text">quality</th>
-                                    <th class="muted-table-text">type</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {{ for (var i in it.identity.aliases) { }}
+                        <div class="detail-group">
+                            <h5 class="card-detail-header">Aliases</h5>
+                            <table class="table table-sm">
+                                <thead>
                                     <tr>
-                                        <td>{{= it.identity.aliases[i].display_name }}</td>
-                                        <td>{{= it.identity.aliases[i].strength }}</td>
-                                        <td>{{= it.identity.aliases[i].alias_type }}</td>
+                                        <th class="muted-table-text">name</th>
+                                        <th class="muted-table-text">quality</th>
+                                        <th class="muted-table-text">type</th>
                                     </tr>
-                                {{ } }}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {{ for (var i in it.identity.aliases) { }}
+                                        <tr>
+                                            <td>{{= it.identity.aliases[i].display_name }}</td>
+                                            <td>{{= it.identity.aliases[i].strength }}</td>
+                                            <td>{{= it.identity.aliases[i].alias_type }}</td>
+                                        </tr>
+                                    {{ } }}
+                                </tbody>
+                            </table>
+                        </div>
                     {{?}}
 
                     {{? it.documents.length > 0 }}
-                        <h5 class="card-detail-header">Documents</h5>
-                        <table class="table table-sm">
-                            <thead>
-                                <tr>
-                                    <th class="muted-table-text">#</th>
-                                    <th class="muted-table-text">type</th>
-                                    <th class="muted-table-text">validity</th>
-                                    {{? it.document_headers && it.document_headers.includes('issued_by') }}
-                                        <th class="muted-table-text">issued by</th>
-                                    {{?}}
-                                    {{? it.document_headers && it.document_headers.includes('issued_in') }}
-                                        <th class="muted-table-text">issued in</th>
-                                    {{?}}
-                                    {{? it.document_headers && it.document_headers.includes('issuing_authority') }}
-                                        <th class="muted-table-text">authorized by</th>
-                                    {{?}}
-                                    {{? it.document_headers && it.document_headers.includes('Issue Date') }}
-                                        <th class="muted-table-text">issued on</th>
-                                    {{?}}
-                                    {{? it.document_headers && it.document_headers.includes('Expiration Date') }}
-                                        <th class="muted-table-text">expires on</th>
-                                    {{?}}
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {{ for (var i in it.documents) { }}
+                        <div class="detail-group">
+                            <h5 class="card-detail-header">Documents</h5>
+                            <table class="table table-sm">
+                                <thead>
                                     <tr>
-                                        <td class="doc-number">
-                                            {{= it.documents[i].id_number }}
-                                        </td>
-                                        <td>
-                                            {{= it.documents[i].type }}
-                                        </td>
-                                        <td>
-                                            {{= it.documents[i].validity }}
-                                        </td>
-
-                                        {{? it.document_headers.includes('issued_by') }}
-                                            <td class="doc-info">
-                                                {{? it.documents[i].issued_by }}
-                                                    {{= it.documents[i].issued_by }}
-                                                {{?}}
-                                            </td>
+                                        <th class="muted-table-text">#</th>
+                                        <th class="muted-table-text">type</th>
+                                        <th class="muted-table-text">validity</th>
+                                        {{? it.document_headers && it.document_headers.includes('issued_by') }}
+                                            <th class="muted-table-text">issued by</th>
                                         {{?}}
-
-                                        {{? it.document_headers.includes('issued_in') }}
-                                            <td class="doc-info">
-                                                {{? it.documents[i].issued_in }}
-                                                    {{= it.documents[i].issued_in }}
-                                                {{?}}
-                                            </td>
+                                        {{? it.document_headers && it.document_headers.includes('issued_in') }}
+                                            <th class="muted-table-text">issued in</th>
                                         {{?}}
-
-                                        {{? it.document_headers.includes('issuing_authority') }}
-                                            <td class="doc-info">
-                                                {{? it.documents[i].issuing_authority }}
-                                                    {{= it.documents[i].issuing_authority }}
-                                                {{?}}
-                                            </td>
+                                        {{? it.document_headers && it.document_headers.includes('issuing_authority') }}
+                                            <th class="muted-table-text">authorized by</th>
                                         {{?}}
-
-                                        {{? it.document_headers.includes('Issue Date') }}
-                                            <td class="doc-info">
-                                                {{? it.documents[i]['Issue Date'] }}
-                                                    {{= it.documents[i]['Issue Date'] }}
-                                                {{?}}
-                                            </td>
+                                        {{? it.document_headers && it.document_headers.includes('Issue Date') }}
+                                            <th class="muted-table-text">issued on</th>
                                         {{?}}
-
-                                        {{? it.document_headers.includes('Expiration Date') }}
-                                            <td class="doc-info">
-                                                {{? it.documents[i]['Expiration Date'] }}
-                                                    {{= it.documents[i]['Expiration Date'] }}
-                                                {{?}}
-                                            </td>
+                                        {{? it.document_headers && it.document_headers.includes('Expiration Date') }}
+                                            <th class="muted-table-text">expires on</th>
                                         {{?}}
                                     </tr>
-                                {{ } }}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    {{ for (var i in it.documents) { }}
+                                        <tr>
+                                            <td class="doc-number">
+                                                {{= it.documents[i].id_number }}
+                                            </td>
+                                            <td>
+                                                {{= it.documents[i].type }}
+                                            </td>
+                                            <td>
+                                                {{= it.documents[i].validity }}
+                                            </td>
+
+                                            {{? it.document_headers.includes('issued_by') }}
+                                                <td class="doc-info">
+                                                    {{? it.documents[i].issued_by }}
+                                                        {{= it.documents[i].issued_by }}
+                                                    {{?}}
+                                                </td>
+                                            {{?}}
+
+                                            {{? it.document_headers.includes('issued_in') }}
+                                                <td class="doc-info">
+                                                    {{? it.documents[i].issued_in }}
+                                                        {{= it.documents[i].issued_in }}
+                                                    {{?}}
+                                                </td>
+                                            {{?}}
+
+                                            {{? it.document_headers.includes('issuing_authority') }}
+                                                <td class="doc-info">
+                                                    {{? it.documents[i].issuing_authority }}
+                                                        {{= it.documents[i].issuing_authority }}
+                                                    {{?}}
+                                                </td>
+                                            {{?}}
+
+                                            {{? it.document_headers.includes('Issue Date') }}
+                                                <td class="doc-info">
+                                                    {{? it.documents[i]['Issue Date'] }}
+                                                        {{= it.documents[i]['Issue Date'] }}
+                                                    {{?}}
+                                                </td>
+                                            {{?}}
+
+                                            {{? it.document_headers.includes('Expiration Date') }}
+                                                <td class="doc-info">
+                                                    {{? it.documents[i]['Expiration Date'] }}
+                                                        {{= it.documents[i]['Expiration Date'] }}
+                                                    {{?}}
+                                                </td>
+                                            {{?}}
+                                        </tr>
+                                    {{ } }}
+                                </tbody>
+                            </table>
+                        </div>
                     {{?}}
 
                     {{ for (var feature in it.features) { }}
-                        <h5 class="card-detail-header">{{= feature }}</h5>
-                        <ul>
-                            {{ for (var i = 0; i < it.features[feature].length; i++) { }}
+                        <div class="detail-group">
+                            <h5 class="card-detail-header">{{= feature }}</h5>
+                            <ul>
+                                {{ for (var i = 0; i < it.features[feature].length; i++) { }}
 
-                                {{? it.features[feature][i].details }}
-                                    <li>
-                                        {{= it.features[feature][i].details }}
-                                        {{? it.features[feature][i].reliability != "Unknown" }}
-                                            ({{= it.features[feature][i].reliability }})
-                                        {{?}}
+                                    {{? it.features[feature][i].details }}
+                                        <li>
+                                            {{= it.features[feature][i].details }}
+                                            {{? it.features[feature][i].reliability != "Unknown" }}
+                                                ({{= it.features[feature][i].reliability }})
+                                            {{?}}
 
-                                        {{? it.features[feature][i].comment }}
-                                            ({{= it.features[feature][i].comment }})
-                                        {{?}}
-                                    </li>
-                                {{?}}
+                                            {{? it.features[feature][i].comment }}
+                                                ({{= it.features[feature][i].comment }})
+                                            {{?}}
+                                        </li>
+                                    {{?}}
 
-                                {{? it.features[feature][i].date }}
-                                    <li>
-                                        {{= it.features[feature][i].date }}
-                                        {{? it.features[feature][i].reliability != "Unknown" }}
-                                            ({{= it.features[feature][i].reliability }})
-                                        {{?}}
+                                    {{? it.features[feature][i].date }}
+                                        <li>
+                                            {{= it.features[feature][i].date }}
+                                            {{? it.features[feature][i].reliability != "Unknown" }}
+                                                ({{= it.features[feature][i].reliability }})
+                                            {{?}}
 
-                                        {{? it.features[feature][i].comment }}
-                                            ({{= it.features[feature][i].comment }})
-                                        {{?}}
-                                    </li>
-                                {{?}}
+                                            {{? it.features[feature][i].comment }}
+                                                ({{= it.features[feature][i].comment }})
+                                            {{?}}
+                                        </li>
+                                    {{?}}
 
-                                {{? it.features[feature][i].location }}
-                                    <li>
-                                        {{= it.features[feature][i].location['COMBINED'] }}
-                                        {{? it.features[feature][i].reliability != "Unknown" }}
-                                            ({{= it.features[feature][i].reliability }})
-                                        {{?}}
+                                    {{? it.features[feature][i].location }}
+                                        <li>
+                                            {{= it.features[feature][i].location['COMBINED'] }}
+                                            {{? it.features[feature][i].reliability != "Unknown" }}
+                                                ({{= it.features[feature][i].reliability }})
+                                            {{?}}
 
-                                        {{? it.features[feature][i].comment }}
-                                            ({{= it.features[feature][i].comment }})
-                                        {{?}}
-                                    </li>
-                                {{?}}
-                            {{ } }}
-                        </ul>
+                                            {{? it.features[feature][i].comment }}
+                                                ({{= it.features[feature][i].comment }})
+                                            {{?}}
+                                        </li>
+                                    {{?}}
+                                {{ } }}
+                            </ul>
+                        </div>
                     {{ } }}
 
                     {{? it.party_comment }}
-                        <h5 class="card-detail-header">OFAC Comment</h5>
-                        <p>{{= it.party_comment }}
+                        <div class="detail-group">
+                            <h5 class="card-detail-header">OFAC Comment</h5>
+                            <p>{{= it.party_comment }}
+                        </div>
                     {{?}}
 
                     {{? it.sanctions_entries[0].entry_events.length > 0 }}
-                        <h5 class="card-detail-header">Sanction Events</h5>
-                        <ul>
-                            {{ for (var i = 0; i < it.sanctions_entries[0].entry_events.length; i++) { }}
-                                <li>{{= it.sanctions_entries[0].entry_events[i][0] }}: {{= it.sanctions_entries[0].entry_events[i][1] }}</li>
-                            {{ } }}
-                        </ul>
+                        <div class="detail-group">
+                            <h5 class="card-detail-header">Sanction Events</h5>
+                            <ul>
+                                {{ for (var i = 0; i < it.sanctions_entries[0].entry_events.length; i++) { }}
+                                    <li>{{= it.sanctions_entries[0].entry_events[i][0] }}: {{= it.sanctions_entries[0].entry_events[i][1] }}</li>
+                                {{ } }}
+                            </ul>
+                        </div>
                     {{?}}
 
                     {{? it.linked_profile_ids.length > 0 }}
-                        <h5 class="card-detail-header">Linked To</h5>
-                        <ul>
-                            {{ for (var i = 0; i < it.linked_profiles.length; i++) { }}
-                                <li>
-                                    <a href="#" data-id="{{= it.linked_profiles[i].linked_id }}" class="activate-modal real-link">
-                                        {{= it.linked_profiles[i].linked_name.display_name }}
-                                    </a>
-                                </li>
-                            {{ } }}
-                        </ul>
+                        <div class="detail-group">
+                            <h5 class="card-detail-header">Linked To</h5>
+                            <ul>
+                                {{ for (var i = 0; i < it.linked_profiles.length; i++) { }}
+                                    <li>
+                                        <a href="#" data-id="{{= it.linked_profiles[i].linked_id }}" class="activate-modal real-link">
+                                            {{= it.linked_profiles[i].linked_name.display_name }}
+                                        </a>
+                                    </li>
+                                {{ } }}
+                            </ul>
+                        </div>
                     {{?}}
 
                     {{? it.pr_data && it.pr_data.length > 0 }}
-                        <h5 class="card-detail-header">Possible Press Releases</h5>
-                        <ul>
-                            {{ for (var i = 0; i < it.pr_data.length; i++) { }}
-                                <li>
-                                    <a href="{{= it.pr_data[i].link }}" class="real-link" target="_blank">
-                                        {{? it.pr_data[i].date }}
-                                            {{= it.pr_data[i].date }}:
-                                        {{?}}
+                        <div class="detail-group">
+                            <h5 class="card-detail-header">Possible Press Releases</h5>
+                            <ul>
+                                {{ for (var i = 0; i < it.pr_data.length; i++) { }}
+                                    <li>
+                                        <a href="{{= it.pr_data[i].link }}" class="real-link" target="_blank">
+                                            {{? it.pr_data[i].date }}
+                                                {{= it.pr_data[i].date }}:
+                                            {{?}}
 
-                                        {{= it.pr_data[i].title }}
-                                    </a>
-                                </li>
-                            {{ } }}
-                        </ul>
+                                            {{= it.pr_data[i].title }}
+                                        </a>
+                                    </li>
+                                {{ } }}
+                            </ul>
+                        </div>
                     {{?}}
 
                 </div>
