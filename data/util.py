@@ -24,3 +24,6 @@ def log(owner):
         rollbar.report_message(msg, level.lower())
         print(f'{owner_tag:<14}{level.upper()}: {msg}.')
     return f
+
+def exception_thrown():
+    rollbar.report_exc_info()
