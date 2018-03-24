@@ -86,6 +86,9 @@ def write_ofac_ids(filename):
 	
 	num_tups = len(old_tups)
 	scrape(num_tups, float('inf'))
+	if len(tup_list) == 0:
+		exit()
+		
 	old_tups.extend(tup_list)
 	
 	print("before scrape", num_tups)
