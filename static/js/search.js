@@ -14,28 +14,26 @@ $(document).ready(() => {
 });
 
 
-let get_template = (idstr) => $(idstr).html() ? doT.template($(idstr).html()) : null;
-let append_to_results = (elem, divToUse) => $(divToUse).append(elem);
-let clear_search_results = () => {
-    $('#fuzzy-results').empty();
-    $('#exact-results').empty();
+let get_template           = (idstr) => $(idstr).html() ? doT.template($(idstr).html()) : null;
+let append_to_results      = (elem, divToUse) => $(divToUse).append(elem);
+let clear_search_results   = () => {
+    $('.search-results').empty();
     $('.results-header').hide();
 }
-let display_search_results = (show) => show ? $('#search-results').show() : $('#search-results').hide();
-let update_results_header = (num) => {
+let display_search_results = (show) => {}//show ? $('.search-results').show() : $('.search-results').hide();
+let display_loading_bar    = (show) => show ? $('.loader').show() : $('.loader').hide();
+let change_next_page_text  = (text) => $('.next-page').text(text);
+let truncate_string        = (str, length) => (str && str.length <= length) ? str : str = str.substring(0, length).trim() + '..';
+let sanitize               = str => xssFilters.inHTMLData(str);
+let construct_filter_box   = (field, value, visibility) => '<span class="filter-box badge badge-primary ' + sanitize(visibility) + '" data-toggle="tooltip" data-placement="bottom" title="' + sanitize(field) + '">' + sanitize(value) + '</span>';
+let update_results_header  = (num) => {
     if (num != null) {
-        $('#results-header').text('Results (' + num + ')')
-        if (num > 50) {
-            if ($('#too-many-results').length === 0) {
-                $('#search-results').prepend('<div class="alert alert-warning search-error-alert d-print-none" id="too-many-results">Your search returned a lot of results. Try adding additional filters to narrow it down.</div>');
-            }
-
-            if (window.lastQuery.from + window.lastQuery.size >= num) {
-                $('.next-page').hide();
-            }
-            else {
-                $('.next-page').show();
-            }
+        $('#results-header').text('Results (' + num + ')');
+        if (window.lastQuery.from + window.lastQuery.size >= num) {
+            $('.next-page').hide();
+        }
+        else {
+            $('.next-page').show();
         }
     }
     else {
@@ -43,31 +41,30 @@ let update_results_header = (num) => {
         $('.next-page').hide();
     }
 }
-let display_loading_bar = (show) => show ? $('.loader').show() : $('.loader').hide();
-let change_next_page_text = (text) => $('.next-page').text(text);
-let truncate_string = (str, length) => (str && str.length <= length) ? str : str = str.substring(0, length).trim() + '..';
-let construct_filter_box = (field, value, visibility) => '<span class="filter-box badge badge-primary ' + visibility + '" data-toggle="tooltip" data-placement="bottom" title="' + field + '">' + value + '</span>';
-let update_filters_for_print = (data) => {
+let update_filter_summary  = (data) => {
     $('.filter-box').remove();
     let filter_elem = '';
     $.each(data, (k,v) => {
         let key = api_to_ui(k);
         if (key) {
             filter_elem += construct_filter_box(key, v, 'd-none d-print-block');
-            filter_elem += construct_filter_box(key, truncate_string(v, 12), 'd-block d-print-none');
+            filter_elem += construct_filter_box(key, truncate_string(v, FILTER_SUMMARY_LENGTH), 'd-block d-print-none');
         }
     });
     $(filter_elem).insertAfter('#results-header');
     $('[data-toggle="tooltip"]').tooltip();
 }
 //let disable_search_buttons = (disable) => disable ? $('.btn-sm').addClass('disabled') : $('.btn-sm').removeClass('disabled');
-
-const error_alert = '<div class="alert alert-danger search-error-alert">There was an error. Please try again.</div>';
+let display_error = (e) => {
+    $('#error-display').append('<div class="alert alert-danger search-error-alert">An error occured; please try again. If this persists, please contact us.</div>');
+}
 
 
 function search(url, params, mode, card_generator,  divToUse) {
-    // mode should be 'OVERWRITE', 'APPEND', or 'MODAL'.
-    if (requesting != null) {
+    // mode should be 'OVERWRITE', 'APPEND', or 'MODAL'
+    mode = mode || 'OVERWRITE';
+
+    if (requesting !== null) {
         window.requesting.abort();
     }
 
@@ -75,6 +72,11 @@ function search(url, params, mode, card_generator,  divToUse) {
         return;
     }
 
+    if (mode == 'OVERWRITE') {
+        params = add_elastic_params(params);
+    }
+
+    window.lastQuery = params;
     let newReq = $.get(url, params);
     window.requesting = newReq;
 
@@ -84,7 +86,7 @@ function search(url, params, mode, card_generator,  divToUse) {
 
     // disable_search_buttons(true);
     if (mode == 'OVERWRITE') {
-        update_filters_for_print(params);
+        update_filter_summary(params);
         display_loading_bar(true);
         update_results_header(null);
         clear_search_results();
@@ -102,7 +104,7 @@ function search(url, params, mode, card_generator,  divToUse) {
     })
     .fail((e) => {
         if (e.statusText != 'abort') {
-            $(divToUse).append(error_alert);
+            display_error();
         }
     })
     .always(() => {
@@ -153,11 +155,20 @@ function add_elastic_params(query) {
     if (Object.keys(query).length > 0) {
         query.size = 50;
         query.from = 0;
-
-        window.lastQuery = query;
         return query;
     }
     else {
         return null;
     }
+}
+
+// From https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript/901144#901144
+function getParameterByName(name, url) {
+    if (!url) url = window.location.href;
+    name = name.replace(/[\[\]]/g, "\\$&");
+    let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
+        results = regex.exec(url);
+    if (!results) return null;
+    if (!results[2]) return '';
+    return decodeURIComponent(results[2].replace(/\+/g, " "));
 }

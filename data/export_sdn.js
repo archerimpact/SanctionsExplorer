@@ -174,8 +174,9 @@ const transform = entry => {
 
     });
 
-    // Fields not included: primary_display_name (included with all_display_names), linked_profile_ids (not relevant), fixed_ref
+    // Fields not included: linked_profile_ids (not relevant), fixed_ref
     let all_fields = [
+        'primary_display_name',
         'identity_id',
         'all_display_names',
         'programs',

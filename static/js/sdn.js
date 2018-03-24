@@ -7,7 +7,7 @@ $(document).ready(() => {
 
     $('.search-button').click(event => {
         if (event) { event.preventDefault(); }
-        let query = collect_query_info()
+        let query = collect_query_info();
         send_search(query);
     });
 
@@ -93,7 +93,7 @@ $(document).ready(() => {
         $('#links-modal').modal('show');
         if ($('#links-modal .card-body-' + id).length == 0) {
             if (!$(event.target).text().includes('Link Explorer')) {
-                temporarily_change_text(event.target, 'Added to Link Explorer!');
+                temp_change_text(event.target, 'Added to Link Explorer!');
             }
             let query = {
                 'fixed_ref': parseInt(id)
@@ -101,48 +101,23 @@ $(document).ready(() => {
             send_search(query, 'MODAL', '#entity-modal-body');
         }
         else if (!$(event.target).text().includes('Link Explorer')) {
-            temporarily_change_text(event.target, 'Already in Link Explorer!');
+            temp_change_text(event.target, 'Already in Link Explorer!');
         }
     });
 
-    $(document).on('click', '#clear-modal-body', event => {
-        $('#links-modal .modal-body').empty();
-    });
-
-    $(document).on('click', '#results-link-explorer-icon', event => {
-        $('#links-modal').modal('show');
-    });
-
-    $(document).on('click', '#results-plus-icon', event => {
-        $('.search-results .collapse').collapse('show');
-    });
-
-    $(document).on('click', '#results-minus-icon', event => {
-        $('.search-results .collapse').collapse('hide');
-    });
-
-    $(document).on('click', '#results-print-icon', event => {
-        print();
-    });
-
-    $(document).on('click', '#search-info-icon', event => {
-        $('#search-info-modal').modal('show');
-    });
-
-    $(document).on('click', '#modal-plus-icon', event => {
-        $('#entity-modal-body .collapse').collapse('show');
-    });
-
-    $(document).on('click', '#modal-minus-icon', event => {
-        $('#entity-modal-body .collapse').collapse('hide');
-    });
-
-    // enable tooltips
-    $('[data-toggle="tooltip"]').tooltip();
+    $(document).on('click', '#clear-modal-body',   event => $('#links-modal .modal-body').empty());
+    $(document).on('click', '#results-link-icon',  event => $('#links-modal').modal('show'));
+    $(document).on('click', '#results-plus-icon',  event => $('.search-results .collapse').collapse('show'));
+    $(document).on('click', '#results-minus-icon', event => $('.search-results .collapse').collapse('hide'));
+    $(document).on('click', '#results-print-icon', event => print());
+    $(document).on('click', '#search-info-icon',   event => $('#search-info-modal').modal('show'));
+    $(document).on('click', '#modal-plus-icon',    event => $('#entity-modal-body .collapse').collapse('show'));
+    $(document).on('click', '#modal-minus-icon',   event => $('#entity-modal-body .collapse').collapse('hide'));
+    $('[data-toggle="tooltip"]').tooltip();        // enable tooltips
 
 });
 
-let temporarily_change_text = (selector, text) => {
+let temp_change_text     = (selector, text) => {
     let original = $(selector).text();
     $(selector).text(text);
     $(selector).addClass('link-in-explorer');
@@ -151,25 +126,21 @@ let temporarily_change_text = (selector, text) => {
         $(selector).removeClass('link-in-explorer');
     }, 2000);
 };
-let append_search_row = (id, fields) => $('.search-rows').append(searchRow({'id': id, 'fields': fields}));
-let generate_card = (data) => window.card(data);
-let get_search_row_ids = () => $('.search-row').map((index, elem) => elem.id);
+let append_search_row    = (id, fields) => $('.search-rows').append(searchRow({'id': id, 'fields': fields}));
+let get_search_row_ids   = () => $('.search-row').map((index, elem) => elem.id);
 let get_all_fields_input = () => $('#all-fields-input').val().trim();
-let get_name_input = () => $('#name-input').val().trim();
-let get_type_select = () => $('#type-select').val();
-let get_program_select = () => $('#program-select').val();
-let get_row_select = (id) => $('#' + id + '-select').val();
-let get_row_input = (id) => $('#' + id + '-input').val().trim();
-let send_search = (query, mode, divToUse) => {
-    if (!mode) {
-        mode = 'OVERWRITE';
-        query = add_elastic_params(query);
-    }
-    search(window.searchRoute, query, mode, generate_card, divToUse);
+let get_name_input       = () => $('#name-input').val().trim();
+let get_type_select      = () => $('#type-select').val();
+let get_program_select   = () => $('#program-select').val();
+let get_row              = (id) => [$('#' + id + '-select').val(), $('#' + id + '-input').val().trim()];
+let send_search          = (query, mode, divToUse) => {
+
+    search(window.searchRoute, query, mode, window.card, divToUse);
 };
-const empty_type_field = 'All types';
-const empty_program_field = 'All programs';
-const empty_select = 'Select field';
+const empty_type    = 'All types';
+const empty_program = 'All programs';
+const empty_select  = 'Select field';
+const FILTER_SUMMARY_LENGTH = 12;
 
 
 /*
@@ -192,18 +163,17 @@ function collect_query_info() {
     }
 
     let type = get_type_select()
-    if (type !== empty_type_field) {
+    if (type !== empty_type) {
         query['party_sub_type'] = type;
     }
 
     let program = get_program_select()
-    if (program !== empty_program_field) {
+    if (program !== empty_program) {
         query['programs'] = program;
     }
 
     $.each(get_search_row_ids(), (index, row_id) => {
-        let select = get_row_select(row_id);
-        let input = get_row_input(row_id);
+        let [select, input] = get_row(row_id);
         if (select != empty_select && input !== null && input !== "") {
             query[select] = input;
         }
@@ -245,15 +215,4 @@ function api_to_ui(api_field_name) {
         'all_fields':                           'All Fields',
     };
     return dict[api_field_name];
-}
-
-// From https://stackoverflow.com/questions/901115/how-can-i-get-query-string-values-in-javascript/901144#901144
-function getParameterByName(name, url) {
-    if (!url) url = window.location.href;
-    name = name.replace(/[\[\]]/g, "\\$&");
-    let regex = new RegExp("[?&]" + name + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
 }
