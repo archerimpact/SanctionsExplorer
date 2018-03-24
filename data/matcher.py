@@ -2,6 +2,7 @@ import requests
 import urllib
 import json
 import util
+import re
 from difflib import get_close_matches
 
 log = util.log('matcher')
@@ -43,7 +44,18 @@ def write_ofac_id_matches(outfile):
         sdn_id = entry['_id']
         name = entry['_source']['primary_display_name']
 
-        best_match = get_close_matches(name, ofac_names, n=1, cutoff=0.6)
+        try:
+            best_match = get_close_matches(name, ofac_names, n=1, cutoff=0.6)[0]
+        except:
+            # names might need to be reversed
+            match = re.search(r'[A-Z]+,\s+[a-z]+', name)
+            if match:
+                last, first = match.group(0).partition(',')
+                name = first + ' ' + last
+                try:
+                    best_match = get_close_matches(name, ofac_names, n=1, cutoff=0.6)[0]
+                except:
+                    continue
         ofac_website_id = ofac_name_to_id[best_match]
 
         data[sdn_id] = ofac_website_id
