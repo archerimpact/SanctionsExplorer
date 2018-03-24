@@ -22,15 +22,17 @@ nav.navbar {
     font-size: 1.1em;
 }
 
-img#archer-logo {
-
+img#archer-nav-logo {
+    width: 7em;
+    filter: invert(100%);
+    margin-right: 2em;
 }
 
 img#product-logo {
     width: 10em;
 }
 
-img#c4ads-logo {
+img#c4ads-nav-logo {
     width: 5em;
 }
 

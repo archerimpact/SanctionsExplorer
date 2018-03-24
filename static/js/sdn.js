@@ -18,7 +18,7 @@ $(document).ready(() => {
     });
 
     let id = 0;
-    let fields = construct_fields(['countries', 'nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'birthdate', 'doc_id_numbers', 'location', 'aircraft_tags', 'vessel_tags']);
+    let fields = construct_fields(['countries', 'nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'doc_id_numbers', 'location', 'aircraft_tags', 'vessel_tags']);
     append_search_row(id, fields);
     id++;
 
@@ -47,6 +47,10 @@ $(document).ready(() => {
         }
 
         console.log(currentSelections);
+
+        let eventID = event.target.id.match('([0-9]+)')[1];
+        let selection = $('#search-row-' + eventID + '-select').val();
+        $('#search-row-' + eventID + '-input').attr('placeholder', api_to_placeholder_text(selection));
 
         if (needNewRow) {
             append_search_row(id, fields);
@@ -141,6 +145,7 @@ let clear_filters        = () => {
     $.each(get_search_row_ids(), (index, id) => {
         $('#' + id + '-select').prop('selectedIndex', 0);
         $('#' + id + '-input').val('');
+        $('#' + id + '-input').attr('placeholder', '');
     });
     $('#all-fields-input').val('');
     $('#name-input').val('');
@@ -211,7 +216,6 @@ function api_to_ui(api_field_name) {
         'all_display_names':                    'Name',
         'doc_id_numbers':                       'ID Numbers',
         'programs':                             'Programs',
-        'location':                             'Location',
         'title':                                'Title',
         'birthdate':                            'Birthdate',
         'place_of_birth':                       'Place of Birth',
@@ -224,5 +228,20 @@ function api_to_ui(api_field_name) {
         'vessel_tags':                          'Vessel Info',
         'all_fields':                           'All Fields',
     };
+    return dict[api_field_name];
+}
+
+function api_to_placeholder_text(api_field_name) {
+    let dict = {
+        'doc_id_numbers':                       'IMO, Passport #, SWIFT',
+        'location':                             'e.g. PO Box, London, Switzerland',
+        'title':                                'e.g. President, Commander',
+        'place_of_birth':                       'e.g. Uganda, Russia',
+        'nationality_country':                  'e.g. Uganda, Russia',
+        'citizenship_country':                  'e.g. Uganda, Russia',
+        'countries':                            'e.g. Uganda, Russia',
+        'aircraft_tags':                        'e.g. B727, YAS-AIR',
+        'vessel_tags':                          '[use docID for IMO] e.g. Oil Tanker.',
+    }
     return dict[api_field_name];
 }
