@@ -115,16 +115,23 @@ app.get('/search/sdn', async function(req, res) {
     };
 
     Object.keys(req.query).forEach(k => {
+        if (k == 'all_fields') {
+            // Prioritize primary names over all names (both over other fields)
+            let all_should     = create_match_phrase('all_display_names',    req.query[k], false, 2000);
+            let primary_should = create_match_phrase('primary_display_name', req.query[k], false, 4000);
+            search_query.bool.should.push(all_should);
+            search_query.bool.should.push(primary_should);
+        }
+
         if (k == 'all_display_names') {
             // There must be a fuzzy match in all_display_names.  Boost exact matches in all_display_names, and further boost exact matches in primary names.
             let all_must       = create_match_phrase('all_display_names',    req.query[k], true);
             let all_should     = create_match_phrase('all_display_names',    req.query[k], false, 1000);
-            let primary_should = create_match_phrase('primary_display_name', req.query[k], false, 2);
+            let primary_should = create_match_phrase('primary_display_name', req.query[k], false, 2000);
             search_query.bool.must.push(all_must);
             search_query.bool.should.push(all_should);
             search_query.bool.should.push(primary_should);
-        }
-        else if (get_keywords().includes(k)) {
+        } else if (get_keywords().includes(k)) {
             // There must be a fuzzy match.  Boost exact matches.
             let must_phrase   = create_match_phrase(k, req.query[k], true);
             let should_phrase = create_match_phrase(k, req.query[k], false, 1000);
