@@ -16,19 +16,24 @@ async function delete_index(name) {
     }
 }
 
-async function bulk_add(operations, transform, index_name, index_type, starting_from) {
+async function bulk_add(operations, transform, index_name, index_type, equality_filter) {
     let body = [];
+    let seen_values = new Set();
+
     for (let i = 0; i < operations.length; i++) {
-        let id = starting_from + i;
-        let index_statement = {
-            index: {
-                _index: index_name,
-                _type: index_type,
-                _id: parseInt(id),
-            }
-        };
-        body.push(index_statement);
-        body.push(transform(operations[i]));
+        if (!equality_filter || !seen_values.has(operations[i][equality_filter])) {
+            let id = starting_from + i;
+            let index_statement = {
+                index: {
+                    _index: index_name,
+                    _type: index_type,
+                    _id: parseInt(id),
+                }
+            };
+            body.push(index_statement);
+            body.push(transform(operations[i]));
+            seen_values.add(operations[i][equality_filter]);
+        }
     }
 
     try {

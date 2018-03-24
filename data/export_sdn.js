@@ -302,13 +302,11 @@ async function load_sdn() {
     await exporter.delete_index('sdn');
     await exporter.create_index('sdn');
 
-    await exporter.bulk_add(sdn, transform, 'sdn', 'entry', 0);
+    nonsdn.forEach(e => sdn.push(e));
+
+    await exporter.bulk_add(sdn, transform, 'sdn', 'entry', 'fixed_ref');
     let count = await exporter.indexing_stats('sdn');
     log(count + ' documents indexing', 'info');
-
-    await exporter.bulk_add(nonsdn, transform, 'sdn', 'entry', 100000);     // TODO maybe pick a different indexing scheme.
-    let count_new = await exporter.indexing_stats('sdn');
-    log(count_new + ' documents indexing', 'info');
 }
 
 load_sdn();
