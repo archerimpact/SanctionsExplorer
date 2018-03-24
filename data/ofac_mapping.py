@@ -37,63 +37,69 @@ def parse_name(soup, match_strings):
 	return " ".join(ret)
 
 def is_error(soup):
-	h4 = soup.findall('h4')
-	return error_text in h4[0].text
+	return error_text in soup.findall('h4')[0].text
 
 
+
+# gets tups from start -> end and puts them in tup list
 def scrape(start_num, end_num):
+	# f = open('temp_test.txt', 'w')
 	i = start_num
 	while (i < end_num):
 		url = base_url.format(i)
-		try:
-			result = requests.get(url)
-			sleep(2)
-		except Exception as e:
-			sleep(5)
-			result = requests.get(url)
+		result = None
+		while result is None:
+			try:
+				temp = requests.get(url)
+				if temp.status_code == 200:
+					result = temp
+			except Exception as e:
+				# print('waiting')
+				sleep(5)
 
 		if result.status_code == 200:
 			c = result.content
 			soup = BeautifulSoup(c, 'lxml')
 			
 			if is_type(soup, individual_type):
-				tup_list.append((parse_name(soup, [first_name_id, last_name_id]), i, "individual"))
+				tup = (parse_name(soup, [first_name_id, last_name_id]), i, "individual")
+				tup_list.append(tup)
+				# f.write(str(tup[0]) + ' ' + str(i) + ' ' + str(tup[2]) + '\n')
 			elif is_type(soup, vessel_type):
-				tup_list.append((parse_name(soup, [vessel_name_id]), i, "vessel"))
+				tup = (parse_name(soup, [vessel_name_id]), i, "vessel")
+				tup_list.append(tup)
+				# f.write(str(tup[0]) + ' ' + str(i) + ' ' + str(tup[2]) + '\n')
 			elif is_type(soup, entity_aircraft_type):
-				tup_list.append((parse_name(soup, [entity_aircraft_name_id]), i, "entity/aircraft"))
-			elif is_error(soup):
+				tup = (parse_name(soup, [entity_aircraft_name_id]), i, "entity/aircraft")
+				tup_list.append(tup)
+				# f.write(str(tup[0]) + ' ' + str(i) + ' ' + str(tup[2]) + '\n')
+			else:
 				return
 		i += 1
-		if i % 100 == 0:
-			print(i)
+		print(i)
+	# f.close()
 
-
-
-
-def main():
-	start = 0
-	end = None
-	if args.mode == 'test':	
-		end = 20
-	elif args.mode == 'initial':
-		end = 6216
-	elif args.mode == 'update':
-		start = 6217
-		end = -1
-
-
-	scrape(start, end)
+def write_ofac_ids(filename):
+	inf = open('update_files/ofac_names.txt', 'rb')
+	old_tups = pickle.load(inf)
+	inf.close()
 	
-	# with open('ofac_names.txt', 'wb') as f:
-	# 	pickle.dump(tup_list, f)
+	num_tups = len(old_tups)
+	scrape(num_tups, float('inf'))
+	old_tups.extend(tup_list)
+	
+	print("before scrape", num_tups)
+	print("after scrape", len(old_tups))
+
+	outf = open('update_files/ofac_names.txt', 'wb')
+	pickle.dump(old_tups, outf)
+	outf.close()
+
+	with open(filename, 'w') as f:
+		for t in old_tups:
+			f.write(str(t[1]) + '|' + t[0] + '\n')
 
 
 
 
-if __name__ == "__main__":
-	parser = argparse.ArgumentParser(description='Scrape OFAC to build a mapping from name : ofacid')
-	parser.add_argument("mode", nargs='?', default="test")
-	args = parser.parse_args()
 
-	main()
