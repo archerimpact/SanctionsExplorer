@@ -4,22 +4,23 @@ const exporter = require(path.join(__dirname, 'elastic_export.js'));
 const util = require(path.join(__dirname, 'util.js'));
 const log = util.log('sdn_export');
 
-const sdn    = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/sdn.json'), 'utf8'));
+const sdn    = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/sdn.json'),     'utf8'));
 const nonsdn = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/non_sdn.json'), 'utf8'));
 
 const transform = entry => {
     // Augment the entry with these fields
-    entry.identity_id = entry.identity.id
+    entry.identity_id          = entry.identity.id;
     entry.primary_display_name = entry.identity.primary.display_name;
-    entry.programs = [];
-    entry.all_display_names = [];
-    entry.doc_id_numbers = [];
-    entry.linked_profile_ids = [];
+    entry.programs             = [];
+    entry.countries            = [];
+    entry.all_display_names    = [];
+    entry.doc_id_numbers       = [];
+    entry.linked_profile_ids   = [];
     entry.linked_profile_names = [];
-    entry.countries = [];
-    entry.aircraft_tags = [];
-    entry.vessel_tags = [];
-    entry.all_fields = [];
+    entry.aircraft_tags        = [];
+    entry.vessel_tags          = [];
+    entry.all_fields           = [];
+    entry.sdn_display          = '';
 
     programs  = new Set();
     countries = new Set();
@@ -39,7 +40,6 @@ const transform = entry => {
     });
     entry.programs = Array.from(programs).sort();
 
-    entry.sdn_display = '';
     if (lists.delete('Non-SDN')) {
         if (lists.delete('SDN')) {
             entry.sdn_display += '[SDN] ';
@@ -79,20 +79,24 @@ const transform = entry => {
 
         let combined_info = [];
 
-        entry.features[f_key].forEach(entry => {
-            if (entry.details) {
-                combined_info.push(entry.details);
+        entry.features[f_key].forEach(f => {
+            if (f.details) {
+                combined_info.push(f.details);
+                if (f_key == 'SWIFT/BIC') {
+                    entry.doc_id_numbers.push(f.details);
+                    entry.doc_id_numbers.push(f_key);
+                }
             }
 
-            if (entry.date) {
-                combined_info.push(entry.date);
+            if (f.date) {
+                combined_info.push(f.date);
             }
 
-            if (entry.location) {
-                combined_info.push(entry.location['COMBINED']);
+            if (f.location) {
+                combined_info.push(f.location['COMBINED']);
 
-                if (entry.location["COUNTRY"]) {
-                    countries.add(entry.location["COUNTRY"]);
+                if (f.location["COUNTRY"]) {
+                    countries.add(f.location["COUNTRY"]);
                 }
             }
         });
@@ -103,6 +107,11 @@ const transform = entry => {
     entry.documents.forEach(doc => {
         // for searchability
         entry.doc_id_numbers.push(doc.id_number);
+        entry.doc_id_numbers.push(doc.type);
+        if (doc.type.indexOf('Vessel') > -1) {
+            entry.vessel_tags.push(doc.id_number);
+        }
+
          // for website display
         if (doc.validity != 'Valid' && doc.validity != 'Fraudulent') {
             log('An invalid document status appeared (normally Valid or Fraudulent): ' + doc.validity, 'warning');
@@ -160,18 +169,20 @@ const transform = entry => {
     });
 
     // Create tags field for vessels
-    let vessel_fields = ['vessel_call_sign',
+    let vessel_fields = [
+        'vessel_call_sign',
+        'other_vessel_call_sign',
         'vessel_flag',
+        'other_vessel_flag',
         'vessel_owner',
         'vessel_tonnage',
-        'vessel_gross_tonnage',
+        'vessel_gross_registered_tonnage',
         'vessel_type']
 
-    vessel_fields.forEach(field=>{
+    vessel_fields.forEach(field => {
         if (entry[field]) {
-            entry.vessel_tags.push(String(entry[field]))
+            entry.vessel_tags.push(String(entry[field]));
         }
-
     });
 
     // Fields not included: linked_profile_ids (not relevant), fixed_ref
@@ -188,7 +199,9 @@ const transform = entry => {
         'place_of_birth',
         'additional_sanctions_information_-_',
         'vessel_call_sign',
+        'other_vessel_call_sign',
         'vessel_flag',
+        'other_vessel_flag',
         'vessel_owner',
         'vessel_tonnage',
         'vessel_gross_registered_tonnage',
@@ -268,6 +281,7 @@ let program_to_country = program => {
 
     return dict[program];
 }
+
 let list_to_acronym = l => {
     if (l.endsWith(' List')) {
         l = l.slice(0, -1 * ' List'.length);

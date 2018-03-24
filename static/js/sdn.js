@@ -18,7 +18,7 @@ $(document).ready(() => {
     });
 
     let id = 0;
-    let fields = construct_fields(['countries', 'nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'doc_id_numbers', 'location', 'aircraft_tags', 'vessel_tags']);
+    let fields = construct_fields(['countries', 'nationality_country', 'citizenship_country', 'place_of_birth', 'doc_id_numbers', 'location', 'title', 'aircraft_tags', 'vessel_tags']);
     append_search_row(id, fields);
     id++;
 
@@ -233,7 +233,7 @@ function api_to_ui(api_field_name) {
 
 function api_to_placeholder_text(api_field_name) {
     let dict = {
-        'doc_id_numbers':                       'IMO, Passport #, SWIFT',
+        'doc_id_numbers':                       'e.g. "Cedula", "AB269600"',
         'location':                             'e.g. PO Box, London, Switzerland',
         'title':                                'e.g. President, Commander',
         'place_of_birth':                       'e.g. Uganda, Russia',
@@ -241,7 +241,7 @@ function api_to_placeholder_text(api_field_name) {
         'citizenship_country':                  'e.g. Uganda, Russia',
         'countries':                            'e.g. Uganda, Russia',
         'aircraft_tags':                        'e.g. B727, YAS-AIR',
-        'vessel_tags':                          '[use docID for IMO] e.g. Oil Tanker.',
+        'vessel_tags':                          'e.g. IMO #, "Oil Tanker"',
     }
     return dict[api_field_name];
 }
