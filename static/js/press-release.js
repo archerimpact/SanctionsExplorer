@@ -16,30 +16,30 @@ $(document).ready(() => {
     });
 });
 
-let generate_pr_card = (data) => window.pr_card(data);
 let get_search_input = () => $('#press-release-input').val().trim();
-let send_search = (query, mode, divToUse) => {
+let send_search      = (query, mode, divToUse) => {
     if (!mode) {
         mode = 'OVERWRITE';
+    }
+    if (mode == 'OVERWRITE') {
         query = add_elastic_params(query);
     }
-    search(window.searchRoute, query, mode, generate_pr_card, divToUse);
+    search(window.searchRoute, query, mode, window.pr_card, divToUse);
 }
+const FILTER_SUMMARY_LENGTH = 24;
+
 /*
  * EVERYTHING BELOW THIS POINT SHOULD NOT REFERENCE THE DOM, SPECIFIC IDs/CLASSES, etc.
  * CREATE A HELPER FUNCTION ABOVE FOR ONE EASY PLACE TO MAINTAIN DOM REFERENCES.
  */
+
+
 function collect_pr_query() {
     let input = get_search_input();
-    if (input === "") {
+    if (input === '') {
         return null;
     }
-
-    let query = {'query': input};
-    query.size = 50;
-    query.from = 0;
-    window.lastQuery = query;
-    return query;
+    return {'query': input};
 }
 
 function api_to_ui(api_field_name) {

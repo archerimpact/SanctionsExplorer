@@ -2,15 +2,6 @@
     filter: invert(100%);
 }
 
-#large-archer-logo {
-    max-height: 10em;
-}
-
-#large-c4ads-logo {
-    max-height: 5.5em;
-    height: auto;
-}
-
 #one-search-row {
     margin-left: 20%;
     margin-right: 20%;
@@ -18,12 +9,13 @@
     margin-bottom: 2em;
 }
 
-#in-partnership-with {
-    margin-top: 7em;
-}
-
 #advanced-button {
     margin-left: 2em;
+}
+
+#archer-logo {
+    margin-top: 3em;
+    width: 12em;
 }
 
 .vertical-center {

@@ -16,6 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <script src="https://cdn.rawgit.com/yahoo/xss-filters/master/dist/xss-filters.js" crossorigin="anonymous"></script>
     <script src="../static/js/doT.min.js" charset="utf-8"></script>
     <script src="../static/js/search.js"></script>
     <script src="../static/js/press-release.js"></script>
@@ -24,7 +25,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/"><img id="archer-logo" src="../static/img/archer_sdn.png"></a>
+            <a class="navbar-brand" href="/"><img id="product-logo" src="../static/img/archer_sdn.png"></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -84,12 +85,15 @@
                     <hr class="no-bottom-margin">
                 </div>
                 <div class="loader">Loading...</div>
-                <h5 class="results-header exact-header" id="exact-header">Exact Matches</h5>
+                <div class="search-results" id="error-display">
+                    <!-- Populated with Javascript -->
+                </div>
+                <h5 class="results-header exact-header text-center" id="exact-header">Exact Matches</h5>
                 <hr class="results-header exact-header no-bottom-margin">
                 <div class="search-results" id="exact-results">
                     <!-- Populated with Javscript -->
                 </div>
-                <h5 class="results-header fuzzy-header" id="fuzzy-header">Near Matches</h5>
+                <h5 class="results-header fuzzy-header text-center" id="fuzzy-header">Near Matches</h5>
                 <hr class="results-header fuzzy-header no-bottom-margin">
                 <div class="search-results" id="fuzzy-results">
                     <!-- Populated with Javscript -->
