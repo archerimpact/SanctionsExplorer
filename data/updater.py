@@ -74,50 +74,45 @@ def download_and_parse(url, xml, json):
         quit()
 
 
-def main():
-    log(f'{datetime.now()}: Beginning the update process...', 'info')
-    feed = feedparser.parse(RSS_FEED_URL)
-    serialize_feed(feed, NEW_RSS_FILE)
+log(f'{datetime.now()}: Beginning the update process...', 'info')
+feed = feedparser.parse(RSS_FEED_URL)
+serialize_feed(feed, NEW_RSS_FILE)
 
+force_download = '--force'       in argv or '-f' in argv
+update_only    = '--update-only' in argv or '-u' in argv
 
+should_download = force_download or not update_only
 
-    force_download = '--force'       in argv or '-f' in argv
-    update_only    = '--update-only' in argv or '-u' in argv
+try:
+    unchanged = filecmp.cmp(OLD_RSS_FILE, NEW_RSS_FILE)
+except:
+    unchanged = False
 
-    should_download = force_download or not update_only
+if unchanged and not force_download and not update_only:
+    quit()
 
-    try:
-        unchanged = filecmp.cmp(OLD_RSS_FILE, NEW_RSS_FILE)
-    except:
-        unchanged = False
+if should_download:
+    download_and_parse(SDN_URL, SDN_XML_FILE, SDN_JSON)
+    sdn_parser = importlib.reload(sdn_parser)                       # TODO this is horrible and hacky and needs to be removed
+    download_and_parse(NONSDN_URL, NONSDN_XML_FILE, NONSDN_JSON)
 
-    if unchanged and not force_download and not update_only:
-        quit()
+    log('Scraping press releases from 2018...', 'info')
+    pr_scraper.scrape_2018(PR_JSON_2018)
 
-    if should_download:
-        download_and_parse(SDN_URL, SDN_XML_FILE, SDN_JSON)
-        sdn_parser = importlib.reload(sdn_parser)                       # TODO this is horrible and hacky and needs to be removed
-        download_and_parse(NONSDN_URL, NONSDN_XML_FILE, NONSDN_JSON)
+    #log('Scraping IDs from the OFAC website...', 'info')
+    #ofac_mapping.write_ofac_ids(OFAC_MATCHES_FILE)
 
-        log('Scraping press releases from 2018...', 'info')
-        pr_scraper.scrape_2018(PR_JSON_2018)
+run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
+run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
 
-        #log('Scraping IDs from the OFAC website...', 'info')
-        #ofac_mapping.write_ofac_ids(OFAC_MATCHES_FILE)
+# Match SDN entities with the PRs they appear in
+log('Matching SDN entities with press release data...', 'info')
+matcher.write_pr_matches(PR_MATCHES)
+run_nodejs(EXPORT_MATCHES, 'export PR matches to Elastic')
 
-    run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
-    run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
+#log('Matching SDN entities with their IDs on the OFAC website...', 'info')
+#matcher.write_ofac_id_matches(OFAC_MATCHES_FILE)
+#run_nodejs(EXPORT_IDS, 'export ID matches to Elastic')
 
-    # Match SDN entities with the PRs they appear in
-    log('Matching SDN entities with press release data...', 'info')
-    matcher.write_pr_matches(PR_MATCHES)
-    run_nodejs(EXPORT_MATCHES, 'export PR matches to Elastic')
-
-    #log('Matching SDN entities with their IDs on the OFAC website...', 'info')
-    #matcher.write_ofac_id_matches(OFAC_MATCHES_FILE)
-    #run_nodejs(EXPORT_IDS, 'export ID matches to Elastic')
-
-    # If we've successfully made it this far, we write this for next time.
-    serialize_feed(feed, OLD_RSS_FILE)
-
-main()
+# If we've successfully made it this far, we write this for next time.
+serialize_feed(feed, OLD_RSS_FILE)

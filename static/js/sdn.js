@@ -1,9 +1,27 @@
 'use strict';
 
+const SEARCH_URL    = window.addr + '/search/sdn';
+const ROW_FIELDS    = [
+    'countries',
+    'nationality_country',
+    'citizenship_country',
+    'place_of_birth',
+    'doc_id_numbers',
+    'location',
+    'title',
+    'aircraft_tags',
+    'vessel_tags'
+];
+const EMPTY_TYPE    = 'All types';
+const EMPTY_PROGRAM = 'All programs';
+const EMPTY_SELECT  = 'Select field';
+const FILTER_SUMMARY_LENGTH = 12;       // used for truncation in search.js
+
 $(document).ready(() => {
     window.card = get_template('#card-template');
     window.searchRow = get_template('#search-row-template');
-    window.searchRoute = window.addr + '/search/sdn';
+    window.searchRowID = 0;
+    append_search_row();
 
     $('.search-button').click(event => {
         if (event) { event.preventDefault(); }
@@ -17,20 +35,15 @@ $(document).ready(() => {
         send_search(window.lastQuery, 'APPEND');
     });
 
-    let id = 0;
-    let fields = construct_fields(['countries', 'nationality_country', 'citizenship_country', 'place_of_birth', 'doc_id_numbers', 'location', 'title', 'aircraft_tags', 'vessel_tags']);
-    append_search_row(id, fields);
-    id++;
-
     $(document).on('change', '.search-row-select', event => {
         let needNewRow = true;
         let dupeSelections = false;
         let currentSelections = [];
 
         $.each($('.search-row-select'), (index, value) => {
-            if (value.value == empty_select) {
+            if (value.value == EMPTY_SELECT) {
                 needNewRow = false;
-                let id_num = value.id.match('([0-9]+)')[1];     // this row's id
+                let id_num = extract_number(value.id);     // this row's id
                 $('#search-row-' + id_num + '-input').val('');
             }
             else {
@@ -46,15 +59,12 @@ $(document).ready(() => {
             $('.search-row-error-alert').empty();
         }
 
-        console.log(currentSelections);
-
-        let eventID = event.target.id.match('([0-9]+)')[1];
+        let eventID   = extract_number(event.target.id);
         let selection = $('#search-row-' + eventID + '-select').val();
-        $('#search-row-' + eventID + '-input').attr('placeholder', api_to_placeholder_text(selection));
+        $('#search-row-' + eventID + '-input').attr('placeholder', api_to_placeholder(selection));
 
         if (needNewRow) {
-            append_search_row(id, fields);
-            id++;
+            append_search_row();
         }
     });
 
@@ -119,7 +129,6 @@ $(document).ready(() => {
     $(document).on('click', '#modal-plus-icon',    event => $('#entity-modal-body .collapse').collapse('show'));
     $(document).on('click', '#modal-minus-icon',   event => $('#entity-modal-body .collapse').collapse('hide'));
     $('[data-toggle="tooltip"]').tooltip();        // enable tooltips
-
 });
 
 let temp_change_text     = (selector, text) => {
@@ -131,38 +140,72 @@ let temp_change_text     = (selector, text) => {
         $(selector).removeClass('link-in-explorer');
     }, 2000);
 };
-let append_search_row    = (id, fields) => $('.search-rows').append(searchRow({'id': id, 'fields': fields}));
+let append_search_row    = () => {
+    $('.search-rows').append(window.searchRow({
+        'id':     window.searchRowID++,
+        'fields': construct_fields(ROW_FIELDS),
+    }));
+}
+let clear_search_rows    = () => $('.search-rows').empty();
 let get_search_row_ids   = () => $('.search-row').map((index, elem) => elem.id);
+let extract_number       = (str) => str.match('([0-9]+)')[1];
 let get_all_fields_input = () => $('#all-fields-input').val().trim();
 let get_name_input       = () => $('#name-input').val().trim();
 let get_type_select      = () => $('#type-select').val();
 let get_program_select   = () => $('#program-select').val();
 let get_row              = (id) => [$('#' + id + '-select').val(), $('#' + id + '-input').val().trim()];
 let send_search          = (query, mode, divToUse) => {
-    search(window.searchRoute, query, mode, window.card, divToUse);
+    search(SEARCH_URL, query, mode, window.card, divToUse);
 };
 let clear_filters        = () => {
-    $.each(get_search_row_ids(), (index, id) => {
-        $('#' + id + '-select').prop('selectedIndex', 0);
-        $('#' + id + '-input').val('');
-        $('#' + id + '-input').attr('placeholder', '');
-    });
+    window.searchRowID = 0;
+    clear_search_rows();
+    append_search_row();
     $('#all-fields-input').val('');
     $('#name-input').val('');
     $('#type-select').prop('selectedIndex', 0);
     $('#program-select').prop('selectedIndex', 0);
 };
-const empty_type    = 'All types';
-const empty_program = 'All programs';
-const empty_select  = 'Select field';
-const FILTER_SUMMARY_LENGTH = 12;
-
+let api_to_ui            = (field) => {
+    let dict = {
+        'identity_id':          'ID',
+        'primary_display_name': 'Primary Display Name',
+        'all_display_names':    'Name',
+        'doc_id_numbers':       'ID Numbers',
+        'programs':             'Programs',
+        'title':                'Title',
+        'birthdate':            'Birthdate',
+        'place_of_birth':       'Place of Birth',
+        'nationality_country':  'Nationality',
+        'citizenship_country':  'Citizenship',
+        'countries':            'Related to Country',
+        'party_sub_type':       'SDN Type',
+        'location':             'Location/Address',
+        'aircraft_tags':        'Aircraft Info',
+        'vessel_tags':          'Vessel Info',
+        'all_fields':           'All Fields',
+    };
+    return dict[field];
+}
+let api_to_placeholder   = (field) => {
+    let dict = {
+        'doc_id_numbers':       'e.g. "Cedula", "AB269600"',
+        'location':             'e.g. PO Box, London, Switzerland',
+        'title':                'e.g. President, Commander',
+        'place_of_birth':       'e.g. Uganda, Russia',
+        'nationality_country':  'e.g. Uganda, Russia',
+        'citizenship_country':  'e.g. Uganda, Russia',
+        'countries':            'e.g. Uganda, Russia',
+        'aircraft_tags':        'e.g. B727, YAS-AIR',
+        'vessel_tags':          'e.g. IMO #, "Oil Tanker"',
+    }
+    return dict[field];
+}
 
 /*
  * EVERYTHING BELOW THIS POINT SHOULD NOT REFERENCE THE DOM, SPECIFIC IDs/CLASSES, etc.
  * CREATE A HELPER FUNCTION ABOVE FOR ONE EASY PLACE TO MAINTAIN DOM REFERENCES.
  */
-
 
 function collect_query_info() {
     let query = {};
@@ -178,18 +221,18 @@ function collect_query_info() {
     }
 
     let type = get_type_select()
-    if (type !== empty_type) {
+    if (type !== EMPTY_TYPE) {
         query['party_sub_type'] = type;
     }
 
     let program = get_program_select()
-    if (program !== empty_program) {
+    if (program !== EMPTY_PROGRAM) {
         query['programs'] = program;
     }
 
     $.each(get_search_row_ids(), (index, row_id) => {
         let [select, input] = get_row(row_id);
-        if (select != empty_select && input !== null && input !== "") {
+        if (select != EMPTY_SELECT && input !== null && input !== "") {
             query[select] = input;
         }
     });
@@ -207,41 +250,4 @@ function construct_fields(fields) {
         }
     }
     return retval;
-}
-
-function api_to_ui(api_field_name) {
-    let dict = {
-        'identity_id':                          'ID',
-        'primary_display_name':                 'Primary Display Name',
-        'all_display_names':                    'Name',
-        'doc_id_numbers':                       'ID Numbers',
-        'programs':                             'Programs',
-        'title':                                'Title',
-        'birthdate':                            'Birthdate',
-        'place_of_birth':                       'Place of Birth',
-        'nationality_country':                  'Nationality',
-        'citizenship_country':                  'Citizenship',
-        'countries':                            'Related to Country',
-        'party_sub_type':                       'SDN Type',
-        'location':                             'Location/Address',
-        'aircraft_tags':                        'Aircraft Info',
-        'vessel_tags':                          'Vessel Info',
-        'all_fields':                           'All Fields',
-    };
-    return dict[api_field_name];
-}
-
-function api_to_placeholder_text(api_field_name) {
-    let dict = {
-        'doc_id_numbers':                       'e.g. "Cedula", "AB269600"',
-        'location':                             'e.g. PO Box, London, Switzerland',
-        'title':                                'e.g. President, Commander',
-        'place_of_birth':                       'e.g. Uganda, Russia',
-        'nationality_country':                  'e.g. Uganda, Russia',
-        'citizenship_country':                  'e.g. Uganda, Russia',
-        'countries':                            'e.g. Uganda, Russia',
-        'aircraft_tags':                        'e.g. B727, YAS-AIR',
-        'vessel_tags':                          'e.g. IMO #, "Oil Tanker"',
-    }
-    return dict[api_field_name];
 }

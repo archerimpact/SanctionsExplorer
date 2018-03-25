@@ -22,12 +22,11 @@ async function bulk_add(operations, transform, index_name, index_type, equality_
 
     for (let i = 0; i < operations.length; i++) {
         if (!equality_filter || !seen_values.has(operations[i][equality_filter])) {
-            let id = starting_from + i;
             let index_statement = {
                 index: {
                     _index: index_name,
                     _type: index_type,
-                    _id: parseInt(id),
+                    _id: i,
                 }
             };
             body.push(index_statement);

@@ -1,30 +1,31 @@
 'use strict';
 
+const EXACT_MATCH_THRESHOLD = 200;
+window.addr = 'https://sdn.archerimpact.com';//window.location.protocol + '//' + window.location.host;
+window.requesting = null;
+
 $(document).ready(() => {
     // Set heights of divs to ensure proper scrolling behavior
     let resize_col = () => $('.page-col').innerHeight($(window).height() - $('nav').outerHeight() - 1);
     resize_col();
     $(window).on('resize', resize_col);
-
-    $('#collapse-all').click(() => $('.card .collapse').collapse('hide'));
-    $('#expand-all').click(() => $('.card .collapse').collapse('show'));
-
-    window.addr = 'https://sdn.archerimpact.com';//window.location.protocol + '//' + window.location.host;
-    window.requesting = null;
 });
 
 
 let get_template           = (idstr) => $(idstr).html() ? doT.template($(idstr).html()) : null;
 let append_to_results      = (elem, divToUse) => $(divToUse).append(elem);
+let append_to_exact        = (elem) => append_to_results(elem, '#exact-results');
+let append_to_fuzzy        = (elem) => append_to_results(elem, '#fuzzy-results');
+let show_exact_header      = () => $('.exact-header').show();
+let show_fuzzy_header      = () => $('.fuzzy-header').show();
 let clear_search_results   = () => {
     $('.search-results').empty();
     $('.results-header').hide();
 }
-let display_search_results = (show) => {}//show ? $('.search-results').show() : $('.search-results').hide();
 let display_loading_bar    = (show) => show ? $('.loader').show() : $('.loader').hide();
 let change_next_page_text  = (text) => $('.next-page').text(text);
 let truncate_string        = (str, length) => (str && str.length <= length) ? str : str = str.substring(0, length).trim() + '..';
-let sanitize               = str => xssFilters.inHTMLData(str);
+let sanitize               = (str) => xssFilters.inHTMLData(str);
 let construct_filter_box   = (field, value, visibility) => '<span class="filter-box badge badge-primary ' + sanitize(visibility) + '" data-toggle="tooltip" data-placement="bottom" title="' + sanitize(field) + '">' + sanitize(value) + '</span>';
 let update_results_header  = (num) => {
     if (num != null) {
@@ -54,11 +55,14 @@ let update_filter_summary  = (data) => {
     $(filter_elem).insertAfter('#results-header');
     $('[data-toggle="tooltip"]').tooltip();
 }
-//let disable_search_buttons = (disable) => disable ? $('.btn-sm').addClass('disabled') : $('.btn-sm').removeClass('disabled');
-let display_error = (e) => {
+let display_error          = (e) => {
     $('#error-display').append('<div class="alert alert-danger search-error-alert">An error occured; please try again. If this persists, please contact us.</div>');
 }
 
+/*
+ * EVERYTHING BELOW THIS POINT SHOULD NOT REFERENCE THE DOM, SPECIFIC IDs/CLASSES, etc.
+ * CREATE A HELPER FUNCTION ABOVE FOR ONE EASY PLACE TO MAINTAIN DOM REFERENCES.
+ */
 
 function search(url, params, mode, card_generator,  divToUse) {
     // mode should be 'OVERWRITE', 'APPEND', or 'MODAL'
@@ -84,7 +88,6 @@ function search(url, params, mode, card_generator,  divToUse) {
         change_next_page_text('Loading...');
     }
 
-    // disable_search_buttons(true);
     if (mode == 'OVERWRITE') {
         update_filter_summary(params);
         display_loading_bar(true);
@@ -102,7 +105,7 @@ function search(url, params, mode, card_generator,  divToUse) {
             update_results_header(num_results);
         }
     })
-    .fail((e) => {
+    .fail(e => {
         if (e.statusText != 'abort') {
             display_error();
         }
@@ -110,7 +113,6 @@ function search(url, params, mode, card_generator,  divToUse) {
     .always(() => {
         if (mode == 'OVERWRITE') {
             display_loading_bar(false);
-            display_search_results(true);
         }
 
         if (mode == 'OVERWRITE' || mode == 'APPEND') {
@@ -127,7 +129,7 @@ function display_query(res, divToUse, card_generator) {
     $.each(res.response, (index, value) => {
         let e = document.createElement("div");
         e.innerHTML = card_generator(value[0]);
-        if (value[1] > 200) {
+        if (value[1] > EXACT_MATCH_THRESHOLD) {
             exact.appendChild(e);
         }
         else {
@@ -140,12 +142,12 @@ function display_query(res, divToUse, card_generator) {
     }
     else {
         if (exact.children.length > 0) {
-            append_to_results(exact, '#exact-results');
-            $('.exact-header').show();
+            append_to_exact(exact);
+            show_exact_header();
         }
         if (fuzzy.children.length > 0) {
-            append_to_results(fuzzy, '#fuzzy-results');
-            $('.fuzzy-header').show();
+            append_to_fuzzy(fuzzy);
+            show_fuzzy_header();
         }
     }
     return res['num_results'];
@@ -170,5 +172,5 @@ function getParameterByName(name, url) {
         results = regex.exec(url);
     if (!results) return null;
     if (!results[2]) return '';
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
+    return xssFilters.inHTMLData(decodeURIComponent(results[2].replace(/\+/g, " ")));
 }
