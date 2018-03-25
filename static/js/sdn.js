@@ -12,6 +12,58 @@ const ROW_FIELDS    = [
     'aircraft_tags',
     'vessel_tags'
 ];
+// TODO add descriptions
+const PROGRAMS      = {
+    'All programs': 'Do not filter by program',
+    '561List': '',
+    'BALKANS': '',
+    'BELARUS': '',
+    'BURUNDI': '',
+    'CAATSA': 'Countering America\'s Adversaries Through Sanctions Act (Iran, Russia, NK)',
+    'CAR': '',
+    'CUBA': '',
+    'CYBER2': '',
+    'DARFUR': '',
+    'DPRK': '',
+    'DPRK2': '',
+    'DPRK3': '',
+    'DPRK4': '',
+    'DRCONGO': '',
+    'FSE-SY': '',
+    'FTO': '',
+    'GLOMAG': '',
+    'HRIT-IR': '',
+    'HRIT-SY': '',
+    'IFSR': '',
+    'IRAN': '',
+    'IRAN-HR': '',
+    'IRAN-TRA': '',
+    'IRAQ2': '',
+    'IRAQ3': '',
+    'IRGC': '',
+    'ISA': '',
+    'LEBANON': '',
+    'LIBYA2': '',
+    'LIBYA3': '',
+    'MAGNIT': '',
+    'NPWMD': '',
+    'NS-PLC': '',
+    'SDGT': '',
+    'SDNT': '',
+    'SDNTK': '',
+    'SDT': '',
+    'SOMALIA': '',
+    'SOUTH SUDAN': '',
+    'SYRIA': '',
+    'TCO': '',
+    'UKRAINE-EO13660': '',
+    'UKRAINE-EO13661': '',
+    'UKRAINE-EO13662': '',
+    'UKRAINE-EO13685': '',
+    'VENEZUELA': '',
+    'YEMEN': '',
+    'ZIMBABWE': '',
+}
 const EMPTY_TYPE    = 'All types';
 const EMPTY_PROGRAM = 'All programs';
 const EMPTY_SELECT  = 'Select field';
@@ -84,6 +136,15 @@ $(document).ready(() => {
         history.pushState(null, null, '/sdn');
     }
 
+    $.each(Object.keys(PROGRAMS), (i, p) => {
+        $('#program-select').append($('<option />').val(p).text(p));
+    });
+
+    $(document).on('mouseenter', 'option', event => {
+        $('#program-header').text(event.target.value);
+        $('#program-description').text(PROGRAMS[event.target.value] || '');
+    });
+
     $(document).on('click', '.collapse-link', event => {
         if (event) { event.preventDefault(); }
         let id = $(event.target).attr('data-id');
@@ -152,7 +213,7 @@ let extract_number       = (str) => str.match('([0-9]+)')[1];
 let get_all_fields_input = () => $('#all-fields-input').val().trim();
 let get_name_input       = () => $('#name-input').val().trim();
 let get_type_select      = () => $('#type-select').val();
-let get_program_select   = () => $('#program-select').val();
+let get_program_select   = () => $('#program-select').val().join(' ').replace(EMPTY_PROGRAM, '').trim();
 let get_row              = (id) => [$('#' + id + '-select').val(), $('#' + id + '-input').val().trim()];
 let send_search          = (query, mode, divToUse) => {
     search(SEARCH_URL, query, mode, window.card, divToUse);
@@ -226,7 +287,7 @@ function collect_query_info() {
     }
 
     let program = get_program_select()
-    if (program !== EMPTY_PROGRAM) {
+    if (program != '') {
         query['programs'] = program;
     }
 

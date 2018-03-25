@@ -1,7 +1,7 @@
 'use strict';
 
 $(document).ready(() => {
-    $('.no-js').hide();         // if the user has JS enabled, do not show the hideous error alert
+    //$('.no-js').hide();         // if the user has JS enabled, do not show the hideous error alert
 
     let redirect = path => window.location.href = window.location.protocol + '//' + window.location.host + '/sdn' + path;
     let submit   = ()   => $('#one-search-input').trigger('submit');

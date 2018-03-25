@@ -8,7 +8,6 @@
       gtag('js', new Date());
       gtag('config', 'UA-111936547-2');
     </script>
-
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
     <link rel="stylesheet" href="../static/css/style.css"></link>
@@ -62,6 +61,11 @@
             -->
         </div>
     </div><!-- /container-fluid -->
+
+    <!-- faster than using jQuery document ready? -->
+    <script type="text/javascript">
+        document.getElementsByClassName('no-js')[0].style.display = 'none';
+    </script>
 </body>
 
 </html>

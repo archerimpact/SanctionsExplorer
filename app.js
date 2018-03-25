@@ -83,13 +83,18 @@ app.get('/search/sdn', async function(req, res) {
         'party_sub_type': '0'
     };
 
+    const operators = {
+        'programs': 'or',
+    };
+
     let search_query;
 
     let create_match_phrase = (field, query_str, is_fuzzy, boost) => {
         let json = { match: {} };
+        let op = operators[field] || 'and';
         json.match[field] = {
-            'query': query_str,
-            'operator': 'and',
+            query: query_str,
+            operator: op,
         };
 
         let fuzz_setting = 'AUTO';

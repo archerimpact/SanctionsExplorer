@@ -81,7 +81,7 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-md-5">
+                            <div class="form-group col-md-12">
                                 <select class="custom-select form-control form-control-sm" id="type-select">
                                     <option selected="">All types</option>
                                     <option value="Individual">Individual</option>
@@ -90,57 +90,17 @@
                                     <option value="Vessel">Vessel</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-7">
-                                <select class="custom-select form-control form-control-sm" id="program-select">
-                                    <option selected="">All programs</option>
-                                    <option value="561List">561List</option>
-                                    <option value="BALKANS">BALKANS</option>
-                                    <option value="BELARUS">BELARUS</option>
-                                    <option value="BURUNDI">BURUNDI</option>
-                                    <option value="CAR">CAR</option>
-                                    <option value="CUBA">CUBA</option>
-                                    <option value="CYBER2">CYBER2</option>
-                                    <option value="DARFUR">DARFUR</option>
-                                    <option value="DPRK">DPRK</option>
-                                    <option value="DPRK2">DPRK2</option>
-                                    <option value="DPRK3">DPRK3</option>
-                                    <option value="DPRK4">DPRK4</option>
-                                    <option value="DRCONGO">DRCONGO</option>
-                                    <option value="FSE-SY">FSE-SY</option>
-                                    <option value="FTO">FTO</option>
-                                    <option value="GLOMAG">GLOMAG</option>
-                                    <option value="HRIT-IR">HRIT-IR</option>
-                                    <option value="HRIT-SY">HRIT-SY</option>
-                                    <option value="IFSR">IFSR</option>
-                                    <option value="IRAN">IRAN</option>
-                                    <option value="IRAN-HR">IRAN-HR</option>
-                                    <option value="IRAN-TRA">IRAN-TRA</option>
-                                    <option value="IRAQ2">IRAQ2</option>
-                                    <option value="IRAQ3">IRAQ3</option>
-                                    <option value="IRGC">IRGC</option>
-                                    <option value="ISA">ISA</option>
-                                    <option value="LEBANON">LEBANON</option>
-                                    <option value="LIBYA2">LIBYA2</option>
-                                    <option value="LIBYA3">LIBYA3</option>
-                                    <option value="MAGNIT">MAGNIT</option>
-                                    <option value="NPWMD">NPWMD</option>
-                                    <option value="NS-PLC">NSPLC</option>
-                                    <option value="SDGT">SDGT</option>
-                                    <option value="SDNT">SDNT</option>
-                                    <option value="SDNTK">SDNTK</option>
-                                    <option value="SDT">SDT</option>
-                                    <option value="SOMALIA">SOMALIA</option>
-                                    <option value="SOUTH SUDAN">SOUTH SUDAN</option>
-                                    <option value="SYRIA">SYRIA</option>
-                                    <option value="TCO">TCO</option>
-                                    <option value="UKRAINE-EO13660">UKRAINE-EO13660</option>
-                                    <option value="UKRAINE-EO13661">UKRAINE-EO13661</option>
-                                    <option value="UKRAINE-EO13662">UKRAINE-EO13662</option>
-                                    <option value="UKRAINE-EO13685">UKRAINE-EO13685</option>
-                                    <option value="VENEZUELA">VENEZUELA</option>
-                                    <option value="YEMEN">YEMEN</option>
-                                    <option value="ZIMBABWE">ZIMBABWE</option>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-5">
+                                <select multiple class="custom-select form-control form-control-sm" id="program-select">
+                                    <!-- Populated by Javascript -->
                                 </select>
+                            </div>
+                            <div class="col-md-7">
+                                <!-- These are both populated by Javscript on program select hover -->
+                                <h6 id="program-header"></h6>
+                                <small id="program-description"></small>
                             </div>
                         </div><!-- /form-row -->
 
