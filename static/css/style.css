@@ -22,6 +22,11 @@ nav.navbar {
     font-size: 1.1em;
 }
 
+.nav-item {
+    margin-right: 0;
+    margin-left: 3em;
+}
+
 img#archer-nav-logo {
     width: 7em;
     filter: invert(100%);
@@ -29,7 +34,7 @@ img#archer-nav-logo {
 }
 
 img#product-logo {
-    width: 10em;
+    width: 13em;
 }
 
 img#c4ads-nav-logo {
