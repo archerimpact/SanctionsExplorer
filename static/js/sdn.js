@@ -67,7 +67,7 @@ const PROGRAMS      = {
 }
 const EMPTY_TYPE    = 'All types';
 const EMPTY_PROGRAM = 'All programs';
-const EMPTY_SELECT  = 'Select field';
+const EMPTY_SELECT  = 'select-field';
 const FILTER_SUMMARY_LENGTH = 12;       // used for truncation in search.js
 
 $(document).ready(() => {
@@ -186,6 +186,7 @@ $(document).ready(() => {
     $(document).on('click', '#results-plus-icon',  event => $('.search-results .collapse').collapse('show'));
     $(document).on('click', '#results-minus-icon', event => $('.search-results .collapse').collapse('hide'));
     $(document).on('click', '#results-print-icon', event => print());
+    $(document).on('click', '#download-icon',      event => export_results());
     $(document).on('click', '#trash-icon',         event => clear_filters());
     $(document).on('click', '#search-info-icon',   event => $('#search-info-modal').modal('show'));
     $(document).on('click', '#modal-plus-icon',    event => $('#entity-modal-body .collapse').collapse('show'));
@@ -238,7 +239,7 @@ let api_to_ui            = (field) => {
         'all_display_names':    'Name',
         'doc_id_numbers':       'ID Numbers',
         'programs':             'Programs',
-        'title':                'Title',
+        'title':                'Title/Position',
         'birthdate':            'Birthdate',
         'place_of_birth':       'Place of Birth',
         'nationality_country':  'Nationality',
@@ -265,9 +266,57 @@ let api_to_placeholder   = (field) => {
         'sanction_dates':       'e.g. 2011-2015, 1999',
         'aircraft_tags':        'e.g. B727, YAS-AIR',
         'vessel_tags':          'e.g. IMO #, "Oil Tanker"',
+        'select-field':         '',      // unselected
     }
     return dict[field];
 }
+let export_results       = () => {
+    let csv = [];
+    csv.push(['name', 'type', 'programs']);
+
+    $.each($('.card'), (i, card) => {
+        let [header, body] = card.children;
+        let title    = $(header).children('a.collapse-link')[0];
+        let id       = $(title).attr('data-id');
+        let name     = title.innerText;
+        let type     = $(header).children('small.card-sdn-type')[0].innerText.replace('(', '').replace(')', '');
+        let programs = $(header).children('.float-right')[0].innerText;
+
+        body = $(body).children('.card-body')[0];
+        $.each($(body).children('.detail-group'), (i, g) => {
+            let detail_type = $(g).children('h5')[0].innerText;
+            // TODO grab appropriate details.
+        });
+
+        let csv_entry = [name, type, programs];
+        let row_string = '"' + csv_entry.map(str => str.trim()).join('","') + '"';
+        csv.push(row_string);
+    });
+
+    let csv_text = csv.join('\r\n');
+    download_file('sanctions-explorer.csv', csv_text);
+}
+let download_file        = (filename, contents) => {
+    // Adapted from http://buildwebthings.com/create-csv-export-client-side-javascript/
+    let blob = new Blob([contents], { type: 'text/csv;charset=utf-8;' });
+
+    if (navigator.msSaveBlob) { // IE 10+
+        navigator.msSaveBlob(blob, filename);
+    } else {
+        let link = document.createElement("a");
+        if (link.download !== undefined) { // feature detection
+            // Browsers that support HTML5 download attribute
+            let url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style = "visibility:hidden";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+}
+
 
 /*
  * EVERYTHING BELOW THIS POINT SHOULD NOT REFERENCE THE DOM, SPECIFIC IDs/CLASSES, etc.

@@ -68,19 +68,17 @@
                         <h5 id="more-filters-header">Additional Filters</h5>
 
                         <div class="form-row">
-                            <div class="form-group col-md-12">
-                                <input type="text" class="form-control form-control-sm" id="name-input" placeholder="Name or Alias">
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-md-5">
                                 <select class="custom-select form-control form-control-sm" id="type-select">
                                     <option selected="">All types</option>
                                     <option value="Individual">Individual</option>
-                                    <option value="Entity">Entity</option>
+                                    <option value="Entity">Entity/Organization</option>
                                     <option value="Aircraft">Aircraft</option>
                                     <option value="Vessel">Vessel</option>
                                 </select>
+                            </div>
+                            <div class="form-group col-md-7">
+                                <input type="text" class="form-control form-control-sm" id="name-input" placeholder="Name or Alias">
                             </div>
                         </div>
                         <div class="form-row">
@@ -92,8 +90,8 @@
                             <div class="col-md-7">
                                 <!-- These are both populated by Javscript on program select hover -->
                                 <div id="program-info">
-                                    <h6 id="program-header"></h6>
-                                    <small id="program-description"></small>
+                                    <h6 id="program-header">Programs</h6>
+                                    <small id="program-description">(Hover to see description. To select multiple, Control+click or Cmd+click.)</small>
                                 </div>
                             </div>
                         </div><!-- /form-row -->
@@ -121,7 +119,8 @@
                 <div class="sticky-header">
                     <div class="d-flex flex-row" id="results-header-row">
                         <h3 class="col-header text-left" id="results-header">Results</h3>
-                        <img src="../img/open-iconic-svg/link-intact.svg" class="ml-auto col-icon" id="results-link-icon" data-toggle="tooltip" data-placement="bottom" title="Open Link Explorer">
+                        <img src="../img/open-iconic-svg/data-transfer-download.svg" class="ml-auto col-icon" id="download-icon" data-toggle="tooltip" data-placement="bottom" title="Download CSV">
+                        <img src="../img/open-iconic-svg/link-intact.svg" class="col-icon" id="results-link-icon" data-toggle="tooltip" data-placement="bottom" title="Open Link Explorer">
                         <img src="../img/open-iconic-svg/print.svg" class="col-icon" id="results-print-icon" data-toggle="tooltip" data-placement="bottom" title="Print">
                         <!--<img src="../img/open-iconic-svg/share.svg" class="col-icon" id="results-share-icon">-->
                         <img src="../img/open-iconic-svg/plus.svg" class="col-icon" id="results-plus-icon" data-toggle="tooltip" data-placement="bottom" title="Expand all">
@@ -389,9 +388,9 @@
         <div id="search-row-{{=it.id}}" class="search-row form-row">
             <div class="form-group col-lg-5 col-md-5">
                 <select id="search-row-{{=it.id}}-select" class="search-row-select custom-select form-control form-control-sm">
-                    <option selected="">Select field</option>
-                    {{ for (var f in it.fields) { }} <!-- for loop over the 'fields' key -->
-                        <option value="{{=f}}">{{=it.fields[f]}}</option>
+                    <option value="select-field" selected>Select field</option>
+                    {{ for (var f in it.fields) { }}
+                        <option value="{{=f}}">{{= it.fields[f] }}</option>
                     {{ } }}
                 </select>
             </div>

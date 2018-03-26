@@ -154,12 +154,9 @@ app.get('/search/sdn', async function(req, res) {
         if (get_keywords().includes(k)) {
             // There must be a fuzzy match.  Boost exact matches.
             let must_phrase   = create_match_phrase(k, req.query[k], true);
+            let should_phrase = create_match_phrase(k, req.query[k], false, 1000);
             search_query.bool.must.push(must_phrase);
-
-            if (operators[k] != 'or') {
-                let should_phrase = create_match_phrase(k, req.query[k], false, 1000);
-                search_query.bool.should.push(should_phrase);
-            }
+            search_query.bool.should.push(should_phrase);
         }
     });
     console.log('=====> ' + JSON.stringify(search_query));
