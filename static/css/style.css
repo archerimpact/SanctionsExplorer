@@ -76,9 +76,18 @@ img#c4ads-nav-logo {
 }
 
 #more-filters-header {
-    padding-top: 3em;
+    padding-top: 2em;
     padding-bottom: 0.5em;
     padding-left: 5px;    /* match form row below */
+}
+
+#program-header {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+}
+
+#program-info {
+    margin-left: 0.5em;
 }
 
 #footer {

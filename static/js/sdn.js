@@ -9,8 +9,9 @@ const ROW_FIELDS    = [
     'doc_id_numbers',
     'location',
     'title',
+    'sanction_dates',
     'aircraft_tags',
-    'vessel_tags'
+    'vessel_tags',
 ];
 // TODO add descriptions
 const PROGRAMS      = {
@@ -216,6 +217,9 @@ let get_type_select      = () => $('#type-select').val();
 let get_program_select   = () => $('#program-select').val().join(' ').replace(EMPTY_PROGRAM, '').trim();
 let get_row              = (id) => [$('#' + id + '-select').val(), $('#' + id + '-input').val().trim()];
 let send_search          = (query, mode, divToUse) => {
+    if (Object.keys(query).length == 0) {
+        return null;
+    }
     search(SEARCH_URL, query, mode, window.card, divToUse);
 };
 let clear_filters        = () => {
@@ -242,6 +246,7 @@ let api_to_ui            = (field) => {
         'countries':            'Related to Country',
         'party_sub_type':       'SDN Type',
         'location':             'Location/Address',
+        'sanction_dates':       'Sanction Dates',
         'aircraft_tags':        'Aircraft Info',
         'vessel_tags':          'Vessel Info',
         'all_fields':           'All Fields',
@@ -257,6 +262,7 @@ let api_to_placeholder   = (field) => {
         'nationality_country':  'e.g. Uganda, Russia',
         'citizenship_country':  'e.g. Uganda, Russia',
         'countries':            'e.g. Uganda, Russia',
+        'sanction_dates':       'e.g. 2011-2015, 1999',
         'aircraft_tags':        'e.g. B727, YAS-AIR',
         'vessel_tags':          'e.g. IMO #, "Oil Tanker"',
     }
@@ -297,7 +303,7 @@ function collect_query_info() {
             query[select] = input;
         }
     });
-
+    console.log(query);
     return query;
 }
 

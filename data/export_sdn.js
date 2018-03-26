@@ -12,6 +12,7 @@ const transform = entry => {
     entry.identity_id          = entry.identity.id;
     entry.primary_display_name = entry.identity.primary.display_name;
     entry.programs             = [];
+    entry.sanction_dates       = [];
     entry.countries            = [];
     entry.all_display_names    = [];
     entry.doc_id_numbers       = [];
@@ -26,9 +27,9 @@ const transform = entry => {
     countries = new Set();
     lists     = new Set();
 
-    entry.sanctions_entries.forEach(entry => {
-        lists.add(list_to_acronym(entry.list));
-        entry.program.forEach(program => {
+    entry.sanctions_entries.forEach(e => {
+        lists.add(list_to_acronym(e.list));
+        e.program.forEach(program => {
             if (program) {
                 programs.add(program);
                 let program_country = program_to_country(program);
@@ -36,6 +37,9 @@ const transform = entry => {
                     countries.add(program_country);
                 }
             }
+        });
+        e.entry_events.forEach(event => {
+            entry.sanction_dates.push(String(event[0]));
         });
     });
     entry.programs = Array.from(programs).sort();
