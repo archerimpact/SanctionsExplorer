@@ -53,6 +53,7 @@ img#c4ads-nav-logo {
     width: 1em;
     margin-left: 25px;
     cursor: hand;
+    z-index: 101;
 }
 
 .sticky-header {
