@@ -7,6 +7,14 @@ const log = util.log('sdn_export');
 const sdn    = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/sdn.json'),     'utf8'));
 const nonsdn = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/non_sdn.json'), 'utf8'));
 
+Set.prototype.union = function(setB) {
+    var union = new Set(this);
+    for (var elem of setB) {
+        union.add(elem);
+    }
+    return union;
+}
+
 const transform = entry => {
     // Augment the entry with these fields
     entry.identity_id          = entry.identity.id;
@@ -126,6 +134,7 @@ const transform = entry => {
         if (doc.issued_by != 'None') {
             headers.push('issued_by');
             countries.add(doc.issued_by);
+
         }
         else {
             doc.issued_by = null;
@@ -189,6 +198,19 @@ const transform = entry => {
         }
     });
 
+    if(entry.countries != null){
+        entry.countries = add_country_synonyms(entry.countries);
+    }
+    if(entry.nationality_country != null){
+        entry.nationality_country = add_country_synonyms(entry.nationality_country);
+    }
+    if(entry.citizenship_country != null){
+        entry.citizenship_country = add_country_synonyms(entry.citizenship_country);
+    }
+     if(entry.nationality_of_registration != null){
+        entry.nationality_of_registration = add_country_synonyms(entry.nationality_of_registration);
+    }
+
     // Fields not included: linked_profile_ids (not relevant), fixed_ref
     let all_fields = [
         'primary_display_name',
@@ -238,9 +260,43 @@ const transform = entry => {
             entry.all_fields.push(String(entry[field]))
         }
     });
+
+
+
     entry.all_fields.push(entry.sdn_display);
 
     return entry;
+}
+
+let add_country_synonyms = country_list=>{
+    let country_set = new Set(country_list);
+    for(country of country_set){
+        var synonyms = country_synonyms(country);
+        if(synonyms != null){
+            country_set = country_set.union(synonyms);
+        }
+    }
+    return Array.from(country_set);
+}
+
+let country_synonyms = country =>{
+    let korea_set = new Set(["NK", "DPRK", "Democratic People's Republic of Korea", "North Korea"]);
+    let drc_set = new Set(["DRC", "Democratic Republic of the Congo"]);
+    let us_set = new Set(["US", "USA", "America", "United States"]);
+    let russia_set = new Set(["Russian Federation", "Russia"]);
+    let england_set = new Set(["England", "UK", "United Kingdom"]);
+    let china_set = new Set(["PRC", "China"]);
+    let uae_set = new Set(["UAE", "United Arab Emirates"]);
+    let car_set = new Set(["CAR", "Central African Republic"]);
+
+    let all_sets = [korea_set, drc_set, us_set, russia_set, england_set, china_set, uae_set, car_set];
+    const dict = {}
+    all_sets.forEach(set=>{
+        for(key of set){
+            dict[key] = set;
+        }
+    });
+    return dict[country];
 }
 
 let program_to_country = program => {
@@ -305,8 +361,6 @@ let list_to_acronym = l => {
 async function load_sdn() {
     await exporter.delete_index('sdn');
     await exporter.create_index('sdn');
-    //await exporter.add_synonym_filter('sdn');
-    await exporter.add_synonym_mappings('sdn');
 
     nonsdn.forEach(e => sdn.push(e));
 

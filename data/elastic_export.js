@@ -92,37 +92,7 @@ async function create_index(name) {
     log('Creating ' + name + ' index...', 'info');
     let created = await client.indices.exists({ index: name });
     if (!created) {
-        let settings_body = {
-         settings:{
-             index:{
-                analysis:{
-                    analyzer:{
-                        synonym:{
-			    tokenizer:"whitespace",
-			    filter:["synonym"]
-                    }
-                },
-                filter:{
-                    synonym:{
-                        //tokenizer: "whitespace",
-                        type:"synonym",
-                        synonyms:[
-                        "NK, DPRK, Democratic People's Republic of Korea => North Korea",
-                        "DRC => Democratic Republic of the Congo",
-                        "US, USA, America => United States",
-                        "Russian Federation => Russia",
-                        "England, UK => United Kingdom",
-                        "PRC => China",
-                        "UAE => United Arab Emirates",
-                        "CAR => Central African Republic"
-                        ]
-                    }
-                }
-            }
-        }
-    }
-    };
-        return await client.indices.create({ index: name , body:settings_body});
+        return await client.indices.create({ index: name });
     }
     else {
         log('Index ' + name + ' already existed; deletion failed', 'error');
@@ -145,59 +115,6 @@ async function reload_index(operations, transform, index_name, index_type) {
     }
 }
 
-async function add_synonym_filter(name){
-    try{
-       /*let settings_body = {
-	   index:{
-            analysis:{
-                analyzer:{
-                    all_fields:{
-                        tokenizer:"whitespace",
-                        filter:["synonym"]
-                    },
-                    countries:{
-                        tokenizer:"whitespace",
-                        filter:["synonym"]
-                    },
-                    nationality_country:{
-                        tokenizer:"whitespace",
-                        filter:["synonym"]
-                    },
-                    citizenship_country:{
-                        tokenizer:"whitespace",
-                        filter:["synonym"]
-                    },
-                    nationality_of_registration:{
-                        tokenizer:"whitespace",
-                        filter:["synonym"]
-                    }
-                }
-            },
-            filter:{
-                synonym:{
-		            tokenizer: "whitespace",
-                    type:"synonym"
-                    synonyms:[
-                        "NK, DPRK, Democratic People's Republic of Korea => North Korea",
-                        "DRC => Democratic Republic of the Congo",
-                        "US, USA, America => United States",
-                        "Russian Federation => Russia",
-                        "England, UK => United Kingdom",
-                        "PRC => China",
-                        "UAE => United Arab Emirates",
-                        "CAR => Central African Republic"
-                    ]
-                }
-            }
-        }
-	};*/
-        await client.indices.putSettings({index: name, body:settings_body});
-
-    }
-    catch(error){
-        log(error, 'error');
-    }
-}
 
 async function add_synonym_mappings(name){
     try{
@@ -238,7 +155,5 @@ module.exports = {
     bulk_update: bulk_update,
     delete_index: delete_index,
     create_index: create_index,
-    indexing_stats: indexing_stats,
-    add_synonym_mappings: add_synonym_mappings,
-    add_synonym_filter: add_synonym_filter
+    indexing_stats: indexing_stats
 }
