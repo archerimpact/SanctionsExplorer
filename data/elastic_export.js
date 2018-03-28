@@ -117,6 +117,7 @@ async function reload_index(operations, transform, index_name, index_type) {
 async function add_synonym_filter(name){
     try{
         let settings_body = {
+	   index:{
             analysis:{
                 analyzer:{
                     all_fields:{
@@ -140,11 +141,12 @@ async function add_synonym_filter(name){
                         filter:["synonym"]
                     }
                 }
-            },
+            }/*,
             filter:{
                 synonym:{
-                    type:"synonym",
-                    synonyms:[
+		    tokenizer: "whitespace",
+                    type:"synonym"
+                   /* synonyms:[
                         "NK, DPRK, Democratic People's Republic of Korea => North Korea",
                         "DRC => Democratic Republic of the Congo",
                         "US, USA, America => United States",
@@ -155,9 +157,10 @@ async function add_synonym_filter(name){
                         "CAR => Central African Republic"
                     ]
                 }
-            }
+            }*/
         }
-        await client.indices.putSettings({index: name, type:"_doc", body:settings_body});
+	};
+        await client.indices.putSettings({index: name, body:settings_body});
 
     }
     catch(error){
@@ -200,4 +203,6 @@ module.exports = {
     delete_index: delete_index,
     create_index: create_index,
     indexing_stats: indexing_stats,
+    add_synonym_mappings: add_synonym_mappings,
+    add_synonym_filter: add_synonym_filter
 }
