@@ -114,6 +114,85 @@ async function reload_index(operations, transform, index_name, index_type) {
     }
 }
 
+async function add_synonym_filter(name){
+    try{
+        let settings_body = {
+            analysis:{
+                analyzer:{
+                    all_fields:{
+                        tokenizer:"whitespace",
+                        filter:["synonym"]
+                    },
+                    countries:{
+                        tokenizer:"whitespace",
+                        filter:["synonym"]
+                    },
+                    nationality_country:{
+                        tokenizer:"whitespace",
+                        filter:["synonym"]
+                    },
+                    citizenship_country:{
+                        tokenizer:"whitespace",
+                        filter:["synonym"]
+                    },
+                    nationality_of_registration:{
+                        tokenizer:"whitespace",
+                        filter:["synonym"]
+                    }
+                }
+            },
+            filter:{
+                synonym:{
+                    type:"synonym",
+                    synonyms:[
+                        "NK, DPRK, Democratic People's Republic of Korea => North Korea",
+                        "DRC => Democratic Republic of the Congo",
+                        "US, USA, America => United States",
+                        "Russian Federation => Russia",
+                        "England, UK => United Kingdom",
+                        "PRC => China",
+                        "UAE => United Arab Emirates",
+                        "CAR => Central African Republic"
+                    ]
+                }
+            }
+        }
+        await client.indices.putSettings({index: name, type:"_doc", body:settings_body});
+
+    }
+    catch(error){
+        log(error, 'error');
+    }
+}
+
+async function add_synonym_mappings(name){
+    try{
+        let map_body = {
+            properties:{
+                all_fields:{
+                    analyzer:"synonym"
+                },
+                countries:{
+                    analyzer:"synonym"
+                },
+                nationality_country:{
+                    analyzer:"synonym"
+                },
+                citizenship_country:{
+                    analyzer:"synonym"
+                },
+                nationality_of_registration:{
+                    analyzer:"synonym"
+                }
+            }
+        }
+        await client.indices.putMapping({index:name, type:"_doc", body:map_body});
+    }
+    catch(error){
+        log(error, 'error');
+    }
+}
+
 module.exports = {
     reload_index: reload_index,
     bulk_add: bulk_add,
