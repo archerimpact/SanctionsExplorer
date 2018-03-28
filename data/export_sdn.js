@@ -305,7 +305,7 @@ let list_to_acronym = l => {
 async function load_sdn() {
     await exporter.delete_index('sdn');
     await exporter.create_index('sdn');
-    await exporter.add_synonym_filter('sdn');
+    //await exporter.add_synonym_filter('sdn');
     await exporter.add_synonym_mappings('sdn');
 
     nonsdn.forEach(e => sdn.push(e));

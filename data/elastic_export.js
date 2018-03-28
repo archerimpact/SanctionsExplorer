@@ -71,7 +71,8 @@ async function bulk_update(operations, index_name, index_type) {
     try {
         log('Bulk updating...', 'info');
         const result = await client.bulk({
-            body: body
+	    timeout:"6s",
+	    body: body
         });
 
         result.items.forEach(i => {
@@ -96,32 +97,15 @@ async function create_index(name) {
              index:{
                 analysis:{
                     analyzer:{
-                        all_fields:{
-                            tokenizer:"whitespace",
-                            filter:["synonym"]
-                        },
-                        countries:{
-                            tokenizer:"whitespace",
-                            filter:["synonym"]
-                        },
-                        nationality_country:{
-                            tokenizer:"whitespace",
-                            filter:["synonym"]
-                        },
-                        citizenship_country:{
-                            tokenizer:"whitespace",
-                            filter:["synonym"]
-                        },
-                        nationality_of_registration:{
-                            tokenizer:"whitespace",
-                            filter:["synonym"]
-                        }
+                        synonym:{
+			    tokenizer:"whitespace",
+			    filter:["synonym"]
                     }
                 },
                 filter:{
                     synonym:{
-                        tokenizer: "whitespace",
-                        type:"synonym"
+                        //tokenizer: "whitespace",
+                        type:"synonym",
                         synonyms:[
                         "NK, DPRK, Democratic People's Republic of Korea => North Korea",
                         "DRC => Democratic Republic of the Congo",
@@ -136,6 +120,7 @@ async function create_index(name) {
                 }
             }
         }
+    }
     };
         return await client.indices.create({ index: name , body:settings_body});
     }
@@ -162,7 +147,7 @@ async function reload_index(operations, transform, index_name, index_type) {
 
 async function add_synonym_filter(name){
     try{
-       let settings_body = {
+       /*let settings_body = {
 	   index:{
             analysis:{
                 analyzer:{
@@ -205,7 +190,7 @@ async function add_synonym_filter(name){
                 }
             }
         }
-	};
+	};*/
         await client.indices.putSettings({index: name, body:settings_body});
 
     }
@@ -219,19 +204,24 @@ async function add_synonym_mappings(name){
         let map_body = {
             properties:{
                 all_fields:{
+		    type:"text",
                     analyzer:"synonym"
                 },
                 countries:{
+		    type:"text",
                     analyzer:"synonym"
                 },
                 nationality_country:{
+		    type:"text",
                     analyzer:"synonym"
                 },
                 citizenship_country:{
+		    type:"text",
                     analyzer:"synonym"
                 },
                 nationality_of_registration:{
-                    analyzer:"synonym"
+		    type:"text",
+		    analyzer:"synonym"
                 }
             }
         }
