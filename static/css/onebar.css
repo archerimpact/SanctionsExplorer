@@ -33,3 +33,13 @@ body {
     background-image: url('../img/p6.png');
     background-repeat: repeat;
 }
+
+@media (max-width: 768px) {
+    #one-search-row {
+        margin-left: 0;
+        margin-right: 0;
+    }
+    #advanced-button {
+        display: none;
+    }
+}

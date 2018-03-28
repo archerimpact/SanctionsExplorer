@@ -47,11 +47,11 @@
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-4 col-md-12 page-col left-col">
+            <div class="col-md-4 page-col left-col">
                 <div class="d-flex flex-column left-flex-col">
                     <div class="sticky-header">
                         <div class="d-flex flex-row">
-                            <h3 class="col-header mr-auto">Sanctions</h3>
+                            <h3 class="col-header mr-auto">Search</h3>
                             <img src="../img/open-iconic-svg/trash.svg" class="col-icon" id="trash-icon" data-toggle="tooltip" data-placement="bottom" title="Clear Filters">
                             <img src="../img/open-iconic-svg/question-mark.svg" class="col-icon" id="search-info-icon" data-toggle="tooltip" data-placement="bottom" title="Info">
                         </div>
@@ -59,7 +59,7 @@
                     </div>
                     <form class="search-form">
                         <div class="form-row">
-                            <div class="form-group col-md-12">
+                            <div class="form-group col-xl-12" id=all-fields-form-group>
                                 <input type="text" class="form-control form-control-sm" id="all-fields-input" placeholder="Search all fields" autofocus>
                                 <small id="all-fields-help" class="form-text text-muted">Search the entire SDN database for your query.</small>
                             </div>
@@ -68,7 +68,7 @@
                         <h5 id="more-filters-header">Additional Filters</h5>
 
                         <div class="form-row">
-                            <div class="form-group col-md-5">
+                            <div class="form-group col-sm-5">
                                 <select class="custom-select form-control form-control-sm" id="type-select">
                                     <option selected="">All types</option>
                                     <option value="Individual">Individual</option>
@@ -77,17 +77,17 @@
                                     <option value="Vessel">Vessel</option>
                                 </select>
                             </div>
-                            <div class="form-group col-md-7">
+                            <div class="form-group col-sm-7">
                                 <input type="text" class="form-control form-control-sm" id="name-input" placeholder="Name or Alias">
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="form-group col-md-5">
+                            <div class="form-group col-xs-12 col-sm-5">
                                 <select multiple class="custom-select form-control form-control-sm" id="program-select">
                                     <!-- Populated by Javascript -->
                                 </select>
                             </div>
-                            <div class="col-md-7">
+                            <div class="d-none d-sm-block col-sm-7">
                                 <!-- These are both populated by Javscript on program select hover -->
                                 <div id="program-info">
                                     <h6 id="program-header">Programs</h6>
@@ -115,7 +115,7 @@
                 </div><!-- /left-col -->
             </div>
 
-            <div class="col-lg-8 col-md-12 page-col right-col">
+            <div class="col-md-8 page-col right-col">
                 <div class="sticky-header">
                     <div class="d-flex flex-row" id="results-header-row">
                         <h3 class="col-header text-left" id="results-header">Results</h3>
@@ -160,7 +160,7 @@
                     ({{= it.party_sub_type }})
                 </small>
 
-                <div class="float-right" style="margin-left: 10px;">
+                <div class="float-right card-program">
                     {{? it.sdn_display }}
                         {{= it.sdn_display }}
                     {{?}}
@@ -386,7 +386,7 @@
 
     <script id="search-row-template" type="text/template">
         <div id="search-row-{{=it.id}}" class="search-row form-row">
-            <div class="form-group col-lg-5 col-md-5">
+            <div class="form-group col-sm-5">
                 <select id="search-row-{{=it.id}}-select" class="search-row-select custom-select form-control form-control-sm">
                     <option value="select-field" selected>Select field</option>
                     {{ for (var f in it.fields) { }}
@@ -394,7 +394,7 @@
                     {{ } }}
                 </select>
             </div>
-            <div class="form-group col-lg-7 col-md-7">
+            <div class="form-group col-sm-7">
                 <input type="text" id="search-row-{{=it.id}}-input" class="form-control form-control-sm">
             </div>
         </div>

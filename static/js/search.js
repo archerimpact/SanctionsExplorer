@@ -1,12 +1,16 @@
 'use strict';
 
 const EXACT_MATCH_THRESHOLD = 200;
-window.addr = 'https://sdn.archerimpact.com';//window.location.protocol + '//' + window.location.host;
+window.addr = window.location.protocol + '//' + window.location.host;
 window.requesting = null;
 
 $(document).ready(() => {
     // Set heights of divs to ensure proper scrolling behavior
-    let resize_col = () => $('.page-col').innerHeight($(window).height() - $('nav').outerHeight() - 1);
+    let resize_col = () => {
+        if ($('body').width() >= 768) {
+            $('.page-col').innerHeight($(window).height() - $('nav').outerHeight() - 1);
+        }
+    };
     resize_col();
     $(window).on('resize', resize_col);
 });

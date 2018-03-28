@@ -8,10 +8,10 @@ html, body {
 
 .page-col {
     overflow-y: scroll;
-    height: 90%;        /* should be overwritten by Javascript */
+    height: auto;        /* should be overwritten by Javascript */
     padding-top: 0;
-    padding-right: 1.5em;
-    padding-left: 1.5em;
+    padding-right: 1em;
+    padding-left: 1em;
 }
 
 nav.navbar {
@@ -53,7 +53,7 @@ img#c4ads-nav-logo {
     width: 1em;
     margin-left: 25px;
     cursor: hand;
-    z-index: 101;
+    z-index: 1000;
 }
 
 .sticky-header {
@@ -81,6 +81,12 @@ img#c4ads-nav-logo {
     text-align: right;
 }
 
+/* normally 5px padding, but we need to allow for on:focus highlighting border */
+#all-fields-form-group {
+    padding-left: 9px;
+    padding-right: 9px;
+}
+
 #more-filters-header {
     padding-top: 2em;
     padding-bottom: 0.5em;
@@ -96,13 +102,9 @@ img#c4ads-nav-logo {
     margin-left: 0.5em;
 }
 
-#footer {
-
-}
-
 .left-flex-col {
     flex: 1 1 auto;
-    height: 100%;
+    height: 100%;        /* 100% so the footer is bottom-aligned */
 }
 
 .col-header {
@@ -126,6 +128,10 @@ img#c4ads-nav-logo {
 
 #fuzzy-header {
     margin-top: 1em;
+}
+
+.card-program {
+    margin-left: 10px;
 }
 
 .results-header {
@@ -261,6 +267,48 @@ td.doc-info {
     font-size: 14px;
 }
 
+/* Mobile (excluding tablets) */
+@media (max-width: 767px) {
+    /* I don't think phones can print the CSV? */
+    #download-icon {
+        display: none;
+    }
+
+    .sticky-header {
+        position: relative;    /* no longer sticky */
+    }
+
+    #footer {
+        display: none;
+    }
+
+    .left-flex-col {
+        height: auto;    /* no more footer */
+    }
+
+    .page-col {
+        height: auto;
+    }
+}
+
+/* Mobile (including tablets) */
+@media (max-width: 768px) {
+    .filter-box {
+        display: none !important;
+    }
+
+    .card-program {
+        display: block !important;
+        float: none !important;
+        margin-left: 0;
+    }
+}
+
+@media (max-width: 992px) {
+    .search-button {
+        width: 100%;
+    }
+}
 
 /*********** Print Formatting ***********/
 @media print {

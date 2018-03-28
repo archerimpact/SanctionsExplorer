@@ -221,6 +221,10 @@ let send_search          = (query, mode, divToUse) => {
     if (Object.keys(query).length == 0) {
         return null;
     }
+    if (!mode || mode == 'OVERWRITE') {
+        // only really applies on mobile -- scroll to results so users aren't confused why nothing happened.
+        document.getElementById('results-header').scrollIntoView();
+    }
     search(SEARCH_URL, query, mode, window.card, divToUse);
 };
 let clear_filters        = () => {
@@ -293,8 +297,10 @@ let export_results       = () => {
         csv.push(row_string);
     });
 
-    let csv_text = csv.join('\r\n');
-    download_file('sanctions-explorer.csv', csv_text);
+    if (csv.length > 1) {
+        let csv_text = csv.join('\r\n');
+        download_file('sanctions-explorer.csv', csv_text);
+    }
 }
 let download_file        = (filename, contents) => {
     // Adapted from http://buildwebthings.com/create-csv-export-client-side-javascript/
