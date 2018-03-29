@@ -56,8 +56,12 @@ img#c4ads-nav-logo {
     z-index: 1000;
 }
 
+.non-sticky-header {
+    padding-top: 3rem;
+}
+
 .sticky-header {
-    padding-top: 3em;
+    padding-top: 3rem;
     position: -webkit-sticky; /* Safari */
     position: sticky;
     top: 0;

@@ -24,7 +24,7 @@ $(document).ready(() => {
 		{
 			id: 'disclaimer',
 			question: 'Are you affiliated with the Treasury? Can I use this for compliance?',
-			answer: '<p>SanctionsExplorer, Archer, and C4ADS are neither affiliated with nor endorsed by the U.S. Department of Treasury or OFAC.  Additionally, SanctionsExplorer, Archer, and C4ADS make no guarantee on the accuracy of the data contained in the SanctionsExplorer platform or any released datasets (though we do our best to confidentally ensure that no data is missing). SanctionsExplorer is not a replacement for due diligence and we recommend verifying information with the OFAC website or datasets.</p>',
+			answer: '<p>SanctionsExplorer, Archer, and C4ADS are neither affiliated with nor endorsed by the U.S. Department of Treasury or OFAC.  Additionally, SanctionsExplorer, Archer, and C4ADS make no guarantee on the accuracy of the data contained in the SanctionsExplorer platform or any released datasets (though we do our absolute best to ensure accurate data). SanctionsExplorer is not a replacement for due diligence and we recommend verifying information with the OFAC website or datasets.</p>',
 		}
 	];
 

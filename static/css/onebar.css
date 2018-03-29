@@ -13,6 +13,21 @@
     margin-left: 2em;
 }
 
+#button-flex-div {
+    padding-bottom: 7em;
+}
+
+.latch-to-bottom {
+    position: absolute;
+    bottom: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+img#joint-logo {
+    max-width: 30em;
+}
+
 #archer-logo {
     margin-top: 3em;
     width: 12em;

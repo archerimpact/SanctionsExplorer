@@ -3,10 +3,14 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const path = require('path');
 const es = require('elasticsearch');
 const client = new es.Client({
     host:'localhost:9200'
 });
+
+const email_file    = path.join(__dirname, 'submissions', 'email.txt');
+const feedback_file = path.join(__dirname, 'submissions', 'feedback.txt');
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
@@ -27,9 +31,48 @@ app.get('/about', (req, res) => {
     res.sendFile(__dirname + '/views/about.html');
 });
 
+app.get('/feedback', (req, res) => {
+    res.sendFile(__dirname + '/views/feedback.html');
+});
+
 app.get('/press-releases', (req, res) => {
     res.sendFile(__dirname + '/views/press-releases.html');
 });
+
+app.get('/submit/email', async function(req, res) {
+    const email = req.query.email;
+    if (!email) {
+        return res.status(400).end();
+    }
+
+    await fs.appendFile(email_file, JSON.stringify(email) + ',\n', err => {
+        if (err) {
+            console.log('ERROR writing to email file: ' + err);
+            return res.status(400).end();
+        }
+    });
+    return res.status(200).end();
+});
+
+app.get('/submit/feedback', async function(req, res) {
+    const text = req.query.text;
+    const type = req.query.feedback_type;
+    const email = req.query.email;
+
+    const submission = {
+        text: text,
+        type: type,
+        email: email,
+    };
+
+    await fs.appendFile(feedback_file, JSON.stringify(submission) + ',\n', err => {
+        if (err) {
+            console.log('ERROR writing to feedback file: ' + err);
+            return res.status(400).end();
+        }
+    });
+    return res.status(200).end();
+})
 
 
 app.get('/search/press-releases', async function(req, res) {
