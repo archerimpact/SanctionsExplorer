@@ -1,6 +1,6 @@
 'use strict';
 
-const SEARCH_URL    = window.addr + '/search/sdn';
+const SEARCH_URL    = 'https://sdn.archerimpact.com/search/sdn';//window.addr + '/search/sdn';
 const ROW_FIELDS    = [
     'countries',
     'nationality_country',
@@ -88,6 +88,19 @@ $(document).ready(() => {
         send_search(window.lastQuery, 'APPEND');
     });
 
+    // TODO fix this.  Hackiest solution in the world.
+    // For some reason, the z-index needs to be updated every time the page is scrolled...
+    $('.right-col').on('scroll', () => {
+        let curr = parseInt($('.sticky-header').css('z-index'));
+        console.log(curr);
+        if (curr > 100) {
+            $('.sticky-header').css('z-index', 100);
+        }
+        else {
+            $('.sticky-header').css('z-index', curr+1);
+        }
+    });
+
     $(document).on('change', '.search-row-select', event => {
         let needNewRow = true;
         let dupeSelections = false;
@@ -105,11 +118,10 @@ $(document).ready(() => {
         });
 
         if (new Set(currentSelections).size !== currentSelections.length) {
-            console.log('Duplicate filter detected');
-            $('.search-row-error-alert').html('<div class="alert alert-danger">Multiple of the same filter selected!</div>');
+            show_filter_error();
         }
         else {
-            $('.search-row-error-alert').empty();
+            hide_filter_error();
         }
 
         let eventID   = extract_number(event.target.id);
@@ -227,7 +239,14 @@ let send_search          = (query, mode, divToUse) => {
     }
     search(SEARCH_URL, query, mode, window.card, divToUse);
 };
+let show_filter_error    = () => {
+    $('.search-row-error-alert').html('<div class="alert alert-danger">Multiple of the same filter selected!</div>');
+}
+let hide_filter_error    = () => {
+    $('.search-row-error-alert').empty();
+}
 let clear_filters        = () => {
+    hide_filter_error();
     window.searchRowID = 0;
     clear_search_rows();
     append_search_row();
@@ -235,6 +254,7 @@ let clear_filters        = () => {
     $('#name-input').val('');
     $('#type-select').prop('selectedIndex', 0);
     $('#program-select').prop('selectedIndex', 0);
+
 };
 let api_to_ui            = (field) => {
     let dict = {
