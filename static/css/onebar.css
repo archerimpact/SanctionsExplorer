@@ -1,20 +1,35 @@
-.inverted {
-    filter: invert(100%);
+.tagline {
+    margin-bottom: 0;
 }
 
-#one-search-row {
-    margin-left: 20%;
-    margin-right: 20%;
-    margin-top: 3em;
-    margin-bottom: 2em;
+.description-group {
+    margin-bottom: 4rem;
+    padding: 0 15px;
 }
 
-#advanced-button {
-    margin-left: 2em;
+.product-logo-group, .partner-logo-group {
+    width: 100%;
 }
 
-#button-flex-div {
-    padding-bottom: 7em;
+#splash-logo {
+    width: 100%;
+    max-width: 50rem;
+}
+
+#one-search-input {
+    border-right: 0;
+    max-width: 50em;
+}
+
+.search-group {
+    margin-top: 1em;
+    padding: 0 15px;
+}
+
+/* only visible on mobile */
+.help-group {
+    margin-top: 1em;
+    display: none !important;
 }
 
 .latch-to-bottom {
@@ -28,33 +43,63 @@ img#joint-logo {
     max-width: 30em;
 }
 
-#archer-logo {
-    margin-top: 3em;
-    width: 12em;
-}
-
 .vertical-center {
     min-height: 100%;
     min-height: 100vh;
     display: flex;
     align-items: center;
+    padding: 0;
 }
 
 .cont {
     width: 100%;
+    position: absolute;
+    top: 20%;
 }
 
 body {
     background-image: url('../img/p6.png');
     background-repeat: repeat;
 }
+::-webkit-input-placeholder { /* WebKit browsers */
+    opacity: 0;
+}
 
 @media (max-width: 768px) {
-    #one-search-row {
-        margin-left: 0;
-        margin-right: 0;
+    .help-group {
+        display: flex !important;
     }
-    #advanced-button {
-        display: none;
+
+    .cont {
+        top: 10%;
     }
+
+    .description-group {
+        margin-bottom: 6rem;
+    }
+
+    .latch-to-bottom {
+        padding: 0 1rem;
+    }
+
+    #joint-logo {
+        padding: 0 30px;
+    }
+
+    ::-webkit-input-placeholder { /* WebKit browsers */
+        opacity: 0 !important;
+        color: transparent !important;
+    }
+    :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+       opacity: 0 !important;
+       color: transparent !important;
+    }
+    ::-moz-placeholder { /* Mozilla Firefox 19+ */
+       opacity: 0 !important;
+       color: transparent !important;
+    }
+    :-ms-input-placeholder { /* Internet Explorer 10+ */
+       opacity: 0 !important;
+       color: transparent !important;
+   }
 }

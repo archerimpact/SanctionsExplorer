@@ -6,6 +6,11 @@ html, body {
     /*overflow: hidden;*/
 }
 
+/* match Lux navbar */
+.btn-primary, .btn-outline-primary:hover {
+    background-color: #343a40;
+}
+
 .page-col {
     overflow-y: scroll;
     height: 90%;        /* should be overwritten by Javascript */

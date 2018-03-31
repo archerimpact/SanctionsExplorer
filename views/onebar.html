@@ -30,42 +30,46 @@
                     </div>
                 </div>
             </div>
-            <div class="d-flex justify-content-center">
+            <!-- faster than using jQuery document ready? -->
+            <script type="text/javascript">
+                document.getElementsByClassName('no-js')[0].style.display = 'none';
+            </script>
+
+            <div class="d-flex justify-content-center tagline-group">
+                <h5 class="tagline text-center">Explore 24 years of OFAC Sanctions Data</h5>
+            </div>
+            <div class="d-flex justify-content-center description-group">
+                <p class="text-center">6,880+ entries across the SDN, SSI, FSE, and more. Updated &lt;5 minutes ago.</p>
+            </div>
+
+            <div class="d-flex justify-content-center product-logo-group">
                 <div class="d-flex flex-column">
                     <a href="https://archerimpact.com">
-                        <img src="../static/img/sanctions_explorer (blue).png" class="img-fluid" id="large-archer-logo" />
+                        <img src="../static/img/sanctions_explorer (blue).png" class="img-fluid" id="splash-logo" />
                     </a>
                 </div>
             </div>
 
-            <div>
-                <form id="one-search-form">
-                    <div class="row" id="one-search-row">
-                        <input type="text" class="form-control form-control-md" id="one-search-input" placeholder="Search U.S. Treasury sanctions (e.g. &quot;Russia&quot;, &quot;Kony&quot;, &quot;DPRK2&quot;)" autofocus>
-                    </div>
-                </form>
+            <div class="d-flex justify-content-center search-group">
+                <input type="text" class="form-control form-control-md" id="one-search-input" placeholder="Search U.S. Treasury sanctions (e.g. 'Russia', 'Kony', 'DPRK2')" autofocus>
+                <div class="btn btn-primary" id="search-button">Search</div>
             </div>
 
-            <div class="d-flex justify-content-center" id="button-flex-div">
-                <div class="btn btn-outline-primary" id="search-button">Search</div>
-                <div class="btn btn-outline-primary" id="advanced-button">Continue without Searching</div>
-            </div>
-
-            <div class="d-flex justify-content-center">
-                <div class="latch-to-bottom">
-                    <a href="https://c4ads.org">
-                        <img src="../static/img/SE_graphic_archerc4ads.png" id="joint-logo" class="img-fluid">
-                    </a>
-                </div>
+            <div class="d-flex justify-content-center help-group">
+                <p class="text-center">Search U.S. Treasury sanctions (e.g. 'Russia', 'Kony', 'DPRK2')</p>
             </div>
 
         </div>
+
+        <div class="d-flex justify-content-center partner-logo-group">
+            <div class="latch-to-bottom">
+                <a href="https://c4ads.org">
+                    <img src="../static/img/SE_graphic_archerc4ads.png" id="joint-logo" class="img-fluid">
+                </a>
+            </div>
+        </div>
     </div><!-- /container-fluid -->
 
-    <!-- faster than using jQuery document ready? -->
-    <script type="text/javascript">
-        document.getElementsByClassName('no-js')[0].style.display = 'none';
-    </script>
 </body>
 
 </html>

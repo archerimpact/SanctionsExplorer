@@ -1,6 +1,6 @@
 'use strict';
 
-const SEARCH_URL    = 'https://sdn.archerimpact.com/search/sdn';//window.addr + '/search/sdn';
+const SEARCH_URL    = window.addr + '/search/sdn';
 const ROW_FIELDS    = [
     'countries',
     'nationality_country',
