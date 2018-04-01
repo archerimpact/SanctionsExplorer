@@ -31,11 +31,11 @@ def write_pr_matches(outfile):
     util.write_json(outfile, data)
 
 
-def write_ofac_id_matches(outfile):
+def write_ofac_id_matches(infile, outfile):
     data = {}        # { sdn_id : ofac_website_id }
     ofac_name_to_id = {} # {ofac_name : ofac_website_id}
-    
-    with open('update_files/ofac_id_to_name.txt') as f:
+
+    with open(infile) as f:
         for line in f:
             ofac_id, name = line.split('|')
             name = name.lower().translate(table).strip()
@@ -43,7 +43,7 @@ def write_ofac_id_matches(outfile):
     ofac_names = ofac_name_to_id.keys()
 
     entries = get_names_from_elastic()
-    
+
     num_not_found = 0
     for entry in entries:
         sdn_id = entry['_id']

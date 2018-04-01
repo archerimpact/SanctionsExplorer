@@ -10,9 +10,9 @@ import feedparser
 import filecmp
 
 import sdn_parser
-import pr_scraper
+import scrape_prs
 import matcher
-import ofac_mapping
+import scrape_ofac
 import util
 log = util.log('updater')
 
@@ -30,7 +30,8 @@ SDN_JSON        = DIR + '/update_files/sdn.json'
 NONSDN_JSON     = DIR + '/update_files/non_sdn.json'
 PR_JSON_2018    = DIR + '/update_files/press_releases.json'
 PR_MATCHES      = DIR + '/update_files/pr_matches.json'
-OFAC_MATCHES    = DIR + '/update_files/ofac_id_matches.json'
+OFAC_IDS        = DIR + '/update_files/ofac_id_to_name.txt'
+OFAC_MATCHES    = DIR + '/update_files/ofac_matches.json'
 
 EXPORT_SDN      = DIR + '/export_sdn.js'
 EXPORT_PRS      = DIR + '/export_prs.js'
@@ -97,22 +98,21 @@ if should_download:
     download_and_parse(NONSDN_URL, NONSDN_XML_FILE, NONSDN_JSON)
 
     log('Scraping press releases from 2018...', 'info')
-    pr_scraper.scrape_2018(PR_JSON_2018)
+    scrape_prs.scrape_2018(PR_JSON_2018)
 
-    #log('Scraping IDs from the OFAC website...', 'info')
-    #ofac_mapping.write_ofac_ids(OFAC_MATCHES_FILE)
+    log('Scraping IDs from the OFAC website...', 'info')
+    scrape_ofac.write_ofac_ids(OFAC_IDS)
 
 run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
 run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
 
-# Match SDN entities with the PRs they appear in
 log('Matching SDN entities with press release data...', 'info')
 matcher.write_pr_matches(PR_MATCHES)
 run_nodejs(EXPORT_MATCHES, 'export PR matches to Elastic')
 
-#log('Matching SDN entities with their IDs on the OFAC website...', 'info')
-#matcher.write_ofac_id_matches(OFAC_MATCHES_FILE)
-#run_nodejs(EXPORT_IDS, 'export ID matches to Elastic')
+log('Matching SDN entities with their IDs on the OFAC website...', 'info')
+matcher.write_ofac_id_matches(OFAC_IDS, OFAC_MATCHES_FILE)
+# run_nodejs(EXPORT_IDS, 'export ID matches to Elastic')
 
 # If we've successfully made it this far, we write this for next time.
 serialize_feed(feed, OLD_RSS_FILE)
