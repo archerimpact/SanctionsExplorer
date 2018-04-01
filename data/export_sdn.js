@@ -276,20 +276,23 @@ let add_country_synonyms = country_list=>{
             country_set = country_set.union(synonyms);
         }
     }
+    var new_set = Array.from(country_set);
+    if(new_set != country_list){
+	//console.log("Changed list");
+    }
     return Array.from(country_set);
 }
 
 let country_synonyms = country =>{
-    let korea_set = new Set(["NK", "DPRK", "Democratic People's Republic of Korea", "North Korea"]);
-    let drc_set = new Set(["DRC", "Democratic Republic of the Congo"]);
+    let korea_set = new Set(["NK", "DPRK", "Democratic People's Republic of Korea", "Korea, North",  "North Korea"]);
+    let drc_set = new Set(["DRC", "Democratic Republic of the Congo", "Congo, Democratic Republic of the"]);
     let us_set = new Set(["US", "USA", "America", "United States"]);
     let russia_set = new Set(["Russian Federation", "Russia"]);
-    let england_set = new Set(["England", "UK", "United Kingdom"]);
-    let china_set = new Set(["PRC", "China"]);
+    let england_set = new Set(["England", "UK", "United Kingdom", "Britain"]);
     let uae_set = new Set(["UAE", "United Arab Emirates"]);
     let car_set = new Set(["CAR", "Central African Republic"]);
 
-    let all_sets = [korea_set, drc_set, us_set, russia_set, england_set, china_set, uae_set, car_set];
+    let all_sets = [korea_set, drc_set, us_set, russia_set, england_set, uae_set, car_set];
     const dict = {}
     all_sets.forEach(set=>{
         for(key of set){

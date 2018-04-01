@@ -2,6 +2,8 @@ import requests
 import urllib
 import json
 import util
+import re
+from fuzzywuzzy import process
 from difflib import get_close_matches
 
 log = util.log('matcher')
@@ -35,19 +37,36 @@ def write_ofac_id_matches(outfile):
     with open('update_files/ofac_id_to_name.txt') as f:
         for line in f:
             ofac_id, name = line.split('|')
+            name = name.lower()
             ofac_name_to_id[name] = ofac_id
     ofac_names = ofac_name_to_id.keys()
 
     entries = get_names_from_elastic()
+    i = 0
     for entry in entries:
         sdn_id = entry['_id']
-        name = entry['_source']['primary_display_name']
-
-        best_match = get_close_matches(name, ofac_names, n=1, cutoff=0.6)
+        name = entry['_source']['primary_display_name'].lower()
+        
+        try:
+            best_match = get_close_matches(name, ofac_names, n=1, cutoff=0.9)[0]
+        except:
+            i += 1
+            # names might need to be reversed
+            match = re.search(r'[A-Z]+,\s+[a-z]+', name)
+            if match:
+                last, first = match.group(0).partition(',')
+                name = first + ' ' + last
+                try:
+                    best_match = get_close_matches(name, ofac_names, n=1, cutoff=0.9)[0]
+                except:
+                    print(name)
+                    continue
+        
+        
+        # print(name, ';', best_match)
         ofac_website_id = ofac_name_to_id[best_match]
-
         data[sdn_id] = ofac_website_id
-
+    print(i)
     util.write_json(outfile, data)
 
 

@@ -77,6 +77,7 @@ app.get('/submit/feedback', async function(req, res) {
 
 app.get('/search/press-releases', async function(req, res) {
     let text = req.query.query;
+    console.log(JSON.stringify(text));
     let search_query = {
         bool: {
             must: [
@@ -202,7 +203,7 @@ app.get('/search/sdn', async function(req, res) {
             search_query.bool.should.push(should_phrase);
         }
     });
-    console.log('=====> ' + JSON.stringify(search_query));
+    //console.log('=====> ' + JSON.stringify(search_query));
 
     respond_with_search(req, res, search_query, 'sdn');
 });
