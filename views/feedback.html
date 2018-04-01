@@ -1,0 +1,143 @@
+<html>
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111936547-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-111936547-2');
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
+    <link rel="stylesheet" href="../static/css/style.css"></link>
+    <link rel="stylesheet" href="../static/css/about.css"></link>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="../static/js/feedback.js"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/"><img id="product-logo" src="../static/img/sanctions_explorer (blue, inverted).png"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarColor02">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sdn">OFAC Sanctions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/press-releases">OFAC Press Releases</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/feedback">Feedback</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 order-12 col-md-4 order-md-1 page-col left-col">
+                <div class="sticky-header">
+                    <h3 class="text-center col-header">Updates</h3>
+                    <hr>
+                </div>
+                <p>We work very hard to push out useful features and fix any bugs that are reported.</p>
+                <p>If you'd like to be notified when we push out a major feature, please submit your email below.</p>
+                <p>We promise to not spam you or sell your email address!</p>
+                <form id="email-update-form">
+                    <div class="form-row">
+                        <div class="form-group col-12 col-sm-8 col-md-12 col-lg-8">
+                            <input type="email" class="form-control" id="email-update-input" placeholder="Email address">
+                        </div>
+                        <div class="form-group col-12 col-sm-4 col-md-12 col-lg-4">
+                            <button class="btn btn-primary" type="submit" id="email-submit-button">Submit</button>
+                        </div>
+                    </div>
+                    <p id="email-error-text" class="text-danger">
+                        <!-- Populated by Javascript if necessary -->
+                    </p>
+                </form>
+            </div>
+            <div class="col-12 order-1 col-md-8 order-md-12 page-col right-col">
+                <div class="sticky-header">
+                    <h3 class="text-center col-header">Feedback &amp; Issues</h3>
+                    <hr>
+                </div>
+                <p>Encountered a bug? Did your search not return a result, or are you getting unexpected errors? Please contact us!  We do our absolute best to ensure that SanctionsExplorer is bug-free and working correctly for everyone.</p>
+                <p>If you'd like to see a feature added, please contact us as well &mdash; we highly prioritize community input in our development.</p>
+                <form id="feedback-form">
+                    <h5 id="feedback-form-header">Submit Feedback!</h5>
+                    <hr>
+                    <p>Please be as specific as you can. If a search did not work, please provide which filters were used and what you expected to see.</p>
+                    <p>Feel free to include your name and email if you're okay with us possibly contacting you for additional details or clarifications. Including your email here does NOT subscribe you to our update list.</p>
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="form-group">
+                                <textarea class="form-control" id="feedback-textarea" rows="5" placeholder="Feedback"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <select class="form-control custom-select" id="issue-select">
+                                    <option value="select" selected>Select Feedback Type</option>
+                                    <option value="bug">Bug Report</option>
+                                    <option value="feature">Feature Request</option>
+                                    <option value="contact">Get in Contact with the Team</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="form-group">
+                                <input type="email" class="form-control" id="email-input" placeholder="Email (optional)">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-outline-primary" id="feedback-submit-button">Submit</button>
+                            </div>
+                        </div>
+                    </div>
+                    <p id="feedback-error-text" class="text-danger">
+                        <!-- Populated by Javascript if necessary -->
+                    </p>
+                </form>
+                <div class="about-footer">
+                    <p class="text-right">Created by <a href="https://archerimpact.com">Archer</a> in partnership with <a href="https://c4ads.org">C4ADS</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script id="faq-card-template" type="text/template">
+        <div class="card">
+            <div class="card-header">
+                <a data-toggle="collapse" href="#card-body-{{=it.id}}">
+                    {{=it.question}}
+                </a>
+            </div>
+            <div class="collapse hide" id="card-body-{{=it.id}}">
+                <div class="card-body faq-card-body">
+                    {{=it.answer}}
+                </div>
+            </div>
+        </div>
+    </script>
+</body>
+</html>

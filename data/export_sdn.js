@@ -4,30 +4,42 @@ const exporter = require(path.join(__dirname, 'elastic_export.js'));
 const util = require(path.join(__dirname, 'util.js'));
 const log = util.log('sdn_export');
 
-const sdn    = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/sdn.json'), 'utf8'));
+const sdn    = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/sdn.json'),     'utf8'));
 const nonsdn = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/non_sdn.json'), 'utf8'));
+
+Set.prototype.union = function(setB) {
+    var union = new Set(this);
+    for (var elem of setB) {
+        union.add(elem);
+    }
+    return union;
+}
 
 const transform = entry => {
     // Augment the entry with these fields
-    entry.identity_id = entry.identity.id
+    entry.identity_id          = entry.identity.id;
     entry.primary_display_name = entry.identity.primary.display_name;
-    entry.programs = [];
-    entry.all_display_names = [];
-    entry.doc_id_numbers = [];
-    entry.linked_profile_ids = [];
+    entry.programs             = [];
+    entry.sanction_dates       = [];
+    entry.countries            = [];
+    entry.all_display_names    = [];
+    entry.doc_id_numbers       = [];
+    entry.linked_profile_ids   = [];
     entry.linked_profile_names = [];
-    entry.countries = [];
-    entry.aircraft_tags = [];
-    entry.vessel_tags = [];
-    entry.all_fields = [];
+    entry.aircraft_tags        = [];
+    entry.vessel_tags          = [];
+    entry.all_fields           = [];
+    entry.sdn_display          = '';
+    entry.documents_from_country = [];
 
     programs  = new Set();
     countries = new Set();
     lists     = new Set();
+    document_countries = new Set();
 
-    entry.sanctions_entries.forEach(entry => {
-        lists.add(list_to_acronym(entry.list));
-        entry.program.forEach(program => {
+    entry.sanctions_entries.forEach(e => {
+        lists.add(list_to_acronym(e.list));
+        e.program.forEach(program => {
             if (program) {
                 programs.add(program);
                 let program_country = program_to_country(program);
@@ -36,10 +48,12 @@ const transform = entry => {
                 }
             }
         });
+        e.entry_events.forEach(event => {
+            entry.sanction_dates.push(String(event[0]));
+        });
     });
     entry.programs = Array.from(programs).sort();
 
-    entry.sdn_display = '';
     if (lists.delete('Non-SDN')) {
         if (lists.delete('SDN')) {
             entry.sdn_display += '[SDN] ';
@@ -79,20 +93,24 @@ const transform = entry => {
 
         let combined_info = [];
 
-        entry.features[f_key].forEach(entry => {
-            if (entry.details) {
-                combined_info.push(entry.details);
+        entry.features[f_key].forEach(f => {
+            if (f.details) {
+                combined_info.push(f.details);
+                if (f_key == 'SWIFT/BIC') {
+                    entry.doc_id_numbers.push(f.details);
+                    entry.doc_id_numbers.push(f_key);
+                }
             }
 
-            if (entry.date) {
-                combined_info.push(entry.date);
+            if (f.date) {
+                combined_info.push(f.date);
             }
 
-            if (entry.location) {
-                combined_info.push(entry.location['COMBINED']);
+            if (f.location) {
+                combined_info.push(f.location['COMBINED']);
 
-                if (entry.location["COUNTRY"]) {
-                    countries.add(entry.location["COUNTRY"]);
+                if (f.location["COUNTRY"]) {
+                    countries.add(f.location["COUNTRY"]);
                 }
             }
         });
@@ -103,6 +121,11 @@ const transform = entry => {
     entry.documents.forEach(doc => {
         // for searchability
         entry.doc_id_numbers.push(doc.id_number);
+        entry.doc_id_numbers.push(doc.type);
+        if (doc.type.indexOf('Vessel') > -1) {
+            entry.vessel_tags.push(doc.id_number);
+        }
+
          // for website display
         if (doc.validity != 'Valid' && doc.validity != 'Fraudulent') {
             log('An invalid document status appeared (normally Valid or Fraudulent): ' + doc.validity, 'warning');
@@ -113,6 +136,8 @@ const transform = entry => {
         if (doc.issued_by != 'None') {
             headers.push('issued_by');
             countries.add(doc.issued_by);
+            document_countries.add(doc.issued_by);
+
         }
         else {
             doc.issued_by = null;
@@ -121,6 +146,7 @@ const transform = entry => {
         if (doc.issued_in != 'None') {
             headers.push('issued_in');
             countries.add(doc.issued_in["COUNTRY"])
+            document_countries.add(doc.issued_in["COUNTRY"]);
         }
         else {
             doc.issued_in = null;
@@ -129,6 +155,7 @@ const transform = entry => {
         if (doc.issuing_authority != 'None') {
             headers.push('issuing_authority');
             countries.add(doc.issuing_authority);
+            document_countries.add(doc.issuing_authority);
         }
         else {
             doc.issuing_authority = null;
@@ -160,19 +187,34 @@ const transform = entry => {
     });
 
     // Create tags field for vessels
-    let vessel_fields = ['vessel_call_sign',
+    let vessel_fields = [
+        'vessel_call_sign',
+        'other_vessel_call_sign',
         'vessel_flag',
+        'other_vessel_flag',
         'vessel_owner',
         'vessel_tonnage',
-        'vessel_gross_tonnage',
+        'vessel_gross_registered_tonnage',
         'vessel_type']
 
-    vessel_fields.forEach(field=>{
+    vessel_fields.forEach(field => {
         if (entry[field]) {
-            entry.vessel_tags.push(String(entry[field]))
+            entry.vessel_tags.push(String(entry[field]));
         }
-
     });
+
+    if(entry.countries != null){
+        entry.countries = add_country_synonyms(entry.countries);
+    }
+    if(entry.nationality_country != null){
+        entry.nationality_country = add_country_synonyms(entry.nationality_country);
+    }
+    if(entry.citizenship_country != null){
+        entry.citizenship_country = add_country_synonyms(entry.citizenship_country);
+    }
+     if(entry.nationality_of_registration != null){
+        entry.nationality_of_registration = add_country_synonyms(entry.nationality_of_registration);
+    }
 
     // Fields not included: linked_profile_ids (not relevant), fixed_ref
     let all_fields = [
@@ -188,7 +230,9 @@ const transform = entry => {
         'place_of_birth',
         'additional_sanctions_information_-_',
         'vessel_call_sign',
+        'other_vessel_call_sign',
         'vessel_flag',
+        'other_vessel_flag',
         'vessel_owner',
         'vessel_tonnage',
         'vessel_gross_registered_tonnage',
@@ -221,9 +265,43 @@ const transform = entry => {
             entry.all_fields.push(String(entry[field]))
         }
     });
+
+    entry.documents_from_country = Array.from(document_countries);
+
     entry.all_fields.push(entry.sdn_display);
 
     return entry;
+}
+
+let add_country_synonyms = country_list=>{
+    let country_set = new Set(country_list);
+    for(country of country_set){
+        var synonyms = country_synonyms(country);
+        if(synonyms != null){
+            country_set = country_set.union(synonyms);
+        }
+    }
+    return Array.from(country_set);
+}
+
+let country_synonyms = country =>{
+    let korea_set = new Set(["NK", "DPRK", "Democratic People's Republic of Korea", "North Korea"]);
+    let drc_set = new Set(["DRC", "Democratic Republic of the Congo"]);
+    let us_set = new Set(["US", "USA", "America", "United States"]);
+    let russia_set = new Set(["Russian Federation", "Russia"]);
+    let england_set = new Set(["England", "UK", "United Kingdom"]);
+    let china_set = new Set(["PRC", "China"]);
+    let uae_set = new Set(["UAE", "United Arab Emirates"]);
+    let car_set = new Set(["CAR", "Central African Republic"]);
+
+    let all_sets = [korea_set, drc_set, us_set, russia_set, england_set, china_set, uae_set, car_set];
+    const dict = {}
+    all_sets.forEach(set=>{
+        for(key of set){
+            dict[key] = set;
+        }
+    });
+    return dict[country];
 }
 
 let program_to_country = program => {
@@ -268,6 +346,7 @@ let program_to_country = program => {
 
     return dict[program];
 }
+
 let list_to_acronym = l => {
     if (l.endsWith(' List')) {
         l = l.slice(0, -1 * ' List'.length);
@@ -288,13 +367,11 @@ async function load_sdn() {
     await exporter.delete_index('sdn');
     await exporter.create_index('sdn');
 
-    await exporter.bulk_add(sdn, transform, 'sdn', 'entry', 0);
+    nonsdn.forEach(e => sdn.push(e));
+
+    await exporter.bulk_add(sdn, transform, 'sdn', 'entry', 'fixed_ref');
     let count = await exporter.indexing_stats('sdn');
     log(count + ' documents indexing', 'info');
-
-    await exporter.bulk_add(nonsdn, transform, 'sdn', 'entry', 100000);     // TODO maybe pick a different indexing scheme.
-    let count_new = await exporter.indexing_stats('sdn');
-    log(count_new + ' documents indexing', 'info');
 }
 
 load_sdn();

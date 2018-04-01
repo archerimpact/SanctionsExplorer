@@ -3,10 +3,14 @@
 const express = require('express');
 const app = express();
 const fs = require('fs');
+const path = require('path');
 const es = require('elasticsearch');
 const client = new es.Client({
     host:'localhost:9200'
 });
+
+const email_file    = path.join(__dirname, 'submissions', 'email.txt');
+const feedback_file = path.join(__dirname, 'submissions', 'feedback.txt');
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
@@ -27,9 +31,48 @@ app.get('/about', (req, res) => {
     res.sendFile(__dirname + '/views/about.html');
 });
 
+app.get('/feedback', (req, res) => {
+    res.sendFile(__dirname + '/views/feedback.html');
+});
+
 app.get('/press-releases', (req, res) => {
     res.sendFile(__dirname + '/views/press-releases.html');
 });
+
+app.get('/submit/email', async function(req, res) {
+    const email = req.query.email;
+    if (!email) {
+        return res.status(400).end();
+    }
+
+    await fs.appendFile(email_file, JSON.stringify(email) + ',\n', err => {
+        if (err) {
+            console.log('ERROR writing to email file: ' + err);
+            return res.status(400).end();
+        }
+    });
+    return res.status(200).end();
+});
+
+app.get('/submit/feedback', async function(req, res) {
+    const text = req.query.text;
+    const type = req.query.feedback_type;
+    const email = req.query.email;
+
+    const submission = {
+        text: text,
+        type: type,
+        email: email,
+    };
+
+    await fs.appendFile(feedback_file, JSON.stringify(submission) + ',\n', err => {
+        if (err) {
+            console.log('ERROR writing to feedback file: ' + err);
+            return res.status(400).end();
+        }
+    });
+    return res.status(200).end();
+})
 
 
 app.get('/search/press-releases', async function(req, res) {
@@ -80,16 +123,23 @@ app.get('/search/sdn', async function(req, res) {
         'doc_id_numbers': '0',
         'birthdate': '0',
         'fixed_ref': 'NONE',
-        'party_sub_type': '0'
+        'party_sub_type': '0',
+        'sanction_dates': 'NONE',
+    };
+
+    const operators = {
+        'programs': 'or',
+        'sanction_dates': 'or',
     };
 
     let search_query;
 
     let create_match_phrase = (field, query_str, is_fuzzy, boost) => {
         let json = { match: {} };
+        let op = operators[field] || 'and';
         json.match[field] = {
-            'query': query_str,
-            'operator': 'and',
+            query: query_str,
+            operator: op,
         };
 
         let fuzz_setting = 'AUTO';
@@ -124,14 +174,27 @@ app.get('/search/sdn', async function(req, res) {
         }
 
         if (k == 'all_display_names') {
-            // There must be a fuzzy match in all_display_names.  Boost exact matches in all_display_names, and further boost exact matches in primary names.
-            let all_must       = create_match_phrase('all_display_names',    req.query[k], true);
-            let all_should     = create_match_phrase('all_display_names',    req.query[k], false, 1000);
+            // Boost exact matches in primary names.
             let primary_should = create_match_phrase('primary_display_name', req.query[k], false, 2000);
-            search_query.bool.must.push(all_must);
-            search_query.bool.should.push(all_should);
             search_query.bool.should.push(primary_should);
-        } else if (get_keywords().includes(k)) {
+        }
+
+        if (k == 'sanction_dates') {
+            // Expand year ranges (e.g. 2011-2017) into concatenated list of years to boolean-OR search for
+            let q = req.query[k];
+            let year_range = q.match(/^[0-9]{4}\-[0-9]{4}$/);
+            if (year_range) {
+                let [begin, end] = q.split('-');
+                let concat_years = '';
+                for (let y = parseInt(begin); y <= parseInt(end); y++) {
+                    concat_years += ' ' + y;
+                }
+                console.log(concat_years);
+                req.query[k] = concat_years;        // overwrite range with concatenated list
+            }
+        }
+
+        if (get_keywords().includes(k)) {
             // There must be a fuzzy match.  Boost exact matches.
             let must_phrase   = create_match_phrase(k, req.query[k], true);
             let should_phrase = create_match_phrase(k, req.query[k], false, 1000);
@@ -234,5 +297,7 @@ function get_keywords() {
         'aircraft_tags',
         'vessel_tags',
         'all_fields',
+        'sanction_dates',
+        'document_countries'
     ];
 }

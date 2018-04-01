@@ -16,19 +16,23 @@ async function delete_index(name) {
     }
 }
 
-async function bulk_add(operations, transform, index_name, index_type, starting_from) {
+async function bulk_add(operations, transform, index_name, index_type, equality_filter) {
     let body = [];
+    let seen_values = new Set();
+
     for (let i = 0; i < operations.length; i++) {
-        let id = starting_from + i;
-        let index_statement = {
-            index: {
-                _index: index_name,
-                _type: index_type,
-                _id: parseInt(id),
-            }
-        };
-        body.push(index_statement);
-        body.push(transform(operations[i]));
+        if (!equality_filter || !seen_values.has(operations[i][equality_filter])) {
+            let index_statement = {
+                index: {
+                    _index: index_name,
+                    _type: index_type,
+                    _id: i,
+                }
+            };
+            body.push(index_statement);
+            body.push(transform(operations[i]));
+            seen_values.add(operations[i][equality_filter]);
+        }
     }
 
     try {
@@ -67,7 +71,8 @@ async function bulk_update(operations, index_name, index_type) {
     try {
         log('Bulk updating...', 'info');
         const result = await client.bulk({
-            body: body
+	    timeout:"6s",
+	    body: body
         });
 
         result.items.forEach(i => {
@@ -110,11 +115,45 @@ async function reload_index(operations, transform, index_name, index_type) {
     }
 }
 
+
+async function add_synonym_mappings(name){
+    try{
+        let map_body = {
+            properties:{
+                all_fields:{
+		    type:"text",
+                    analyzer:"synonym"
+                },
+                countries:{
+		    type:"text",
+                    analyzer:"synonym"
+                },
+                nationality_country:{
+		    type:"text",
+                    analyzer:"synonym"
+                },
+                citizenship_country:{
+		    type:"text",
+                    analyzer:"synonym"
+                },
+                nationality_of_registration:{
+		    type:"text",
+		    analyzer:"synonym"
+                }
+            }
+        }
+        await client.indices.putMapping({index:name, type:"_doc", body:map_body});
+    }
+    catch(error){
+        log(error, 'error');
+    }
+}
+
 module.exports = {
     reload_index: reload_index,
     bulk_add: bulk_add,
     bulk_update: bulk_update,
     delete_index: delete_index,
     create_index: create_index,
-    indexing_stats: indexing_stats,
+    indexing_stats: indexing_stats
 }

@@ -1,28 +1,59 @@
-.about-row {
-	padding-top: 0;
+.card, .card-header {
+    background-color: #eeeeee;
 }
 
-.about-col {
-	padding: 2em;
+.card-body {
+    margin-left: 0;
+    border-left: 0;
 }
 
 .about-footer {
-	margin-top: 7em;
+    margin-top: 7rem;
 }
 
-.about-right-col > .about-header ~ .about-header {
-	padding-top: 2em;
+@media (max-width: 767px) {
+    .about-footer {
+        display: none !important;
+    }
+    .left-col {
+        padding-bottom: 6rem;
+    }
 }
 
-.about-left-col {
-	background-color: #eeeeee;
+.right-col {
+    /* We can afford a bit more padding here. */
+    padding-left: 1.8rem;
+    padding-right: 1.8rem;
+}
+
+.about-header {
+    padding-top: 2rem;
+}
+
+.right-col {
+    padding-bottom: 0;
 }
 
 .faq-card-body {
-	padding-top: 0;
-	padding-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
 }
 
-.beta-text {
-    color: #4e4e4e;
+/* Specific to the feedback page */
+#email-submit-button {
+    width: 100%;
+}
+
+#feedback-form {
+    margin-top: 3rem;
+    padding: 2rem 2rem 1rem 2rem;
+    border: 1px solid #bbbbbb;
+}
+
+#feedback-form-header {
+    margin-bottom: 0.5rem;
+}
+
+#issue-select {
+    background-color: #f7f7f9;
 }

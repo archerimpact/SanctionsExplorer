@@ -6,7 +6,6 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'UA-111936547-2');
     </script>
 
@@ -24,88 +23,82 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/"><img id="product-logo" src="../static/img/archer_sdn.png"></a>
+            <a class="navbar-brand" href="/"><img id="product-logo" src="../static/img/sanctions_explorer (blue, inverted).png"></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
             <div class="collapse navbar-collapse" id="navbarColor02">
-                <ul class="navbar-nav mr-auto">
+                <ul class="navbar-nav ml-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="/sdn">SDN</a>
+                        <a class="nav-link" href="/sdn">OFAC Sanctions</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/press-releases">Press Releases</a>
+                        <a class="nav-link" href="/press-releases">OFAC Press Releases</a>
                     </li>
                     <li class="nav-item active">
                         <a class="nav-link" href="/about">About</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/feedback">Feedback</a>
+                    </li>
                 </ul>
-                <div>
-                    <a href="https://c4ads.org/" target="_blank">
-                        <img src="../img/c4ads_logo.png" id="c4ads-logo">
-                    </a>
-                </div>
             </div>
         </div>
     </nav>
 
     <div class="container-fluid">
-        <div class="about-row row">
-            <div class="col-lg-4 about-col about-left-col">
-                <h1 class="about-header text-center">BETA</h1>
-                <hr>
-                <p><a href="https://docs.google.com/forms/d/e/1FAIpQLSfIYem2nuEyzsIOnTPIjeOpdrGS_gls0OftNnHd-GEepQZqIg/viewform?usp=sf_link" class="real-link" target="_blank">Feedback Form</a></p>
-                <p class="beta-text">Thanks for beta-testing!</p>
-                <p class="beta-text">If you have any feedback or ideas about the website design, workflow improvements, feature requests, or concerns about the search, please let us know <a href="https://docs.google.com/forms/d/e/1FAIpQLSfIYem2nuEyzsIOnTPIjeOpdrGS_gls0OftNnHd-GEepQZqIg/viewform?usp=sf_link" class="real-link" target="_blank">here</a>.  We're looking mainly at workflow/interface concerns since our data is still being reworked as you read this.  However, we appreciate ALL feedback, so please submit anything you can think of!  We want to make sure nothing slips through the cracks.</p>
-                <p class="beta-text">If you encounter a search result that's just drastically wrong, please tell us what you typed into the search bar and what you were expecting as a result.  This will be hugely helpful for us as we optimize search.</li>
-                <hr>
+        <div class="row">
+            <div class="col-12 order-12 col-md-4 order-md-1 page-col left-col">
+                <div class="sticky-header">
+                    <h3 class="col-header text-center">FAQ</h3>
+                    <hr class="no-bottom-margin">
+                </div>
+                <div class="faq-list">
+                    <!-- Populated by Javascript -->
+                </div>
             </div>
-            <div class="col-lg-8 about-col about-right-col">
-                <h1 class="about-header text-center">About ArcherSDN</h1>
-                <hr>
-                <p>ArcherSDN reimagines the <a href="https://sanctionssearch.ofac.treas.gov">OFAC SDN List website</a>, a list of individuals, entities, and vehicles that are sanctioned by the U.S. Treasury.  This list is difficult to search and provides very little functionality -- yet it plays a crucial role in academic, compliance, and due diligence investigations.  We've redesigned the experience of searching the SDN list, providing access to all of the same data with a vastly improved interface and additional features to streamline the investigative process.</p>
 
-                <p>ArcherSDN was created by <a href="https://archerimpact.com">Archer</a> (a Berkeley-based nonprofit using tech to improve human rights and human security) in partnership with <a href="https://c4ads.org">C4ADS</a> (a nonprofit dedicated to providing data-driven, evidence-based research on global conflict and transnational security issues).</p>
+            <div class="col-12 order-1 col-md-8 order-md-12 page-col right-col">
+                <div class="sticky-header">
+                    <h3 class="col-header text-center">About Us</h3>
+                    <hr>
+                </div>
+                <p>SanctionsExplorer reimagines the <a href="https://sanctionssearch.ofac.treas.gov">OFAC SDN List website</a>, a list of individuals, entities, and vehicles that are sanctioned by the U.S. Treasury.  This list is difficult to search and provides very little functionality -- yet it plays a crucial role in academic, compliance, and due diligence investigations.  We've redesigned the experience of searching the SDN list, providing access to all of the same data with a vastly improved interface and additional features to streamline the investigative process.</p>
 
-                <h1 class="about-header text-center">Features</h1>
+                <p>SanctionsExplorer was created by <a href="https://archerimpact.com">Archer</a> (a Berkeley-based nonprofit using tech to improve human rights and human security) in partnership with <a href="https://c4ads.org">C4ADS</a> (a nonprofit dedicated to providing data-driven, evidence-based research on global conflict and transnational security issues).</p>
+
+                <h3 class="about-header text-center">Features</h3>
                 <hr>
 
                 <h5>More Robust Search</h5>
                 <p>Want to find all businesses related to North Korea?  What about individuals whose Chinese names can be transliterated to English in multiple ways?</p>
                 <p>With fuzzy/inexact matching, items that might have previously gone unfound will no longer slip through the cracks.  Our search is forgiving of typos and alternate spellings or transliterations.</p>
-                <p>We also provide a number of additional filters, especially in regards to location (nationality, citizenship, place of birth, etc).</p>
+                <p>We also provide a number of additional filters, especially in regards to location (nationality, citizenship, place of birth, etc).  There are also filters to find all entities who are linked to a country ("Related to Country") as well as a date-of-sanction filter.</p>
                 <hr>
 
                 <h5>Press release integration</h5>
-                <p>The Treasury releases additional context and justification behind sanctions via <a href="https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/OFAC-Recent-Actions.aspx">press releases</a> that accompany updates to the SDN list.  These are indexed &amp; searchable via the ArcherSDN platform.  Using the press release archive search, searches can also be conducted for entities that were sanctioned at one point but have since been removed from the SDN list (since their identifying information will have been published in a press release).
-                <p>Additionally, we've algorithmically matched press releases with the entities that they discuss; ArcherSDN will attempt to display (in the regular search results) all press releases that an entity appeared in!</p>
+                <p>The Treasury releases additional context and justification behind sanctions via <a href="https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/OFAC-Recent-Actions.aspx">press releases</a> that accompany updates to the SDN list.  These are indexed &amp; searchable via the SanctionsExplorer platform.  Using the press release archive search, searches can also be conducted for entities that were sanctioned at one point but have since been removed from the SDN list (since their identifying information will have been published in a press release).
+                <p>Additionally, we've algorithmically matched press releases with the entities that they discuss; SanctionsExplorer will attempt to display (in the regular search results) all press releases that an entity appeared in!</p>
                 <hr>
 
                 <h5>Additional Data</h5>
-                <p>There is official Treasury data that is not available through the OFAC website, includes the reliability of information (e.g. confirmed vs reported) as well as sanction dates for most entities.</p>
-                <p>Additionally, OFAC has began included some non-Latin aliases (mostly in Cyrillic, Chinese, Japanese, and Arabic).  Unfortunately, these are neither searachable nor surfaced in the results on the OFAC website (but are freely available on ArcherSDN). Note that currently a small number of entities have non-Latin names.</p>
+                <p>There is official Treasury data that is not available through the OFAC website, including the reliability of information (e.g. confirmed vs reported) as well as the sanction date and legal basis.</p>
+                <p>Additionally, OFAC has began included some non-Latin aliases (mostly in Cyrillic, Chinese, Japanese, and Arabic).  Though these are neither searachable nor surfaced in the results on the OFAC website, they are freely available on SanctionsExplorer. Note that currently a small number of entities have non-Latin names.</p>
                 <hr>
 
-                <h5>Printable reports</h5>
+                <h5>Downloadable reports</h5>
                 <p>Regular search queries can be printed, allowing for immediate printable reports.  Expand the entities of interest and their details will be included in the printout!</p>
+                <p>Search results can also be downloaded as a CSV file, to be opened in Excel or imported into another tool.  We are still working on including more data in the download.</p>
                 <hr>
-
-                <h5>
 
                 <h5>And more!</h5>
-                <p>There are plenty of other ways that ArcherSDN stands out from the Treasury's website, including an interface that's modern, updated, and requires fewer clicks to navigate.  If you'd like to see a feature added or report a bug, please fill out our feedback form!  We continue striving for improvement and prioritize user feedback and community input when considering how to prioritize our efforts.</p>
-
-                <h1 class="about-header text-center">Frequently Asked Questions</h1>
-                <hr class="no-bottom-margin">
-                <div class="faq-list">
-                    <!-- Populated by Javascript -->
-                </div>
+                <p>There are plenty of other ways that SanctionsExplorer stands out from the Treasury's website, including an interface that's modern, updated, and requires fewer clicks to navigate.  If you'd like to see a feature added or report a bug, please fill out our feedback form!  We continue striving for improvement and prioritize user feedback and community input when considering how to prioritize our efforts.</p>
 
                 <div class="about-footer">
-                    <p class="text-right">Made by <a href="https://archerimpact.com">Archer</a> in collaboration with <a href="https://c4ads.org">C4ADS</a>.</p>
+                    <p class="text-right">Created by <a href="https://archerimpact.com">Archer</a> in partnership with <a href="https://c4ads.org">C4ADS</a>.</p>
                 </div>
-
+            </div>
         </div>
     </div>
 

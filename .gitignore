@@ -1,5 +1,5 @@
 # credentials
-data/credentials.* 
+data/credentials.*
 
 # ignore data files
 data/**/*.xml
@@ -7,6 +7,9 @@ data/**/*.json
 data/**/*.xlsx
 data/**/*.txt
 data/update_files/*
+
+# ignore user submissions
+submissions/
 
 .DS_Store
 

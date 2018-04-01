@@ -1,9 +1,80 @@
 'use strict';
 
+const SEARCH_URL    = window.addr + '/search/sdn';
+const ROW_FIELDS    = [
+    'countries',
+    'nationality_country',
+    'citizenship_country',
+    'place_of_birth',
+    'doc_id_numbers',
+    'location',
+    'title',
+    'sanction_dates',
+    'aircraft_tags',
+    'vessel_tags',
+];
+// TODO add descriptions
+const PROGRAMS      = {
+    'All programs': 'Do not filter by program',
+    '561List': '',
+    'BALKANS': '',
+    'BELARUS': '',
+    'BURUNDI': '',
+    'CAATSA': 'Countering America\'s Adversaries Through Sanctions Act (Iran, Russia, NK)',
+    'CAR': '',
+    'CUBA': '',
+    'CYBER2': '',
+    'DARFUR': '',
+    'DPRK': '',
+    'DPRK2': '',
+    'DPRK3': '',
+    'DPRK4': '',
+    'DRCONGO': '',
+    'FSE-SY': '',
+    'FTO': '',
+    'GLOMAG': '',
+    'HRIT-IR': '',
+    'HRIT-SY': '',
+    'IFSR': '',
+    'IRAN': '',
+    'IRAN-HR': '',
+    'IRAN-TRA': '',
+    'IRAQ2': '',
+    'IRAQ3': '',
+    'IRGC': '',
+    'ISA': '',
+    'LEBANON': '',
+    'LIBYA2': '',
+    'LIBYA3': '',
+    'MAGNIT': '',
+    'NPWMD': '',
+    'NS-PLC': '',
+    'SDGT': '',
+    'SDNT': '',
+    'SDNTK': '',
+    'SDT': '',
+    'SOMALIA': '',
+    'SOUTH SUDAN': '',
+    'SYRIA': '',
+    'TCO': '',
+    'UKRAINE-EO13660': '',
+    'UKRAINE-EO13661': '',
+    'UKRAINE-EO13662': '',
+    'UKRAINE-EO13685': '',
+    'VENEZUELA': '',
+    'YEMEN': '',
+    'ZIMBABWE': '',
+}
+const EMPTY_TYPE    = 'All types';
+const EMPTY_PROGRAM = 'All programs';
+const EMPTY_SELECT  = 'select-field';
+const FILTER_SUMMARY_LENGTH = 12;       // used for truncation in search.js
+
 $(document).ready(() => {
     window.card = get_template('#card-template');
     window.searchRow = get_template('#search-row-template');
-    window.searchRoute = window.addr + '/search/sdn';
+    window.searchRowID = 0;
+    append_search_row();
 
     $('.search-button').click(event => {
         if (event) { event.preventDefault(); }
@@ -17,10 +88,18 @@ $(document).ready(() => {
         send_search(window.lastQuery, 'APPEND');
     });
 
-    let id = 0;
-    let fields = construct_fields(['countries', 'nationality_country', 'title', 'citizenship_country', 'place_of_birth', 'birthdate', 'doc_id_numbers', 'location', 'aircraft_tags', 'vessel_tags']);
-    append_search_row(id, fields);
-    id++;
+    // TODO fix this.  Hackiest solution in the world.
+    // For some reason, the z-index needs to be updated every time the page is scrolled...
+    $('.right-col').on('scroll', () => {
+        let curr = parseInt($('.sticky-header').css('z-index'));
+        console.log(curr);
+        if (curr > 100) {
+            $('.sticky-header').css('z-index', 100);
+        }
+        else {
+            $('.sticky-header').css('z-index', curr+1);
+        }
+    });
 
     $(document).on('change', '.search-row-select', event => {
         let needNewRow = true;
@@ -28,9 +107,9 @@ $(document).ready(() => {
         let currentSelections = [];
 
         $.each($('.search-row-select'), (index, value) => {
-            if (value.value == empty_select) {
+            if (value.value == EMPTY_SELECT) {
                 needNewRow = false;
-                let id_num = value.id.match('([0-9]+)')[1];     // this row's id
+                let id_num = extract_number(value.id);     // this row's id
                 $('#search-row-' + id_num + '-input').val('');
             }
             else {
@@ -39,18 +118,18 @@ $(document).ready(() => {
         });
 
         if (new Set(currentSelections).size !== currentSelections.length) {
-            console.log('Duplicate filter detected');
-            $('.search-row-error-alert').html('<div class="alert alert-danger">Multiple of the same filter selected!</div>');
+            show_filter_error();
         }
         else {
-            $('.search-row-error-alert').empty();
+            hide_filter_error();
         }
 
-        console.log(currentSelections);
+        let eventID   = extract_number(event.target.id);
+        let selection = $('#search-row-' + eventID + '-select').val();
+        $('#search-row-' + eventID + '-input').attr('placeholder', api_to_placeholder(selection));
 
         if (needNewRow) {
-            append_search_row(id, fields);
-            id++;
+            append_search_row();
         }
     });
 
@@ -69,6 +148,15 @@ $(document).ready(() => {
         });
         history.pushState(null, null, '/sdn');
     }
+
+    $.each(Object.keys(PROGRAMS), (i, p) => {
+        $('#program-select').append($('<option />').val(p).text(p));
+    });
+
+    $(document).on('mouseenter', 'option', event => {
+        $('#program-header').text(event.target.value);
+        $('#program-description').text(PROGRAMS[event.target.value] || '');
+    });
 
     $(document).on('click', '.collapse-link', event => {
         if (event) { event.preventDefault(); }
@@ -110,11 +198,12 @@ $(document).ready(() => {
     $(document).on('click', '#results-plus-icon',  event => $('.search-results .collapse').collapse('show'));
     $(document).on('click', '#results-minus-icon', event => $('.search-results .collapse').collapse('hide'));
     $(document).on('click', '#results-print-icon', event => print());
+    $(document).on('click', '#download-icon',      event => export_results());
+    $(document).on('click', '#trash-icon',         event => clear_filters());
     $(document).on('click', '#search-info-icon',   event => $('#search-info-modal').modal('show'));
     $(document).on('click', '#modal-plus-icon',    event => $('#entity-modal-body .collapse').collapse('show'));
     $(document).on('click', '#modal-minus-icon',   event => $('#entity-modal-body .collapse').collapse('hide'));
     $('[data-toggle="tooltip"]').tooltip();        // enable tooltips
-
 });
 
 let temp_change_text     = (selector, text) => {
@@ -126,28 +215,139 @@ let temp_change_text     = (selector, text) => {
         $(selector).removeClass('link-in-explorer');
     }, 2000);
 };
-let append_search_row    = (id, fields) => $('.search-rows').append(searchRow({'id': id, 'fields': fields}));
+let append_search_row    = () => {
+    $('.search-rows').append(window.searchRow({
+        'id':     window.searchRowID++,
+        'fields': construct_fields(ROW_FIELDS),
+    }));
+}
+let clear_search_rows    = () => $('.search-rows').empty();
 let get_search_row_ids   = () => $('.search-row').map((index, elem) => elem.id);
+let extract_number       = (str) => str.match('([0-9]+)')[1];
 let get_all_fields_input = () => $('#all-fields-input').val().trim();
 let get_name_input       = () => $('#name-input').val().trim();
 let get_type_select      = () => $('#type-select').val();
-let get_program_select   = () => $('#program-select').val();
+let get_program_select   = () => $('#program-select').val().join(' ').replace(EMPTY_PROGRAM, '').trim();
 let get_row              = (id) => [$('#' + id + '-select').val(), $('#' + id + '-input').val().trim()];
 let send_search          = (query, mode, divToUse) => {
-
-    search(window.searchRoute, query, mode, window.card, divToUse);
+    if (Object.keys(query).length == 0) {
+        return null;
+    }
+    if (!mode || mode == 'OVERWRITE') {
+        // only really applies on mobile -- scroll to results so users aren't confused why nothing happened.
+        document.getElementById('results-header').scrollIntoView();
+    }
+    search(SEARCH_URL, query, mode, window.card, divToUse);
 };
-const empty_type    = 'All types';
-const empty_program = 'All programs';
-const empty_select  = 'Select field';
-const FILTER_SUMMARY_LENGTH = 12;
+let show_filter_error    = () => {
+    $('.search-row-error-alert').html('<div class="alert alert-danger">Multiple of the same filter selected!</div>');
+}
+let hide_filter_error    = () => {
+    $('.search-row-error-alert').empty();
+}
+let clear_filters        = () => {
+    hide_filter_error();
+    window.searchRowID = 0;
+    clear_search_rows();
+    append_search_row();
+    $('#all-fields-input').val('');
+    $('#name-input').val('');
+    $('#type-select').prop('selectedIndex', 0);
+    $('#program-select').prop('selectedIndex', 0);
+
+};
+let api_to_ui            = (field) => {
+    let dict = {
+        'identity_id':          'ID',
+        'primary_display_name': 'Primary Display Name',
+        'all_display_names':    'Name',
+        'doc_id_numbers':       'ID Numbers',
+        'programs':             'Programs',
+        'title':                'Title/Position',
+        'birthdate':            'Birthdate',
+        'place_of_birth':       'Place of Birth',
+        'nationality_country':  'Nationality',
+        'citizenship_country':  'Citizenship',
+        'countries':            'Related to Country',
+        'party_sub_type':       'SDN Type',
+        'location':             'Location/Address',
+        'sanction_dates':       'Sanction Dates',
+        'aircraft_tags':        'Aircraft Info',
+        'vessel_tags':          'Vessel Info',
+        'all_fields':           'All Fields',
+    };
+    return dict[field];
+}
+let api_to_placeholder   = (field) => {
+    let dict = {
+        'doc_id_numbers':       'e.g. "Cedula", "AB269600"',
+        'location':             'e.g. PO Box, London, Switzerland',
+        'title':                'e.g. President, Commander',
+        'place_of_birth':       'e.g. Uganda, Russia',
+        'nationality_country':  'e.g. Uganda, Russia',
+        'citizenship_country':  'e.g. Uganda, Russia',
+        'countries':            'e.g. Uganda, Russia',
+        'sanction_dates':       'e.g. 2011-2015, 1999',
+        'aircraft_tags':        'e.g. B727, YAS-AIR',
+        'vessel_tags':          'e.g. IMO #, "Oil Tanker"',
+        'select-field':         '',      // unselected
+    }
+    return dict[field];
+}
+let export_results       = () => {
+    let csv = [];
+    csv.push(['name', 'type', 'programs']);
+
+    $.each($('.card'), (i, card) => {
+        let [header, body] = card.children;
+        let title    = $(header).children('a.collapse-link')[0];
+        let id       = $(title).attr('data-id');
+        let name     = title.innerText;
+        let type     = $(header).children('small.card-sdn-type')[0].innerText.replace('(', '').replace(')', '');
+        let programs = $(header).children('.float-right')[0].innerText;
+
+        body = $(body).children('.card-body')[0];
+        $.each($(body).children('.detail-group'), (i, g) => {
+            let detail_type = $(g).children('h5')[0].innerText;
+            // TODO grab appropriate details.
+        });
+
+        let csv_entry = [name, type, programs];
+        let row_string = '"' + csv_entry.map(str => str.trim()).join('","') + '"';
+        csv.push(row_string);
+    });
+
+    if (csv.length > 1) {
+        let csv_text = csv.join('\r\n');
+        download_file('sanctions-explorer.csv', csv_text);
+    }
+}
+let download_file        = (filename, contents) => {
+    // Adapted from http://buildwebthings.com/create-csv-export-client-side-javascript/
+    let blob = new Blob([contents], { type: 'text/csv;charset=utf-8;' });
+
+    if (navigator.msSaveBlob) { // IE 10+
+        navigator.msSaveBlob(blob, filename);
+    } else {
+        let link = document.createElement("a");
+        if (link.download !== undefined) { // feature detection
+            // Browsers that support HTML5 download attribute
+            let url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", filename);
+            link.style = "visibility:hidden";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+}
 
 
 /*
  * EVERYTHING BELOW THIS POINT SHOULD NOT REFERENCE THE DOM, SPECIFIC IDs/CLASSES, etc.
  * CREATE A HELPER FUNCTION ABOVE FOR ONE EASY PLACE TO MAINTAIN DOM REFERENCES.
  */
-
 
 function collect_query_info() {
     let query = {};
@@ -163,22 +363,22 @@ function collect_query_info() {
     }
 
     let type = get_type_select()
-    if (type !== empty_type) {
+    if (type !== EMPTY_TYPE) {
         query['party_sub_type'] = type;
     }
 
     let program = get_program_select()
-    if (program !== empty_program) {
+    if (program != '') {
         query['programs'] = program;
     }
 
     $.each(get_search_row_ids(), (index, row_id) => {
         let [select, input] = get_row(row_id);
-        if (select != empty_select && input !== null && input !== "") {
+        if (select != EMPTY_SELECT && input !== null && input !== "") {
             query[select] = input;
         }
     });
-
+    console.log(query);
     return query;
 }
 
@@ -192,27 +392,4 @@ function construct_fields(fields) {
         }
     }
     return retval;
-}
-
-function api_to_ui(api_field_name) {
-    let dict = {
-        'identity_id':                          'ID',
-        'primary_display_name':                 'Primary Display Name',
-        'all_display_names':                    'Name',
-        'doc_id_numbers':                       'ID Numbers',
-        'programs':                             'Programs',
-        'location':                             'Location',
-        'title':                                'Title',
-        'birthdate':                            'Birthdate',
-        'place_of_birth':                       'Place of Birth',
-        'nationality_country':                  'Nationality',
-        'citizenship_country':                  'Citizenship',
-        'countries':                            'Related to Country',
-        'party_sub_type':                       'SDN Type',
-        'location':                             'Location/Address',
-        'aircraft_tags':                        'Aircraft Info',
-        'vessel_tags':                          'Vessel Info',
-        'all_fields':                           'All Fields',
-    };
-    return dict[api_field_name];
 }
