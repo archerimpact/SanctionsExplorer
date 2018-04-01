@@ -3,8 +3,13 @@ import urllib
 import json
 import util
 import re
+<<<<<<< HEAD
 from fuzzywuzzy import process
+=======
+>>>>>>> 77e531dd4b7244d39c56d458c463f74512f04008
 from difflib import get_close_matches
+import string
+table = str.maketrans(dict.fromkeys(string.punctuation + '\n'))
 
 log = util.log('matcher')
 
@@ -37,36 +42,45 @@ def write_ofac_id_matches(outfile):
     with open('update_files/ofac_id_to_name.txt') as f:
         for line in f:
             ofac_id, name = line.split('|')
-            name = name.lower()
+            name = name.lower().translate(table).strip()
             ofac_name_to_id[name] = ofac_id
     ofac_names = ofac_name_to_id.keys()
 
     entries = get_names_from_elastic()
-    i = 0
+    
+    num_not_found = 0
     for entry in entries:
         sdn_id = entry['_id']
-        name = entry['_source']['primary_display_name'].lower()
-        
+        name = entry['_source']['primary_display_name'].lower().translate(table).strip()
+
         try:
-            best_match = get_close_matches(name, ofac_names, n=1, cutoff=0.9)[0]
+            best_match = get_close_matches(name, ofac_names, n=1, cutoff=1.0)[0]
+            ofac_website_id = ofac_name_to_id[best_match]
+            data[sdn_id] = ofac_website_id
+            # print(name, "|", best_match)
         except:
-            i += 1
-            # names might need to be reversed
-            match = re.search(r'[A-Z]+,\s+[a-z]+', name)
-            if match:
-                last, first = match.group(0).partition(',')
-                name = first + ' ' + last
+            # Try to transpose the words in a name and search for them
+            found = False
+            new = name
+            for _ in range(name.count(' ')):
+                first, space, last = new.partition(' ')
+                new = last + ' ' + first
                 try:
-                    best_match = get_close_matches(name, ofac_names, n=1, cutoff=0.9)[0]
+                    best_match = get_close_matches(new, ofac_names, n=1, cutoff=1.0)[0]
+                    ofac_website_id = ofac_name_to_id[best_match]
+                    data[sdn_id] = ofac_website_id
+                    found = True
+                    break
                 except:
-                    print(name)
-                    continue
+                    pass
+            if not found:
+                # print("no match found", name)
+                num_not_found += 1
+    # print(num_not_found)
+
         
-        
-        # print(name, ';', best_match)
-        ofac_website_id = ofac_name_to_id[best_match]
-        data[sdn_id] = ofac_website_id
-    print(i)
+
+>>>>>>> 77e531dd4b7244d39c56d458c463f74512f04008
     util.write_json(outfile, data)
 
 
