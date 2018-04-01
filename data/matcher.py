@@ -74,9 +74,6 @@ def write_ofac_id_matches(outfile):
                 num_not_found += 1
     # print(num_not_found)
 
-        
-
->>>>>>> 77e531dd4b7244d39c56d458c463f74512f04008
     util.write_json(outfile, data)
 
 
