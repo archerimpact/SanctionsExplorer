@@ -299,5 +299,6 @@ function get_keywords() {
         'vessel_tags',
         'all_fields',
         'sanction_dates',
+        'document_countries'
     ];
 }

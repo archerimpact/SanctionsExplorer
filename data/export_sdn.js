@@ -30,10 +30,12 @@ const transform = entry => {
     entry.vessel_tags          = [];
     entry.all_fields           = [];
     entry.sdn_display          = '';
+    entry.documents_from_country = [];
 
     programs  = new Set();
     countries = new Set();
     lists     = new Set();
+    document_countries = new Set();
 
     entry.sanctions_entries.forEach(e => {
         lists.add(list_to_acronym(e.list));
@@ -134,6 +136,7 @@ const transform = entry => {
         if (doc.issued_by != 'None') {
             headers.push('issued_by');
             countries.add(doc.issued_by);
+            document_countries.add(doc.issued_by);
 
         }
         else {
@@ -143,6 +146,7 @@ const transform = entry => {
         if (doc.issued_in != 'None') {
             headers.push('issued_in');
             countries.add(doc.issued_in["COUNTRY"])
+            document_countries.add(doc.issued_in["COUNTRY"]);
         }
         else {
             doc.issued_in = null;
@@ -151,6 +155,7 @@ const transform = entry => {
         if (doc.issuing_authority != 'None') {
             headers.push('issuing_authority');
             countries.add(doc.issuing_authority);
+            document_countries.add(doc.issuing_authority);
         }
         else {
             doc.issuing_authority = null;
@@ -261,7 +266,7 @@ const transform = entry => {
         }
     });
 
-
+    entry.documents_from_country = Array.from(document_countries);
 
     entry.all_fields.push(entry.sdn_display);
 
