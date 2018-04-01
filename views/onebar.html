@@ -20,29 +20,35 @@
 
 <body>
     <div class="container-fluid vertical-center">
-        <div class="cont">
-            <div class="no-js">
-                <div class="d-flex justify-content-center">
-                    <div class="alert alert-danger">
-                        <p>You MUST have Javascript enabled to use this site.</p>
-                        <p>Here are <a href="https://www.enable-javascript.com/" target="_blank" class="real-link"> instructions how to enable Javascript in your web browser</a>.</p>
-                        <p>If you visit the above link and it says that you do have Javascript enabled, please contact us.</a>
-                    </div>
+        <div class="no-js">
+            <div class="d-flex justify-content-center">
+                <div class="alert alert-danger">
+                    <p>You MUST have Javascript enabled to use this site.</p>
+                    <p>Here are <a href="https://www.enable-javascript.com/" target="_blank" class="real-link"> instructions how to enable Javascript in your web browser</a>.</p>
+                    <p>If you visit the above link and it says that you do have Javascript enabled, please contact us.</a>
                 </div>
             </div>
-            <!-- faster than using jQuery document ready? -->
-            <script type="text/javascript">
-                document.getElementsByClassName('no-js')[0].style.display = 'none';
-            </script>
+        </div>
+        <!-- faster than using jQuery document ready? -->
+        <script type="text/javascript">
+            document.getElementsByClassName('no-js')[0].style.display = 'none';
+        </script>
 
-            <div class="d-flex justify-content-center tagline-group">
-                <h5 class="tagline text-center">Explore 24 years of OFAC Sanctions Data</h5>
+
+        <div class="abs-center attach-to-top" id="info-group">
+            <div class="d-flex justify-content-center" id="tagline">
+                <h5 class="text-center">Explore 24 years of OFAC Sanctions Data</h5>
             </div>
-            <div class="d-flex justify-content-center description-group">
+
+            <div class="d-flex justify-content-center" id="description">
                 <p class="text-center">6,880+ entries across the SDN, SSI, FSE, and more. Updated &lt;5 minutes ago.</p>
             </div>
 
-            <div class="d-flex justify-content-center product-logo-group">
+            <hr class="top-divider">
+        </div>
+
+        <div class="abs-center" id="center-group">
+            <div class="d-flex justify-content-center">
                 <div class="d-flex flex-column">
                     <a href="https://archerimpact.com">
                         <img src="../static/img/sanctions_explorer (blue).png" class="img-fluid" id="splash-logo" />
@@ -50,23 +56,20 @@
                 </div>
             </div>
 
-            <div class="d-flex justify-content-center search-group">
+            <div class="d-flex justify-content-center">
                 <input type="text" class="form-control form-control-md" id="one-search-input" placeholder="Search U.S. Treasury sanctions (e.g. 'Russia', 'Kony', 'DPRK2')" autofocus>
                 <div class="btn btn-primary" id="search-button">Search</div>
             </div>
 
-            <div class="d-flex justify-content-center help-group">
+            <div class="d-flex justify-content-center" id="help-text">
                 <p class="text-center">Search U.S. Treasury sanctions (e.g. 'Russia', 'Kony', 'DPRK2')</p>
             </div>
-
         </div>
 
-        <div class="d-flex justify-content-center partner-logo-group">
-            <div class="latch-to-bottom">
-                <a href="https://c4ads.org">
-                    <img src="../static/img/SE_graphic_archerc4ads.png" id="joint-logo" class="img-fluid">
-                </a>
-            </div>
+        <div class="d-flex justify-content-center attach-to-bottom abs-center" id="partner-logo-group">
+            <a href="https://c4ads.org">
+                <img src="../static/img/SE_graphic_archerc4ads.png" id="joint-logo" class="img-fluid">
+            </a>
         </div>
     </div><!-- /container-fluid -->
 

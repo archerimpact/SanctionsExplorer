@@ -1,46 +1,6 @@
-.tagline {
-    margin-bottom: 0;
-}
-
-.description-group {
-    margin-bottom: 4rem;
-    padding: 0 15px;
-}
-
-.product-logo-group, .partner-logo-group {
-    width: 100%;
-}
-
-#splash-logo {
-    width: 100%;
-    max-width: 50rem;
-}
-
-#one-search-input {
-    border-right: 0;
-    max-width: 50em;
-}
-
-.search-group {
-    margin-top: 1em;
-    padding: 0 15px;
-}
-
-/* only visible on mobile */
-.help-group {
-    margin-top: 1em;
-    display: none !important;
-}
-
-.latch-to-bottom {
-    position: absolute;
-    bottom: 2rem;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-img#joint-logo {
-    max-width: 30em;
+body {
+    background-image: url('../img/pw_pattern.png');
+    background-repeat: repeat;
 }
 
 .vertical-center {
@@ -51,39 +11,65 @@ img#joint-logo {
     padding: 0;
 }
 
-.cont {
-    width: 100%;
+.abs-center {
     position: absolute;
-    top: 20%;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
 }
 
-body {
-    background-image: url('../img/p6.png');
-    background-repeat: repeat;
-}
-::-webkit-input-placeholder { /* WebKit browsers */
-    opacity: 0;
+.attach-to-bottom {
+    bottom: 10px;
 }
 
-@media (max-width: 768px) {
-    .help-group {
+.attach-to-top {
+    top: 2rem;
+}
+
+p, h5 {
+    margin-bottom: 0;
+}
+
+img#splash-logo {
+    width: 100%;
+    max-width: 50rem;
+}
+
+img#joint-logo {
+    max-width: 30em;
+}
+
+#one-search-input {
+    max-width: 50em;
+}
+
+#one-search-input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+/* only visible on mobile */
+#help-text {
+    margin-top: 2em;
+    display: none !important;
+}
+
+
+/* Mobile only */
+@media (max-width: 767px) {
+    #help-text {
         display: flex !important;
     }
 
-    .cont {
-        top: 10%;
+    #description {
+        display: none !important;
     }
 
-    .description-group {
-        margin-bottom: 6rem;
-    }
-
-    .latch-to-bottom {
-        padding: 0 1rem;
-    }
-
-    #joint-logo {
-        padding: 0 30px;
+    .btn-primary {
+        padding-left: 10px;
+        padding-right: 10px;
     }
 
     ::-webkit-input-placeholder { /* WebKit browsers */
