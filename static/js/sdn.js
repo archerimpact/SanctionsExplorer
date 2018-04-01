@@ -12,6 +12,7 @@ const ROW_FIELDS    = [
     'sanction_dates',
     'aircraft_tags',
     'vessel_tags',
+    'document_countries',
 ];
 // TODO add descriptions
 const PROGRAMS      = {
@@ -275,6 +276,7 @@ let api_to_ui            = (field) => {
         'aircraft_tags':        'Aircraft Info',
         'vessel_tags':          'Vessel Info',
         'all_fields':           'All Fields',
+        'document_countries':'Documents From Country'
     };
     return dict[field];
 }
@@ -287,6 +289,7 @@ let api_to_placeholder   = (field) => {
         'nationality_country':  'e.g. Uganda, Russia',
         'citizenship_country':  'e.g. Uganda, Russia',
         'countries':            'e.g. Uganda, Russia',
+        'document_countries':  'e.g. Uganda, Russia',
         'sanction_dates':       'e.g. 2011-2015, 1999',
         'aircraft_tags':        'e.g. B727, YAS-AIR',
         'vessel_tags':          'e.g. IMO #, "Oil Tanker"',

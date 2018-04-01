@@ -32,6 +32,10 @@ p, h5 {
     margin-bottom: 0;
 }
 
+.inverted {
+    filter: invert(100%);
+}
+
 img#splash-logo {
     width: 100%;
     max-width: 50rem;
@@ -39,6 +43,11 @@ img#splash-logo {
 
 img#joint-logo {
     max-width: 30em;
+}
+
+.footer-logo {
+    max-height: 1.15rem;
+    padding: 0 10px;
 }
 
 #one-search-input {
@@ -88,4 +97,18 @@ img#joint-logo {
        opacity: 0 !important;
        color: transparent !important;
    }
+
+   h5 {
+       font-size: 0.8rem;
+   }
+
+   .footer-logo {
+        max-height: 0.8rem;
+   }
+}
+
+@media (max-height: 500px) {
+    #footer-group, #description {
+        display: none !important;
+    }
 }

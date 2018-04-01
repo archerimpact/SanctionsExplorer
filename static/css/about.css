@@ -1,20 +1,4 @@
-.card, .card-header {
-    background-color: #eeeeee;
-}
-
-.card-body {
-    margin-left: 0;
-    border-left: 0;
-}
-
-.about-footer {
-    margin-top: 7rem;
-}
-
 @media (max-width: 767px) {
-    .about-footer {
-        display: none !important;
-    }
     .left-col {
         padding-bottom: 6rem;
     }
@@ -28,10 +12,6 @@
 
 .about-header {
     padding-top: 2rem;
-}
-
-.right-col {
-    padding-bottom: 0;
 }
 
 .faq-card-body {

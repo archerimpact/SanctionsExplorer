@@ -16,6 +16,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="../static/js/columns.js"></script>
     <script src="../static/js/feedback.js"></script>
 </head>
 
@@ -49,26 +50,31 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12 order-12 col-md-4 order-md-1 page-col left-col">
-                <div class="sticky-header">
-                    <h3 class="text-center col-header">Updates</h3>
-                    <hr>
-                </div>
-                <p>We work very hard to push out useful features and fix any bugs that are reported.</p>
-                <p>If you'd like to be notified when we push out a major feature, please submit your email below.</p>
-                <p>We promise to not spam you or sell your email address!</p>
-                <form id="email-update-form">
-                    <div class="form-row">
-                        <div class="form-group col-12 col-sm-8 col-md-12 col-lg-8">
-                            <input type="email" class="form-control" id="email-update-input" placeholder="Email address">
-                        </div>
-                        <div class="form-group col-12 col-sm-4 col-md-12 col-lg-4">
-                            <button class="btn btn-primary" type="submit" id="email-submit-button">Submit</button>
-                        </div>
+                <div class="d-flex flex-column left-flex-col">
+                    <div class="sticky-header">
+                        <h3 class="text-center col-header">Updates</h3>
+                        <hr>
                     </div>
-                    <p id="email-error-text" class="text-danger">
-                        <!-- Populated by Javascript if necessary -->
-                    </p>
-                </form>
+                    <p>We work very hard to push out useful features and fix any bugs that are reported.</p>
+                    <p>If you'd like to be notified when we push out a major feature, please submit your email below.</p>
+                    <p>We promise to not spam you or sell your email address!</p>
+                    <form id="email-update-form">
+                        <div class="form-row">
+                            <div class="form-group col-12 col-sm-8 col-md-12 col-lg-8">
+                                <input type="email" class="form-control" id="email-update-input" placeholder="Email address">
+                            </div>
+                            <div class="form-group col-12 col-sm-4 col-md-12 col-lg-4">
+                                <button class="btn btn-primary" type="submit" id="email-submit-button">Submit</button>
+                            </div>
+                        </div>
+                        <p id="email-error-text" class="text-danger">
+                            <!-- Populated by Javascript if necessary -->
+                        </p>
+                    </form>
+                    <div class="mt-auto" id="footer">
+                        <p>Created by <a href="https://archerimpact.com" target="_blank">Archer</a> in partnership with <a href="https://c4ads.org" target="_blank">C4ADS</a>.</p>
+                    </div>
+                </div>
             </div>
             <div class="col-12 order-1 col-md-8 order-md-12 page-col right-col">
                 <div class="sticky-header">
@@ -118,9 +124,6 @@
                         <!-- Populated by Javascript if necessary -->
                     </p>
                 </form>
-                <div class="about-footer">
-                    <p class="text-right">Created by <a href="https://archerimpact.com">Archer</a> in partnership with <a href="https://c4ads.org">C4ADS</a>.</p>
-                </div>
             </div>
         </div>
     </div>
