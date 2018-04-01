@@ -3,10 +3,6 @@ import urllib
 import json
 import util
 import re
-<<<<<<< HEAD
-from fuzzywuzzy import process
-=======
->>>>>>> 77e531dd4b7244d39c56d458c463f74512f04008
 from difflib import get_close_matches
 import string
 table = str.maketrans(dict.fromkeys(string.punctuation + '\n'))
