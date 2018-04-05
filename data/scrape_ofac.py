@@ -21,6 +21,9 @@ entity_aircraft_name_id = "ctl00_MainContent_lblNameOther"
 
 error_text = "An error has occured."
 
+other_list_id = "ctl00_MainContent_lblSourceListOther" 
+list_id = "ctl00_MainContent_lblSourceList"
+# options are Non-SDN or SDN
 
 tup_list = []
 
@@ -39,12 +42,28 @@ def parse_name(soup, match_strings):
 def is_error(soup):
 	return error_text in soup.findall('h4')[0].text
 
-
+def is_non_sdn(soup):
+    match = soup.find(id=list_id)
+    if match is not None:
+        if match.text == "Non-SDN":
+            return True
+    else:
+        match = soup.find(id=other_list_id)
+        if match is not None:
+            if match.text == "Non-SDN":
+                return True
+        else:
+            "This should not happen"
+            return False
+    return False
 
 # gets tups from start -> end and puts them in tup list
 def scrape(start_num, end_num):
 	# f = open('temp_test.txt', 'w')
 	i = start_num
+	
+	division_found = False
+	next_start_index = None
 	while (i < end_num):
 		url = base_url.format(i)
 		result = None
@@ -60,7 +79,10 @@ def scrape(start_num, end_num):
 		if result.status_code == 200:
 			c = result.content
 			soup = BeautifulSoup(c, 'lxml')
-			
+			if is_non_sdn(soup) and not division_found:
+			    next_start_index = i
+			    division_found = True
+			    print("division found", i)
 			if is_type(soup, individual_type):
 				tup = (parse_name(soup, [first_name_id, last_name_id]), i, "individual")
 				tup_list.append(tup)
@@ -74,35 +96,33 @@ def scrape(start_num, end_num):
 				tup_list.append(tup)
 				# f.write(str(tup[0]) + ' ' + str(i) + ' ' + str(tup[2]) + '\n')
 			else:
-				return
+				return next_start_index
 		i += 1
 		print(i)
-	# f.close()
+	return next_start_index
+    # f.close()
 
-def write_ofac_ids(filename):
-	inf = open('update_files/ofac_names.txt', 'rb')
-	old_tups = pickle.load(inf)
+def write_ofac_ids(intermediate, filename):
+	print('start')
+	inf = open(intermediate, 'rb')
+	old_start, old_tups = pickle.load(inf)
 	inf.close()
-	
+
 	num_tups = len(old_tups)
-	scrape(num_tups, float('inf'))
+	next_start = scrape(old_start, float('inf'))
 	if len(tup_list) == 0:
-		exit()
-		
+		pass#exit()
+
 	old_tups.extend(tup_list)
-	
+
 	print("before scrape", num_tups)
 	print("after scrape", len(old_tups))
 
-	outf = open('update_files/ofac_names.txt', 'wb')
-	pickle.dump(old_tups, outf)
+	outf = open(intermediate, 'wb')
+	pickle.dump([next_start, old_tups], outf)
 	outf.close()
 
 	with open(filename, 'w') as f:
 		for t in old_tups:
-			f.write(str(t[1]) + '|' + t[0] + '\n')
-
-
-
-
+			f.write(str(t[1]) + '|' + t[0] + '\n'); print('tupwrite')
 

@@ -30,7 +30,7 @@ const transform = entry => {
     entry.vessel_tags          = [];
     entry.all_fields           = [];
     entry.sdn_display          = '';
-    entry.documents_from_country = [];
+    entry.document_countries   = [];
 
     programs  = new Set();
     countries = new Set();
@@ -266,7 +266,7 @@ const transform = entry => {
         }
     });
 
-    entry.documents_from_country = Array.from(document_countries);
+    entry.document_countries = Array.from(document_countries);
 
     entry.all_fields.push(entry.sdn_display);
 

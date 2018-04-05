@@ -30,6 +30,7 @@ SDN_JSON        = DIR + '/update_files/sdn.json'
 NONSDN_JSON     = DIR + '/update_files/non_sdn.json'
 PR_JSON_2018    = DIR + '/update_files/press_releases.json'
 PR_MATCHES      = DIR + '/update_files/pr_matches.json'
+OFAC_INT        = DIR + '/update_files/ofac_names.txt'
 OFAC_IDS        = DIR + '/update_files/ofac_id_to_name.txt'
 OFAC_MATCHES    = DIR + '/update_files/ofac_matches.json'
 
@@ -101,7 +102,7 @@ if should_download:
     scrape_prs.scrape_2018(PR_JSON_2018)
 
     log('Scraping IDs from the OFAC website...', 'info')
-    scrape_ofac.write_ofac_ids(OFAC_IDS)
+    scrape_ofac.write_ofac_ids(OFAC_INT, OFAC_IDS)
 
 run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
 run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
@@ -111,8 +112,9 @@ matcher.write_pr_matches(PR_MATCHES)
 run_nodejs(EXPORT_MATCHES, 'export PR matches to Elastic')
 
 log('Matching SDN entities with their IDs on the OFAC website...', 'info')
-matcher.write_ofac_id_matches(OFAC_IDS, OFAC_MATCHES_FILE)
+matcher.write_ofac_id_matches(OFAC_IDS, OFAC_MATCHES)
 # run_nodejs(EXPORT_IDS, 'export ID matches to Elastic')
 
 # If we've successfully made it this far, we write this for next time.
 serialize_feed(feed, OLD_RSS_FILE)
+
