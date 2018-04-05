@@ -93,7 +93,6 @@ $(document).ready(() => {
     // For some reason, the z-index needs to be updated every time the page is scrolled...
     $('.right-col').on('scroll', () => {
         let curr = parseInt($('.sticky-header').css('z-index'));
-        console.log(curr);
         if (curr > 100) {
             $('.sticky-header').css('z-index', 100);
         }

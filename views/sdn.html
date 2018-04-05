@@ -383,6 +383,21 @@
                         </div>
                     {{?}}
 
+                    {{? it.ofac_id }}
+                        <div class="detail-group d-print-none">
+                            <h5 class="card-detail-header">
+                                Original
+                            </h5>
+                            <ul>
+                                <li class="no-bullet">
+                                    <a href="https://sanctionssearch.ofac.treas.gov/Details.aspx?id={{=it.ofac_id}}" class="real-link" target="_blank">
+                                        View on OFAC website
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {{?}}
+
                 </div>
             </div>
         </div>

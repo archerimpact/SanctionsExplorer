@@ -222,6 +222,10 @@ h5.card-detail-header {
     letter-spacing: 2px;
 }
 
+li.no-bullet {
+    list-style: none;
+}
+
 .real-link {
     text-decoration: underline;
     color: inherit;

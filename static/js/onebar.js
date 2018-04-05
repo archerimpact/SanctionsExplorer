@@ -28,10 +28,10 @@ $(document).ready(() => {
 
 function center_page() {
     let top_bound    = $('#info-group')[0].getBoundingClientRect().bottom;
-    let bottom_bound = $('#partner-logo-group')[0].getBoundingClientRect().top;
+    let bottom_bound = $('#footer-group')[0].getBoundingClientRect().top;
     let elem_height  = $('#center-group').height();
-    let empty_mid = (bottom_bound - top_bound) / 2;
-    let mid = top_bound + empty_mid - (elem_height / 2);
+    let empty_mid    = (bottom_bound - top_bound) / 2;
+    let mid          = top_bound + empty_mid - (elem_height / 2);
 
     let bias = 20;
 

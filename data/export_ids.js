@@ -9,7 +9,7 @@ Object.keys(entries).forEach(id => {
 		id: id,
 		body: {
 			doc: {
-				pr_data: entries[id],
+				ofac_id: entries[id],
 			}
 		}
 	});
