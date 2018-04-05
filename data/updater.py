@@ -113,8 +113,7 @@ run_nodejs(EXPORT_MATCHES, 'export PR matches to Elastic')
 
 log('Matching SDN entities with their IDs on the OFAC website...', 'info')
 matcher.write_ofac_id_matches(OFAC_IDS, OFAC_MATCHES)
-# run_nodejs(EXPORT_IDS, 'export ID matches to Elastic')
+run_nodejs(EXPORT_IDS, 'export ID matches to Elastic')
 
 # If we've successfully made it this far, we write this for next time.
 serialize_feed(feed, OLD_RSS_FILE)
-

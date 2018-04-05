@@ -21,7 +21,7 @@ entity_aircraft_name_id = "ctl00_MainContent_lblNameOther"
 
 error_text = "An error has occured."
 
-other_list_id = "ctl00_MainContent_lblSourceListOther" 
+other_list_id = "ctl00_MainContent_lblSourceListOther"
 list_id = "ctl00_MainContent_lblSourceList"
 # options are Non-SDN or SDN
 
@@ -43,25 +43,25 @@ def is_error(soup):
 	return error_text in soup.findall('h4')[0].text
 
 def is_non_sdn(soup):
-    match = soup.find(id=list_id)
-    if match is not None:
-        if match.text == "Non-SDN":
-            return True
-    else:
-        match = soup.find(id=other_list_id)
-        if match is not None:
-            if match.text == "Non-SDN":
-                return True
-        else:
-            "This should not happen"
-            return False
-    return False
+	match = soup.find(id=list_id)
+	if match is not None:
+		if match.text == "Non-SDN":
+			return True
+	else:
+		match = soup.find(id=other_list_id)
+		if match is not None:
+			if match.text == "Non-SDN":
+				return True
+		else:
+			"This should not happen"
+			return False
+	return False
 
 # gets tups from start -> end and puts them in tup list
 def scrape(start_num, end_num):
 	# f = open('temp_test.txt', 'w')
 	i = start_num
-	
+
 	division_found = False
 	next_start_index = None
 	while (i < end_num):
@@ -80,9 +80,9 @@ def scrape(start_num, end_num):
 			c = result.content
 			soup = BeautifulSoup(c, 'lxml')
 			if is_non_sdn(soup) and not division_found:
-			    next_start_index = i
-			    division_found = True
-			    print("division found", i)
+				next_start_index = i
+				division_found = True
+				print("division found", i)
 			if is_type(soup, individual_type):
 				tup = (parse_name(soup, [first_name_id, last_name_id]), i, "individual")
 				tup_list.append(tup)
@@ -98,9 +98,7 @@ def scrape(start_num, end_num):
 			else:
 				return next_start_index
 		i += 1
-		print(i)
 	return next_start_index
-    # f.close()
 
 def write_ofac_ids(intermediate, filename):
 	print('start')
@@ -124,5 +122,4 @@ def write_ofac_ids(intermediate, filename):
 
 	with open(filename, 'w') as f:
 		for t in old_tups:
-			f.write(str(t[1]) + '|' + t[0] + '\n'); print('tupwrite')
-
+			f.write(str(t[1]) + '|' + t[0] + '\n')

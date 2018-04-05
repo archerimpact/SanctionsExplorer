@@ -5,8 +5,6 @@ import util
 import re
 from difflib import get_close_matches
 import string
-table = str.maketrans(dict.fromkeys(string.punctuation + '\n'))
-
 log = util.log('matcher')
 
 def write_pr_matches(outfile):
@@ -32,7 +30,9 @@ def write_pr_matches(outfile):
 
 
 def write_ofac_id_matches(infile, outfile):
-    data = {}        # { sdn_id : ofac_website_id }
+    table = str.maketrans(dict.fromkeys(string.punctuation + '\n'))
+
+    data = {}            # { sdn_id : ofac_website_id }
     ofac_name_to_id = {} # {ofac_name : ofac_website_id}
 
     with open(infile) as f:
@@ -53,7 +53,6 @@ def write_ofac_id_matches(infile, outfile):
             best_match = get_close_matches(name, ofac_names, n=1, cutoff=1.0)[0]
             ofac_website_id = ofac_name_to_id[best_match]
             data[sdn_id] = ofac_website_id
-            # print(name, "|", best_match)
         except:
             # Try to transpose the words in a name and search for them
             found = False
@@ -70,9 +69,8 @@ def write_ofac_id_matches(infile, outfile):
                 except:
                     pass
             if not found:
-                # print("no match found", name)
                 num_not_found += 1
-    # print(num_not_found)
+    log(f'{num_not_found} IDs were unable to be matched to their OFAC website counterpart', 'warning')
 
     util.write_json(outfile, data)
 
