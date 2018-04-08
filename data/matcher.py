@@ -25,6 +25,16 @@ def write_pr_matches(outfile):
                 'title': entry['_source']['title'],
             }
             data[sdn_id].append(pr_elem)
+            other_dates = query_pr_date(entry['_source']['date'])
+            for date_entry in other_dates['hits']['hits']:
+                if (date_entry['_id'] != entry['_id']):
+                    new_elem = {
+                        'pr_id': date_entry['_id'],
+                        'link': date_entry['_source']['link'],
+                        'date': date_entry['_source']['date'],
+                        'title': date_entry['_source']['title'],
+                    }
+                    data[sdn_id].append(new_elem)
 
     util.write_json(outfile, data)
 
@@ -89,6 +99,17 @@ def query_pr_content(query):
     url_template = 'http://localhost:9200/pr/pr/_search'
     headers = {'Content-Type': 'application/json'}
     data = {'query': {'match_phrase': {'content' :{'query': query, 'slop': '3'}}}}
+
+    response = requests.get(url_template, json=data)
+    if response.status_code == 200:
+        return response.json()
+    else:
+        log('Failed to query a PR in Elastic (error ' + response.status_code + ')', 'error')
+
+def query_pr_date(query):
+    url_template = 'http://localhost:9200/pr/pr/_search'
+    headers = {'Content-Type': 'application/json'}
+    data = {'query': {'match_phrase': {'date' :{'query': query, 'slop': '3'}}}}
 
     response = requests.get(url_template, json=data)
     if response.status_code == 200:
