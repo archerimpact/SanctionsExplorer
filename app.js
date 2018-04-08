@@ -8,6 +8,8 @@ const es = require('elasticsearch');
 const client = new es.Client({
     host:'localhost:9200'
 });
+const util = require(path.join(__dirname, 'data', 'util.js'));
+const log = util.log('webserver');
 
 const email_file    = path.join(__dirname, 'submissions', 'email.txt');
 const feedback_file = path.join(__dirname, 'submissions', 'feedback.txt');
@@ -47,10 +49,11 @@ app.get('/submit/email', async function(req, res) {
 
     await fs.appendFile(email_file, JSON.stringify(email) + ',\n', err => {
         if (err) {
-            console.log('ERROR writing to email file: ' + err);
+            log('Could not write to email file: ' + err, 'error');
             return res.status(400).end();
         }
     });
+    log('New email submission!', 'error');
     return res.status(200).end();
 });
 
@@ -67,10 +70,11 @@ app.get('/submit/feedback', async function(req, res) {
 
     await fs.appendFile(feedback_file, JSON.stringify(submission) + ',\n', err => {
         if (err) {
-            console.log('ERROR writing to feedback file: ' + err);
+            log('Could not write to feedback file: ' + err, 'error');
             return res.status(400).end();
         }
     });
+    log('New feedback submission!', 'error');
     return res.status(200).end();
 })
 
