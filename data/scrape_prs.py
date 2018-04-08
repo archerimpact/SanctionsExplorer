@@ -180,13 +180,15 @@ def scrape_urls(urls):
 			table_rows = soup.findAll('tr')
 			for row in table_rows:
 				links = row.findAll('a')
+				tableCheck = row.findAll('table')
+				print(tableCheck)
+				if (len(tableCheck) > 0):
+					continue
 				pr_links = [link for link in links if is_press_release(link.text)]
 				date_links = [link for link in links if is_date(link.text)]
 				if len(date_links) > 0:
 					curr_date = re.search(r'\d{2}\/\d{2}\/\d{4}', date_links[0].text).group(0)
 					cell = row.findAll('td')[-1]
-					if (cell.find("<table") != -1):
-						continue
 					name = remove_link(cell.get_text())
 					print(curr_date)
 					print(name)
