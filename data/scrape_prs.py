@@ -185,6 +185,8 @@ def scrape_urls(urls):
 				if len(date_links) > 0:
 					curr_date = re.search(r'\d{2}\/\d{2}\/\d{4}', date_links[0].text).group(0)
 					cell = row.findAll('td')[-1]
+					if (cell.find("<table") != -1):
+						continue
 					name = remove_link(cell.get_text())
 					print(curr_date)
 					print(name)
