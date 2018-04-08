@@ -28,6 +28,10 @@ def extract_text(html):
 	text = '\n'.join(chunk for chunk in chunks if chunk)
 	return text
 
+def extract_table(raw_html):
+	start = raw_html.find("<table")
+	end = raw_html.find("</table>") + len("</table>")
+
 def remove_link(text):
 	pr_index = text.find('[')
 	if pr_index == -1:
@@ -168,7 +172,8 @@ def scrape_urls(urls):
 		result = requests.get(url)
 		if result.status_code == 200:
 			content = result.content
-			soup = BeautifulSoup(content, 'html.parser')
+			tableText = extract_table(content)
+			soup = BeautifulSoup(tableText, 'html.parser')
 			table_rows = soup.findAll('tr')
 			for row in table_rows:
 				links = row.findAll('a')
@@ -178,6 +183,8 @@ def scrape_urls(urls):
 					curr_date = re.search(r'\d{2}\/\d{2}\/\d{4}', date_links[0].text).group(0)
 					cell = row.findAll('td')[-1]
 					name = remove_link(cell.get_text())
+					print(curr_date)
+					print(name)
 					for pr_link in pr_links:
 						pr_url = pr_link.get('href')
 						if is_relative_url(pr_url):
