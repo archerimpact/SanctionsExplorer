@@ -27,7 +27,7 @@ def write_pr_matches(outfile):
             data[sdn_id].append(pr_elem)
             other_dates = query_pr_date(entry['_source']['date'])
             for date_entry in other_dates['hits']['hits']:
-                if (date_entry['_id'] != entry['_id']):
+                if (date_entry['_id'] != entry['_id'] and date_entry['_source']['link'] in entry['_source']['related']):
                     new_elem = {
                         'pr_id': date_entry['_id'],
                         'link': date_entry['_source']['link'],

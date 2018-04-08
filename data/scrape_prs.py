@@ -72,23 +72,13 @@ def parseHtml2001(pr_result):
 				div_open -= 1
 				content = content[content.find("</div") + 5]
 			else:
-				#print (div_open)
 				break
 
 	end = pr_content.find(content)
 	body = pr_content[div_loc:end + 1]
 
 	temp = body[:]
-	# temp = temp.replace("<div></div>", "\n")
-	# temp = temp.replace("<p></p>", "\n")
-
 	p_text = ""
-
-	# titleStart = temp.find("<h2>")
-	# titleEnd = temp.find("</h2>")
-	# if titleStart != -1 and titleEnd != -1:
-	# 	titleText = temp[titleStart + 4: titleEnd]
-	# 	p_text += sanitize(titleText)
 
 	end = temp.find("<div class=\"image center\">")
 	if end != -1:
@@ -115,46 +105,6 @@ def parseHtml2001(pr_result):
 	p_text = p_text.replace("].", "].\n")
 	p_text = p_text.replace("&amp;", "&")
 	p_text = p_text.replace("&ndash;", "-")
-
-	# while(len(temp) > 0):
-	# 	endBracket = temp.find(">")
-	# 	temp = temp[endBracket + 1:]
-	# 	nextStart = temp.find("<")
-	# 	toAdd = temp[:nextStart]
-	# 	p_text += toAdd
-	# 	temp = temp[nextStart:]
-
-	# while (temp.find("<p") != -1):
-	# 	toAdd = temp[temp.find("<p"):]
-	# 	toAdd = toAdd[toAdd.find(">") + 1:toAdd.find("</p>")]
-	# 	print(toAdd)
-	# 	p_text += toAdd
-	# 	temp = temp[temp.find("</p>") + 4:]
-	# 	p_text += "\n"
-	# 	if (len(p_text) > 2 and p_text[-2] == ":"):
-	# 		stop = temp.find("<p>")
-	# 		if stop == -1:
-	# 			stop = temp.find("</div>")
-	# 		p_text += temp[:stop]
-
-	# print ("******\n")
-
-	# if p_text == "":
-	# 	while (temp.find("<div") != -1):
-	# 		toAdd = temp[temp.find("<div"):]
-	# 		toAdd = toAdd[toAdd.find(">") + 1:toAdd.find("</div>")]
-	# 		p_text += toAdd
-	# 		temp = temp[temp.find("</div>") + 4:]
-	# 		p_text += "\n"
-
-	# if p_text == "":
-	# 	p_text = temp[:-5]
-
-	# p_text = p_text.replace("<br>", "\n")
-	# p_text = p_text.replace("<br />", "\n")
-
-	# while (p_text.find("<") != -1):
-	# 	p_text = p_text[:p_text.find("<")] + p_text[p_text.find(">") + 1:]
 
 	return p_text.replace("&quot;", "\"")
 
@@ -199,7 +149,7 @@ def scrape_urls(urls):
 							html = parseHtml2001(pr_result)
 							pr_content = extract_text(pr_result.content)
 							pr_content = ""
-							tup_list.append( (curr_date, name, pr_url, pr_content, html, 'pr') )
+							tup_list.append( (curr_date, name, pr_url, pr_content, html, 'pr', []) )
 					for d_link in date_links:
 						d_url = d_link.get('href')
 						if is_relative_url(d_url):
@@ -210,15 +160,12 @@ def scrape_urls(urls):
 							d_content = d_content.replace("\n", "")
 							d_content = ""
 							html = parseHtml2001(d_result)
-							#print(d_content)
-							# soup = BeautifulSoup(d_result.content)
-							# html = str(soup.find("div", {"id": "t-content-main-content"}))
-							tup_list.append( (curr_date, name, d_url, d_content, html, 'd') )
+							tup_list.append( (curr_date, name, d_url, d_content, html, 'd', pr_links) )
 
 	jsondata = []
 	for tup in tup_list:
 		entry = {}
-		entry['date'], entry['title'], entry['link'], entry['nothing'], entry['content'], entry['d'] = tup
+		entry['date'], entry['title'], entry['link'], entry['nothing'], entry['content'], entry['d'], entry['related'] = tup
 		jsondata.append(entry)
 
 	return jsondata
