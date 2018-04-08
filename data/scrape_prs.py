@@ -29,8 +29,11 @@ def extract_text(html):
 	return text
 
 def extract_table(raw_html):
-	start = raw_html.find("<table")
-	end = raw_html.find("</table>") + len("</table>")
+	toParse = str(raw_html)
+	start = toParse.find("<table")
+	end = toParse.find("</table>") + len("</table>")
+	return toParse
+
 
 def remove_link(text):
 	pr_index = text.find('[')
