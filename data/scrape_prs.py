@@ -131,21 +131,18 @@ def scrape_urls(urls):
 					curr_date = re.search(r'\d{2}\/\d{2}\/\d{4}', date_links[0].text).group(0)
 					cell = row.findAll('td')[-1]
 					name = remove_link(cell.get_text())
+					related = []
 					for pr_link in pr_links:
 						pr_url = pr_link.get('href')
+						related.append(str(pr_url))
 						if is_relative_url(pr_url):
 							pr_url = urljoin(url, pr_url)
-						# print(pr_url)
 
 						if pr_url.find("2001-2009.state.gov") != -1 or pr_url == "https://www.treasury.gov/press-center/press-releases/Documents/1102_abo_ghaith.pdf":
 							skips += 1
-							# print("skip " + str(skips))
 							continue
 						pr_result = requests.get(pr_url)
 						if pr_result.status_code == 200:
-							#print(pr_result.content)
-							# soup = BeautifulSoup(d_result.content)
-							# html = str(soup.find("div", {"id": "t-content-main-content"}))
 							html = parseHtml2001(pr_result)
 							pr_content = extract_text(pr_result.content)
 							pr_content = ""
@@ -160,7 +157,8 @@ def scrape_urls(urls):
 							d_content = d_content.replace("\n", "")
 							d_content = ""
 							html = parseHtml2001(d_result)
-							tup_list.append( (curr_date, name, d_url, d_content, html, 'd', pr_links) )
+							related = []
+							tup_list.append( (curr_date, name, d_url, d_content, html, 'd', related) )
 
 	jsondata = []
 	for tup in tup_list:
