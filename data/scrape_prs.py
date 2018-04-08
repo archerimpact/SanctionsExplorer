@@ -28,13 +28,6 @@ def extract_text(html):
 	text = '\n'.join(chunk for chunk in chunks if chunk)
 	return text
 
-def extract_table(raw_html):
-	toParse = str(raw_html)
-	start = toParse.find("<table")
-	end = toParse.find("</table>") + len("</table>")
-	return toParse
-
-
 def remove_link(text):
 	pr_index = text.find('[')
 	if pr_index == -1:
@@ -175,13 +168,11 @@ def scrape_urls(urls):
 		result = requests.get(url)
 		if result.status_code == 200:
 			content = result.content
-			tableText = extract_table(content)
-			soup = BeautifulSoup(tableText, 'html.parser')
+			soup = BeautifulSoup(content, 'html.parser')
 			table_rows = soup.findAll('tr')
 			for row in table_rows:
 				links = row.findAll('a')
 				tableCheck = row.findAll('table')
-				print(tableCheck)
 				if (len(tableCheck) > 0):
 					continue
 				pr_links = [link for link in links if is_press_release(link.text)]
