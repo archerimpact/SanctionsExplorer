@@ -3,12 +3,42 @@ html, body {
     margin: 0;
     height: 100%;
     color: #919aa1;        /* Lux default */
-    /*overflow: hidden;*/
+}
+
+.navbar-expand-lg .navbar-nav .nav-link {
+    padding: 0;
+}
+
+nav.navbar {
+    padding: 1em 1em;
+}
+
+.nav-item {
+    border-bottom: 3px solid transparent;
+}
+
+@media (min-width: 992px) {
+    .nav-item.active {
+        border-bottom: 3px solid #1d93f6;
+    }
+}
+
+.nav-link {
+    font-size: 1.1em;
+}
+
+.nav-item {
+    margin: 0.8em 0 0.8em 4em;
+}
+
+.bg-dark {
+    /* background: linear-gradient(to right, #2c3135, #343a40); */
+    background-color: #282c30;
 }
 
 /* match Lux navbar */
 .btn-primary, .btn-outline-primary:hover {
-    background-color: #343a40;
+    background-color: #282c30;
 }
 
 .page-col {
@@ -17,19 +47,6 @@ html, body {
     padding-top: 0;
     padding-right: 1em;
     padding-left: 1em;
-}
-
-nav.navbar {
-    padding: 1em 1em;
-}
-
-.nav-link {
-    font-size: 1.1em;
-}
-
-.nav-item {
-    margin-right: 0;
-    margin-left: 3em;
 }
 
 img#product-logo {
