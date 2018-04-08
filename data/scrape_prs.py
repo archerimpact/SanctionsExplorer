@@ -157,7 +157,6 @@ def scrape_urls(urls):
 							d_content = d_content.replace("\n", "")
 							d_content = ""
 							html = parseHtml2001(d_result)
-							related = []
 							tup_list.append( (curr_date, name, d_url, d_content, html, 'd', related) )
 
 	jsondata = []
