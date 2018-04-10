@@ -324,32 +324,34 @@ function get_keywords() {
 // sitemap generation
 var today = new Date().toISOString().split('T')[0];
 sitemap = sitemap({
-  route: {
-    '/': {
-        lastmod: today,
-        changefreq: 'monthly',
-        priority: 1.0
-    }, 
-    '/sdn': {
-        lastmod: today,
-        changefreq: 'weekly',
-        priority: 0.8
-    },
-    '/press-releases': {
-        lastmod: today,
-        changefreq: 'weekly',
-        priority: 0.7
-    },
-    '/about': {
-        lastmod: today,
-        changefreq: 'weekly',
-        priority: 0.9
-    },
-    '/feedback': {
-        lastmod: today,
-        changefreq: 'monthly',
-        priority: 0.6
-    }
-  },
-});
+      http: 'https',
+      url: 'sanctionsexplorer.org',
+      route: {
+        '/': {
+            lastmod: today,
+            changefreq: 'monthly',
+            priority: 1.0
+        }, 
+        '/sdn': {
+            lastmod: today,
+            changefreq: 'weekly',
+            priority: 0.8
+        },
+        '/press-releases': {
+            lastmod: today,
+            changefreq: 'weekly',
+            priority: 0.7
+        },
+        '/about': {
+            lastmod: today,
+            changefreq: 'weekly',
+            priority: 0.9
+        },
+        '/feedback': {
+            lastmod: today,
+            changefreq: 'monthly',
+            priority: 0.6
+        }
+      },
+    });
 sitemap.generate(app);
