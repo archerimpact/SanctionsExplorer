@@ -29,6 +29,11 @@
             $('body').append('<h1>Unfortunately, Internet Explorer is not yet a supported browser, though we are working on supporting it.  Please access the site using a modern browser such as Chrome or Firefox for now.  Thanks!</h1>');
         </script>
     <![endif]> -->
+    <script type="text/javascript">
+        if (navigator.appName == 'Microsoft Internet Explorer' || 'ActiveXObject' in window) {
+            document.body.innerHTML = '<h1>Unfortunately, Internet Explorer is not yet a supported browser, though we are working on supporting it.  Please access the site using a modern browser such as Chrome or Firefox for now.  Thanks!</h1>';
+        }
+    </script>
     <div class="container-fluid vertical-center">
         <div class="no-js">
             <div class="d-flex justify-content-center">
