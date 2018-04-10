@@ -20,7 +20,10 @@ $(document).ready(() => {
     $('#search-button').click(event => submit());
     $('#advanced-button').click(event => redirect(''));
 
-
+    if (navigator.appName == 'Microsoft Internet Explorer' || navigator.appName == 'Netscape') {
+        $('body').empty();
+        $('body').append('<h1>Unfortunately, Internet Explorer is not yet a supported browser, though we are working on supporting it.  Please access the site using a modern browser such as Chrome or Firefox for now.  Thanks!</h1>');
+    }
 
     center_page();
     $(window).resize(center_page);
