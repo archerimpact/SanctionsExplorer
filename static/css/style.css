@@ -122,6 +122,10 @@ img#c4ads-nav-logo {
     margin-left: 0.5em;
 }
 
+small#program-description {
+    font-size: 90%;
+}
+
 .left-flex-col {
     flex: 1 1 auto;
     height: 100%;        /* 100% so the footer is bottom-aligned */
