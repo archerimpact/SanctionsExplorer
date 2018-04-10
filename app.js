@@ -15,6 +15,8 @@ const weblog = util.weblog();
 const email_file    = path.join(__dirname, 'submissions', 'email.txt');
 const feedback_file = path.join(__dirname, 'submissions', 'feedback.txt');
 
+var sitemap = require('express-sitemap');
+
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
 
@@ -45,6 +47,10 @@ app.get('/press-releases', (req, res) => {
 app.get('/data', (req, res) => {
     res.sendFile(__dirname + '/views/data.html');
 });
+
+app.get('/sitemap.xml', (req, res) => {
+    sitemap.XMLtoWeb(res);
+})
 
 app.get('/submit/email', async function(req, res) {
     const email = req.query.email;
@@ -314,3 +320,36 @@ function get_keywords() {
         'document_countries'
     ];
 }
+
+// sitemap generation
+var today = new Date().toISOString().split('T')[0];
+sitemap = sitemap({
+  route: {
+    '/': {
+        lastmod: today,
+        changefreq: 'monthly',
+        priority: 1.0
+    }, 
+    '/sdn': {
+        lastmod: today,
+        changefreq: 'weekly',
+        priority: 0.8
+    },
+    '/press-releases': {
+        lastmod: today,
+        changefreq: 'weekly',
+        priority: 0.7
+    },
+    '/about': {
+        lastmod: today,
+        changefreq: 'weekly',
+        priority: 0.9
+    },
+    '/feedback': {
+        lastmod: today,
+        changefreq: 'monthly',
+        priority: 0.6
+    }
+  },
+});
+sitemap.generate(app);
