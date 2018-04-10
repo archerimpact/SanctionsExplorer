@@ -3,6 +3,7 @@ html, body {
     margin: 0;
     height: 100%;
     color: #919aa1;        /* Lux default */
+    font-weight: 400;
 }
 
 .navbar-expand-lg .navbar-nav .nav-link {
