@@ -42,6 +42,10 @@ app.get('/press-releases', (req, res) => {
     res.sendFile(__dirname + '/views/press-releases.html');
 });
 
+app.get('/data', (req, res) => {
+    res.sendFile(__dirname + '/views/data.html');
+});
+
 app.get('/submit/email', async function(req, res) {
     const email = req.query.email;
     if (!email) {

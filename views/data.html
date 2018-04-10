@@ -1,0 +1,104 @@
+<html>
+<head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-111936547-2"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-111936547-2');
+    </script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Data | SanctionsExplorer</title>
+    <link rel="icon" href="../static/img/sanctions_explorer_favicon (blue, dark gray, camelcase).png"/>
+    <link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
+    <link rel="stylesheet" href="../static/css/style.css"></link>
+    <link rel="stylesheet" href="../static/css/data.css"></link>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="../static/js/columns.js"></script>
+    <script src="../static/js/doT.min.js" charset="utf-8"></script>
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark unselectable">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">
+                <img id="product-logo" src="../static/img/sanctions_explorer (blue, white, camelcase).png">
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarColor02">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/sdn">OFAC Sanctions</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/press-releases">OFAC Press Releases</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/about">About</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/feedback">Feedback</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 order-12 col-md-4 order-md-1 page-col left-col">
+                <div class="d-flex flex-column left-flex-col">
+                    <div class="sticky-header">
+                        <h3 class="col-header text-center">We're Open-Source!</h3>
+                        <hr>
+                    </div>
+                    <p>We're open source and free to use.  Our entire website and backend infrastructure is publicly available on <a href="https://github.com/archerimpact/ofacasaurus" class="real-link">GitHub</a> under the GPLv3 license.</p>
+                    <div class="mt-auto unselectable" id="footer">
+                        <p>Created by <a href="https://archerimpact.com" target="_blank">Archer</a> in partnership with <a href="https://c4ads.org" target="_blank">C4ADS</a>.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 order-1 col-md-8 order-md-12 page-col right-col">
+                <div class="sticky-header">
+                    <h3 class="col-header text-center">Downloads</h3>
+                    <hr class="no-bottom-margin">
+                </div>
+                <div class="data-downloads">
+                    <p>We're currently working on releasing different download formats in the future, with CSVs being a high priority.  If you'd like to see CSVs, please <a href="feedback" class="real-link" target="_blank">let us know</a>!  We highly prioritize community feedback.</p>
+                    <p>The only thing necessary to read in the data is a basic JSON parser.  If you have any questions, please get in touch with us and we'd be happy to help.</p>
+
+                    <h4>Disclaimer &amp; License</h4>
+                    <p>If you use this data for academic or investigative purposes, please cite SanctionsExplorer.  This data cannot be sold or shared in a commercial setting without explicit written permission from SanctionsExplorer.</p>
+
+                    <h4>Data Files</h4>
+                    <a href="/static/file/latest.json" download="sanctions.json" class="real-link">JSON: SDN &amp; non-SDN lists</a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script id="faq-card-template" type="text/template">
+        <div class="card">
+            <div class="card-header">
+                <a data-toggle="collapse" href="#card-body-{{=it.id}}">
+                    {{=it.question}}
+                </a>
+            </div>
+            <div class="collapse hide" id="card-body-{{=it.id}}">
+                <div class="card-body card-body-condensed faq-card-body">
+                    {{=it.answer}}
+                </div>
+            </div>
+        </div>
+    </script>
+</body>
+</html>
