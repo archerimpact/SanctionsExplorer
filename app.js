@@ -81,7 +81,7 @@ app.get('/submit/feedback', async function(req, res) {
 
 
 app.get('/search/press-releases', async function(req, res) {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const ip = req.headers['x-forwarded-for'];
     const text = req.query.query;
     weblog(JSON.stringify(text), ip);
 
@@ -125,7 +125,7 @@ app.get('/search/press-releases', async function(req, res) {
 
 
 app.get('/search/sdn', async function(req, res) {
-    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const ip = req.headers['x-forwarded-for'];
     weblog(JSON.stringify(req.query), ip);
 
     const fuzziness = {
