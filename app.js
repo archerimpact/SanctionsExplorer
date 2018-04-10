@@ -10,6 +10,7 @@ const client = new es.Client({
 });
 const util = require(path.join(__dirname, 'data', 'util.js'));
 const log = util.log('webserver');
+const weblog = util.weblog();
 
 const email_file    = path.join(__dirname, 'submissions', 'email.txt');
 const feedback_file = path.join(__dirname, 'submissions', 'feedback.txt');
@@ -80,8 +81,10 @@ app.get('/submit/feedback', async function(req, res) {
 
 
 app.get('/search/press-releases', async function(req, res) {
-    let text = req.query.query;
-    console.log(JSON.stringify(text));
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    const text = req.query.query;
+    weblog(JSON.stringify(text), ip);
+
     let search_query = {
         bool: {
             must: [
@@ -122,7 +125,9 @@ app.get('/search/press-releases', async function(req, res) {
 
 
 app.get('/search/sdn', async function(req, res) {
-    console.log(JSON.stringify(req.query));
+    const ip = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+    weblog(JSON.stringify(req.query), ip);
+
     const fuzziness = {
         'programs': '0',
         'doc_id_numbers': '0',
@@ -207,7 +212,6 @@ app.get('/search/sdn', async function(req, res) {
             search_query.bool.should.push(should_phrase);
         }
     });
-    //console.log('=====> ' + JSON.stringify(search_query));
 
     respond_with_search(req, res, search_query, 'sdn');
 });

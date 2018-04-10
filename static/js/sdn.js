@@ -281,7 +281,7 @@ let api_to_ui            = (field) => {
 let api_to_placeholder   = (field) => {
     let dict = {
         'doc_id_numbers':       'e.g. "Cedula", "AB269600"',
-        'location':             'e.g. PO Box, London, Switzerland',
+        'location':             'e.g. P.O. Box, London, Switzerland',
         'title':                'e.g. President, Commander',
         'place_of_birth':       'e.g. Uganda, Russia',
         'nationality_country':  'e.g. Uganda, Russia',
