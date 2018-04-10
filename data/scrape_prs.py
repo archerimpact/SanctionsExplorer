@@ -50,7 +50,7 @@ def sanitize(text):
 	return newText
 
 
-def parseHtml2001(pr_result):
+def parseHtml(pr_result):
 	pr_content = pr_result.content.decode("utf-8")
 	div_loc = pr_content.find("<div class=\"content\">")
 	if pr_content.find("<div class=\"content-slim\">") != -1:
@@ -143,7 +143,7 @@ def scrape_urls(urls):
 							continue
 						pr_result = requests.get(pr_url)
 						if pr_result.status_code == 200:
-							html = parseHtml2001(pr_result)
+							html = parseHtml(pr_result)
 							pr_content = extract_text(pr_result.content)
 							pr_content = ""
 							tup_list.append( (curr_date, name, pr_url, pr_content, html, 'pr', []) )
@@ -156,7 +156,7 @@ def scrape_urls(urls):
 							d_content = extract_text(d_result.content)
 							d_content = d_content.replace("\n", "")
 							d_content = ""
-							html = parseHtml2001(d_result)
+							html = parseHtml(d_result)
 							tup_list.append( (curr_date, name, d_url, d_content, html, 'd', related) )
 
 	jsondata = []
