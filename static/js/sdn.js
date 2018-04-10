@@ -14,9 +14,9 @@ const ROW_FIELDS    = [
     'vessel_tags',
     'document_countries',
 ];
-// TODO add descriptions
 const PROGRAMS      = {
     'All programs': 'Do not filter by program',
+    '561List': '​(non-SDN) List of Foreign Financial Institutions Subject to Part 561',
     'BALKANS': 'Western Balkans Stabilization Regulations (EO 13304)',
     'BELARUS': 'Belarus Sanctions Regulations (EO 13405)',
     'BURUNDI': '(EO 13712)',
@@ -30,6 +30,7 @@ const PROGRAMS      = {
     'DPRK3': 'North Korea (EO 13722)',
     'DPRK4': 'North Korea (EO 13810)',
     'DRCONGO': 'Democratic Republic of the Congo Sanctions Regulations',
+    'FSE-SY': 'Foreign Sanctions Evaders - Syria (EO 13608)',
     'FTO': 'Foreign Terrorist Organizations Sanctions Regulations',
     'GLOMAG': 'Global Magnitsky (EO 13818)',
     'HRIT-IR': 'EO 13606',
@@ -63,10 +64,6 @@ const PROGRAMS      = {
     'VENEZUELA': 'Venezuelan Sanctions (EO 13692)',
     'YEMEN': 'Yemen Sanctions Regulations',
     'ZIMBABWE': 'Zimbabwe Sanctions Regulations (EO 13391, EO 13469)',
-    'Non-SDN': 'Non-SDN entries',
-    '561List': '​(non-SDN) List of Foreign Financial Institutions Subject to Part 561',
-    'FSE-SY': 'Foreign Sanctions Evaders - Syria (EO 13608)',
-    'SSI': 'Sectoral Sanctions Identifications',
 }
 const EMPTY_TYPE    = 'All types';
 const EMPTY_PROGRAM = 'All programs';
@@ -290,7 +287,7 @@ let api_to_placeholder   = (field) => {
         'nationality_country':  'e.g. Uganda, Russia',
         'citizenship_country':  'e.g. Uganda, Russia',
         'countries':            'e.g. Uganda, Russia',
-        'document_countries':  'e.g. Uganda, Russia',
+        'document_countries':   'e.g. Uganda, Russia',
         'sanction_dates':       'e.g. 2011-2015, 1999',
         'aircraft_tags':        'e.g. B727, YAS-AIR',
         'vessel_tags':          'e.g. IMO #, "Oil Tanker"',
