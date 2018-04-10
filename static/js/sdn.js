@@ -200,6 +200,7 @@ $(document).ready(() => {
     $(document).on('click', '#download-icon',      event => export_results());
     $(document).on('click', '#trash-icon',         event => clear_filters());
     $(document).on('click', '#search-info-icon',   event => $('#search-info-modal').modal('show'));
+    $(document).on('click', '#confused',           event => $('#search-info-modal').modal('show'));
     $(document).on('click', '#modal-plus-icon',    event => $('#entity-modal-body .collapse').collapse('show'));
     $(document).on('click', '#modal-minus-icon',   event => $('#entity-modal-body .collapse').collapse('hide'));
     $('[data-toggle="tooltip"]').tooltip();        // enable tooltips

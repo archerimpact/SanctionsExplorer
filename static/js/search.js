@@ -20,6 +20,7 @@ let clear_search_results   = () => {
     $('.results-header').hide();
 }
 let display_loading_bar    = (show) => show ? $('.loader').show() : $('.loader').hide();
+let display_confused       = (show) => show ? $('#confused').show() : $('#confused').hide();
 let change_next_page_text  = (text) => $('.next-page').text(text);
 let truncate_string        = (str, length) => (str && str.length <= length) ? str : str = str.substring(0, length).trim() + '..';
 let sanitize               = (str) => xssFilters.inHTMLData(str);
@@ -27,6 +28,10 @@ let construct_filter_box   = (field, value, visibility) => '<span class="filter-
 let update_results_header  = (num) => {
     if (num != null) {
         $('#results-header').text('Results (' + num + ')');
+        display_confused(false);
+        if (num == 0) {
+            display_confused(true);
+        }
         if (window.lastQuery.from + window.lastQuery.size >= num) {
             $('.next-page').hide();
         }
@@ -88,6 +93,7 @@ function search(url, params, mode, card_generator,  divToUse) {
     if (mode == 'OVERWRITE') {
         update_filter_summary(params);
         display_loading_bar(true);
+        display_confused(false);
         update_results_header(null);
         clear_search_results();
     }

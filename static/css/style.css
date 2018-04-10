@@ -211,6 +211,10 @@ hr.no-bottom-margin {
     margin-bottom: 1em;
 }
 
+#confused {
+    display: none;
+    margin-top: 1em;
+}
 
 /*********** Cards ***********/
 .card {
