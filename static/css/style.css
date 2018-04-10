@@ -35,13 +35,21 @@ nav.navbar {
     background: linear-gradient(to right, #282c30, #343a40);
 }
 
+.unselectable {
+  user-select: none;
+  -moz-user-select: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -o-user-select: none;
+}
+
 /* match Lux navbar */
 .btn-primary, .btn-outline-primary:hover {
     background-color: #343a40;
 }
 
 .page-col {
-    overflow-y: scroll;
+    overflow-y: auto;
     height: 100%;        /* should be overwritten by Javascript */
     padding-top: 0;
     padding-right: 1em;
@@ -86,6 +94,7 @@ img#c4ads-nav-logo {
 /*********** Filter Column ***********/
 .left-col {
     background-color: #eeeeee;
+    border-right: 1px solid #dadada;
 }
 
 .left-col .sticky-header {

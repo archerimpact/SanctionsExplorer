@@ -1,5 +1,5 @@
 body {
-    background-image: url('../img/gplaypattern.png');
+    background-image: url('../img/shattered.png');
     background-repeat: repeat;
 }
 
@@ -26,9 +26,14 @@ body {
 
 .attach-to-top {
     top: 0;
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
     background: linear-gradient(#343a40, #282c30);
+}
+
+#info-group {
+    top: 1.75rem;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 #main-tagline {
@@ -50,11 +55,13 @@ p, h5 {
 img#splash-logo {
     width: 100%;
     max-width: 50rem;
+    margin-bottom: 15px;
 }
 
 .footer-logo {
     max-height: 1rem;
     padding: 0 10px;
+    margin-bottom: 5px;
 }
 
 #archer-logo {
@@ -68,11 +75,36 @@ img#splash-logo {
 
 #one-search-input {
     max-width: 50em;
+    padding: 12px 16px;
+    height: 3rem;
+    border: 1px solid #343A40
 }
 
 #one-search-input:focus {
     outline: none;
     box-shadow: none;
+}
+
+#search-button {
+    /*margin: auto;*/
+    display: inline-block;
+    height: 3rem;
+    width: 7rem;
+}
+
+#search-icon {
+    display: inline-block;
+    vertical-align: middle;
+    height: 100%;
+    -webkit-filter: invert(100%);
+        filter: invert(100%);
+    -moz-transform: scaleX(-1);
+        -o-transform: scaleX(-1);
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
+        filter: FlipH;
+        -ms-filter: "FlipH";
+    /*margin: auto;*/
 }
 
 /* only visible on mobile */

@@ -10,6 +10,7 @@
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>SanctionsExplorer</title>
+    <link rel="icon" href="../static/img/sanctions_explorer_favicon (blue, dark gray, camelcase).png"/>
     <link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
     <link rel="stylesheet" href="../static/css/style.css"></link>
 	<link rel="stylesheet" href="../static/css/onebar.css"></link>
@@ -36,7 +37,7 @@
         </script>
 
 
-        <div class="abs-center attach-to-top" id="info-group">
+        <div class="abs-center attach-to-top unselectable" id="info-group">
             <div class="d-flex justify-content-center" id="tagline">
                 <h5 class="text-center" id="main-tagline">Explore 24 years of OFAC Sanctions Data</h5>
             </div>
@@ -46,16 +47,16 @@
             </div>
         </div>
 
-        <div class="abs-center" id="center-group">
+        <div class="abs-center unselectable" id="center-group">
             <div class="d-flex justify-content-center">
                 <div class="d-flex flex-column">
-                    <img src="../static/img/sanctions_explorer (blue).png" class="img-fluid" id="splash-logo" />
+                    <img src="../static/img/sanctions_explorer (blue, dark gray, camelcase).png" class="img-fluid" id="splash-logo" />
                 </div>
             </div>
 
             <div class="d-flex justify-content-center">
                 <input type="text" class="form-control form-control-md" id="one-search-input" placeholder="Search U.S. Treasury sanctions (e.g. 'Russia', 'Kony', 'DPRK2')" autofocus>
-                <div class="btn btn-primary" id="search-button">Search</div>
+                <div class="btn btn-primary" id="search-button"><img src="../img/search-icon.png" id="search-icon"></div>
             </div>
 
             <div class="d-flex justify-content-center" id="help-text">
@@ -63,7 +64,7 @@
             </div>
         </div>
 
-        <div class="d-flex flex-wrap justify-content-center attach-to-bottom abs-center" id="footer-group">
+        <div class="d-flex flex-wrap justify-content-center attach-to-bottom abs-center unselectable" id="footer-group">
             <div class="d-flex flex-wrap justify-content-center">
                 <h5>Created by</h5>
                 <a href="https://archerimpact.com" target="_blank">

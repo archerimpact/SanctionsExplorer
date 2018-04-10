@@ -11,6 +11,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Search | SanctionsExplorer</title>
+    <link rel="icon" href="../static/img/sanctions_explorer_favicon (blue, dark gray, camelcase).png"/>
     <link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
     <link rel="stylesheet" href="../static/css/style.css"></link>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -24,7 +25,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark unselectable">
         <div class="container-fluid">
             <a class="navbar-brand" href="/"><img id="product-logo" src="../static/img/sanctions_explorer (blue, inverted).png"></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
@@ -55,7 +56,7 @@
             <div class="col-xs-12 col-md-4 page-col left-col">
                 <div class="d-flex flex-column left-flex-col">
                     <div class="sticky-header">
-                        <div class="d-flex flex-row">
+                        <div class="d-flex flex-row unselectable">
                             <h3 class="col-header mr-auto">Search</h3>
                             <img src="../img/open-iconic-svg/trash.svg" class="col-icon" id="trash-icon" data-toggle="tooltip" data-placement="bottom" title="Clear Filters">
                             <img src="../img/open-iconic-svg/question-mark.svg" class="col-icon" id="search-info-icon" data-toggle="tooltip" data-placement="bottom" title="Info">
@@ -66,11 +67,11 @@
                         <div class="form-row">
                             <div class="form-group col-xl-12" id=all-fields-form-group>
                                 <input type="text" class="form-control form-control-sm" id="all-fields-input" placeholder="Search all fields" autofocus>
-                                <small id="all-fields-help" class="form-text text-muted">Search the entire SDN database for your query.</small>
+                                <small id="all-fields-help" class="form-text text-muted unselectable">Search the entire SDN database for your query.</small>
                             </div>
                         </div>
 
-                        <h5 id="more-filters-header">Additional Filters</h5>
+                        <h5 class="unselectable" id="more-filters-header">Additional Filters</h5>
 
                         <div class="form-row">
                             <div class="form-group col-sm-5">
@@ -114,7 +115,7 @@
                         </div>
                     </form>
 
-                    <div class="mt-auto" id="footer">
+                    <div class="mt-auto unselectable" id="footer">
                         <p>Created by <a href="https://archerimpact.com" target="_blank">Archer</a> in partnership with <a href="https://c4ads.org" target="_blank">C4ADS</a>.</p>
                     </div>
                 </div><!-- /left-col -->
@@ -123,13 +124,13 @@
             <div class="col-xs-12 col-md-8 page-col right-col">
                 <div class="sticky-header">
                     <div class="d-flex flex-row" id="results-header-row">
-                        <h3 class="col-header text-left" id="results-header">Results</h3>
-                        <img src="../img/open-iconic-svg/data-transfer-download.svg" class="ml-auto col-icon" id="download-icon" data-toggle="tooltip" data-placement="bottom" title="Download CSV">
-                        <img src="../img/open-iconic-svg/link-intact.svg" class="col-icon" id="results-link-icon" data-toggle="tooltip" data-placement="bottom" title="Open Link Explorer">
-                        <img src="../img/open-iconic-svg/print.svg" class="col-icon" id="results-print-icon" data-toggle="tooltip" data-placement="bottom" title="Print">
+                        <h3 class="col-header text-left unselectable" id="results-header">Results</h3>
+                        <img src="../img/open-iconic-svg/data-transfer-download.svg" class="ml-auto col-icon unselectable" id="download-icon" data-toggle="tooltip" data-placement="bottom" title="Download CSV">
+                        <img src="../img/open-iconic-svg/link-intact.svg" class="col-icon unselectable" id="results-link-icon" data-toggle="tooltip" data-placement="bottom" title="Open Link Explorer">
+                        <img src="../img/open-iconic-svg/print.svg" class="col-icon unselectable" id="results-print-icon" data-toggle="tooltip" data-placement="bottom" title="Print">
                         <!--<img src="../img/open-iconic-svg/share.svg" class="col-icon" id="results-share-icon">-->
-                        <img src="../img/open-iconic-svg/plus.svg" class="col-icon" id="results-plus-icon" data-toggle="tooltip" data-placement="bottom" title="Expand all">
-                        <img src="../img/open-iconic-svg/minus.svg" class="col-icon" id="results-minus-icon" data-toggle="tooltip" data-placement="bottom" title="Collapse all">
+                        <img src="../img/open-iconic-svg/plus.svg" class="col-icon unselectable" id="results-plus-icon" data-toggle="tooltip" data-placement="bottom" title="Expand all">
+                        <img src="../img/open-iconic-svg/minus.svg" class="col-icon unselectable" id="results-minus-icon" data-toggle="tooltip" data-placement="bottom" title="Collapse all">
                     </div>
                     <hr class="no-bottom-margin">
                 </div>

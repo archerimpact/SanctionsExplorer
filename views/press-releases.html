@@ -11,6 +11,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Press Releases | SanctionsExplorer</title>
+    <link rel="icon" href="../static/img/sanctions_explorer_favicon (blue, dark gray, camelcase).png"/>
     <link rel="stylesheet" href="../static/css/lux_bootstrap.min.css"></link>
     <link rel="stylesheet" href="../static/css/style.css"></link>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
@@ -24,7 +25,7 @@
 </head>
 
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark unselectable">
         <div class="container-fluid">
             <a class="navbar-brand" href="/"><img id="product-logo" src="../static/img/sanctions_explorer (blue, inverted).png"></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02">
@@ -54,7 +55,7 @@
         <div class="row">
             <div class="col-md-4 page-col left-col">
                 <div class="d-flex flex-column left-flex-col">
-                    <div class="sticky-header">
+                    <div class="sticky-header unselectable">
                         <h3 class="col-header" id="press-release-header">Press Releases</h3>
                         <hr class="no-bottom-margin">
                     </div>
@@ -68,9 +69,9 @@
                             </div>
                         </div><!-- /form-row -->
                     </form>
-                    <p>Search all <a href="https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/OFAC-Recent-Actions.aspx" target="_blank">OFAC Recent Actions/Press Releases</a>.  This can also be used to find individuals or entities who were previously on the SDN list, as OFAC announces all additions, removals, or modifications.</p>
+                    <p class="unselectable">Search all <a href="https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/OFAC-Recent-Actions.aspx" target="_blank">OFAC Recent Actions/Press Releases</a>.  This can also be used to find individuals or entities who were previously on the SDN list, as OFAC announces all additions, removals, or modifications.</p>
 
-                    <div class="mt-auto" id="footer">
+                    <div class="mt-auto unselectable" id="footer">
                         <p>Created by <a href="https://archerimpact.com" target="_blank">Archer</a> in partnership with <a href="https://c4ads.org" target="_blank">C4ADS</a>.</p>
                     </div>
                 </div>
@@ -79,7 +80,7 @@
             <div class="col-md-8 page-col right-col">
                 <div class="sticky-header">
                     <div class="d-flex flex-row" id="results-header-row">
-                        <h3 class="col-header text-left" id="results-header">Results</h3>
+                        <h3 class="col-header text-left unselectable" id="results-header">Results</h3>
                     </div>
                     <hr class="no-bottom-margin">
                 </div>
