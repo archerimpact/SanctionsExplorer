@@ -1,5 +1,5 @@
 body {
-    background-image: url('../img/pw_pattern.png');
+    background-image: url('../img/gplaypattern.png');
     background-repeat: repeat;
 }
 
@@ -25,7 +25,18 @@ body {
 }
 
 .attach-to-top {
-    top: 2rem;
+    top: 0;
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    background: linear-gradient(#343a40, #282c30);
+}
+
+#main-tagline {
+    color: #efefef;
+}
+
+#sub-tagline {
+    color: #b1b1b1;
 }
 
 p, h5 {
@@ -41,13 +52,18 @@ img#splash-logo {
     max-width: 50rem;
 }
 
-img#joint-logo {
-    max-width: 30em;
+.footer-logo {
+    max-height: 1rem;
+    padding: 0 10px;
 }
 
-.footer-logo {
-    max-height: 1.15rem;
-    padding: 0 10px;
+#archer-logo {
+
+}
+
+#c4ads-logo {
+    margin-top: 1px;
+    max-height: 0.9rem;
 }
 
 #one-search-input {

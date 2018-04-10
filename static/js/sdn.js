@@ -287,7 +287,7 @@ let api_to_placeholder   = (field) => {
         'nationality_country':  'e.g. Uganda, Russia',
         'citizenship_country':  'e.g. Uganda, Russia',
         'countries':            'e.g. Uganda, Russia',
-        'document_countries':   'e.g. Uganda, Russia',
+        'document_countries':   'e.g. Singapore, Russia',
         'sanction_dates':       'e.g. 2011-2015, 1999',
         'aircraft_tags':        'e.g. B727, YAS-AIR',
         'vessel_tags':          'e.g. IMO #, "Oil Tanker"',

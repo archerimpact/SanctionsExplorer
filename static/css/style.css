@@ -32,13 +32,12 @@ nav.navbar {
 }
 
 .bg-dark {
-    /* background: linear-gradient(to right, #2c3135, #343a40); */
-    background-color: #282c30;
+    background: linear-gradient(to right, #282c30, #343a40);
 }
 
 /* match Lux navbar */
 .btn-primary, .btn-outline-primary:hover {
-    background-color: #282c30;
+    background-color: #343a40;
 }
 
 .page-col {
@@ -139,6 +138,10 @@ small#program-description {
     /* fix flex not rendering hr properly */
     margin-left: 0;
     margin-right: 0;
+}
+
+#press-release-button {
+    width: 100%;
 }
 
 /*********** Results Column ***********/
