@@ -1,3 +1,5 @@
+'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const exporter = require(path.join(__dirname, 'elastic_export.js'));

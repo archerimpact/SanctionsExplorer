@@ -671,7 +671,13 @@ class Alias:
 					language = scripts[value.get("ScriptID")].text
 					np_type = name_part_groups_dict[group_id]
 					name = value.text
-					one_name[np_type] = [name, language]
+					if not one_name.get(np_type):
+						one_name[np_type] = [name, language]
+					else:
+						prev = one_name[np_type]
+						prev[0] += ' ' + name
+						if prev[1] != language:
+							log('Name parts have different languages', 'error')
 					# if language != 'Latin':
 					# 	print(one_name[np_type])
 			ret.append(one_name)
@@ -719,27 +725,27 @@ class Alias:
 
 			if 'Patronymic' in name_dict and 'Last Name' in name_dict:
 				# Russian-esque name.  This doesn't always display in the exact order that the OFAC website does, but 99% of entries don't even have Patronymic/Matronymic.
-
 				if 'Middle Name' in name_dict:
 					if name_dict.get('Last Name') is not None:
 						name += name_dict['Last Name'][0].upper()
 					if name_dict.get('Patronymic') is not None:
 						name += ' ' + name_dict['Patronymic'][0].upper()
 					if name_dict.get('First Name') is not None:
-						name += ', ' + name_dict['First Name'][0]
+						name += ', ' if name else ''
+						name += name_dict['First Name'][0]
 					if name_dict.get('Middle Name') is not None:
 						name += ' ' + name_dict['Middle Name'][0]
 				else:
 					if name_dict.get('Last Name') is not None:
 						name += name_dict['Last Name'][0].upper()
 					if name_dict.get('First Name') is not None:
-						name += ', ' + name_dict['First Name'][0]
+						name += ', ' if name else ''
+						name += name_dict['First Name'][0]
 					if name_dict.get('Patronymic') is not None:
 						name += ' ' + name_dict['Patronymic'][0]
 
 			else:
 				# any other names, include Spanish names with (P|M)atronymic
-
 				name = ''
 				if name_dict.get('Last Name') is not None:
 					name += name_dict['Last Name'][0].upper()
@@ -748,7 +754,8 @@ class Alias:
 				if name_dict.get('Matronymic') is not None:
 					name += ' ' + name_dict['Matronymic'][0].upper()
 				if name_dict.get('First Name') is not None:
-					name += ', ' + name_dict['First Name'][0]
+					name += ', ' if name else ''
+					name += name_dict['First Name'][0]
 				if name_dict.get('Middle Name') is not None:
 					name += ' ' + name_dict['Middle Name'][0]
 

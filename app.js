@@ -1,12 +1,13 @@
 'use strict'
 
 const express = require('express');
+const sitemap = require('express-sitemap');
 const app = express();
 const fs = require('fs');
 const path = require('path');
 const es = require('elasticsearch');
 const client = new es.Client({
-    host:'localhost:9200'
+    host: 'localhost:9200'
 });
 const util = require(path.join(__dirname, 'data', 'util.js'));
 const log = util.log('webserver');
@@ -15,7 +16,6 @@ const weblog = util.weblog();
 const email_file    = path.join(__dirname, 'submissions', 'email.txt');
 const feedback_file = path.join(__dirname, 'submissions', 'feedback.txt');
 
-var sitemap = require('express-sitemap');
 
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
@@ -277,7 +277,6 @@ function get_keywords() {
         'birthdate',
         'place_of_birth',
         'location',
-        'website',
         'additional_sanctions_information_-_',
         'vessel_call_sign',
         'vessel_flag',
@@ -331,7 +330,7 @@ sitemap = sitemap({
             lastmod: today,
             changefreq: 'monthly',
             priority: 1.0
-        }, 
+        },
         '/sdn': {
             lastmod: today,
             changefreq: 'weekly',

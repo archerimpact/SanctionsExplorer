@@ -1,11 +1,10 @@
+'use strict';
+
 const fs = require('fs');
 const path = require('path');
 const exporter = require(path.join(__dirname, 'elastic_export.js'));
 const util = require(path.join(__dirname, 'util.js'));
 const log = util.log('sdn_export');
-
-const sdn    = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/sdn.json'),     'utf8'));
-const nonsdn = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/non_sdn.json'), 'utf8'));
 
 Set.prototype.union = function(setB) {
     var union = new Set(this);
@@ -32,17 +31,17 @@ const transform = entry => {
     entry.sdn_display          = '';
     entry.document_countries   = [];
 
-    programs  = new Set();
-    countries = new Set();
-    lists     = new Set();
-    document_countries = new Set();
+    const programs  = new Set();
+    const countries = new Set();
+    const lists     = new Set();
+    const document_countries = new Set();
 
     entry.sanctions_entries.forEach(e => {
         lists.add(list_to_acronym(e.list));
         e.program.forEach(program => {
             if (program) {
                 programs.add(program);
-                let program_country = program_to_country(program);
+                const program_country = program_to_country(program);
                 if (program_country != null) {
                     countries.add(program_country);
                 }
@@ -89,9 +88,8 @@ const transform = entry => {
     });
 
     Object.keys(entry.features).forEach(f_key => {
-        let formatted_key = f_key.split(' ').map(w => w.toLowerCase()).join('_');    // e.g. 'Citizenship Country' -> 'citizenship_country'
-
-        let combined_info = [];
+        const formatted_key = f_key.split(' ').map(w => w.toLowerCase()).join('_');    // e.g. 'Citizenship Country' -> 'citizenship_country'
+        const combined_info = [];
 
         entry.features[f_key].forEach(f => {
             if (f.details) {
@@ -130,23 +128,25 @@ const transform = entry => {
         if (doc.validity != 'Valid' && doc.validity != 'Fraudulent') {
             log('An invalid document status appeared (normally Valid or Fraudulent): ' + doc.validity, 'warning');
         }
-        headers = []
+
+        const headers = []
 
         // TODO the nullification on 'None' logic should be moved to the XML parser.
         if (doc.issued_by != 'None') {
             headers.push('issued_by');
             countries.add(doc.issued_by);
             document_countries.add(doc.issued_by);
-
         }
         else {
             doc.issued_by = null;
         }
 
         if (doc.issued_in != 'None') {
+            doc.issued_in = JSON.parse(doc.issued_in);      // this is actually a location dictionary
             headers.push('issued_in');
-            countries.add(doc.issued_in["COUNTRY"])
-            document_countries.add(doc.issued_in["COUNTRY"]);
+            countries.add(doc.issued_in['COUNTRY']);
+            document_countries.add(doc.issued_in['COUNTRY']);
+            doc.issued_in = doc.issued_in['COMBINED'];      // no longer a location dictionary
         }
         else {
             doc.issued_in = null;
@@ -166,7 +166,7 @@ const transform = entry => {
             headers.push(date);
         });
 
-        entry.document_headers = headers
+        entry.document_headers = headers;
     });
 
     entry.countries = Array.from(countries);
@@ -217,7 +217,7 @@ const transform = entry => {
     }
 
     // Fields not included: linked_profile_ids (not relevant), fixed_ref
-    let all_fields = [
+    const all_fields = [
         'primary_display_name',
         'identity_id',
         'all_display_names',
@@ -273,9 +273,31 @@ const transform = entry => {
     return entry;
 }
 
+async function transform_sdn() {
+    const transformed = [];
+
+    const sdn    = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/sdn.json'),     'utf8'));
+    const nonsdn = JSON.parse(fs.readFileSync(path.join(__dirname, '/update_files/non_sdn.json'), 'utf8'));
+    nonsdn.forEach(e => sdn.push(e));
+
+    const seen_values = new Set();
+    let j = 0;
+    for (let i = 0; i < sdn.length; i++) {
+        const this_id = sdn[i].fixed_ref;
+        if (!seen_values.has(this_id)) {
+            transformed[j] = transform(sdn[i]);
+            j++;
+            seen_values.add(this_id);
+        }
+    }
+
+    fs.writeFileSync(path.join(__dirname, '/update_files/transformed_combined.json'), JSON.stringify(transformed), 'utf8');
+    return transformed;
+}
+
 let add_country_synonyms = country_list=>{
     let country_set = new Set(country_list);
-    for(country of country_set){
+    for(let country of country_set){
         var synonyms = country_synonyms(country);
         if(synonyms != null){
             country_set = country_set.union(synonyms);
@@ -300,7 +322,7 @@ let country_synonyms = country =>{
     let all_sets = [korea_set, drc_set, us_set, russia_set, england_set, uae_set, car_set];
     const dict = {}
     all_sets.forEach(set=>{
-        for(key of set){
+        for(let key of set){
             dict[key] = set;
         }
     });
@@ -366,15 +388,18 @@ let list_to_acronym = l => {
     return dict[l] || l;
 }
 
-async function load_sdn() {
+async function load_sdn(entries) {
     await exporter.delete_index('sdn');
     await exporter.create_index('sdn');
 
-    nonsdn.forEach(e => sdn.push(e));
-
-    await exporter.bulk_add(sdn, transform, 'sdn', 'entry', 'fixed_ref');
+    await exporter.bulk_add(entries, 'sdn', 'entry', 'fixed_ref');
     let count = await exporter.indexing_stats('sdn');
     log(count + ' documents indexing', 'info');
 }
 
-load_sdn();
+async function main() {
+    const entries = await transform_sdn();
+    await load_sdn(entries);
+}
+
+main();
