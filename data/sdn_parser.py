@@ -270,7 +270,10 @@ class List:
 class LocPart:
 	def __init__(self, xml):
 		self.is_primary = xml.get("Primary")
-		self.text = xml_approx_find(xml, "Value").text
+		self.text = xml_approx_find(xml, "Value").text.strip()
+		if len(self.text) == 0:
+			# this literally applies to 2 entries.  Thanks OFAC.
+			self.text = 'Unknown'
 
 	def __str__(self):
 		return self.text
