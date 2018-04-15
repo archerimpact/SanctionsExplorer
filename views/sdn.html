@@ -188,9 +188,9 @@
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
-                                        <th class="muted-table-text">name</th>
-                                        <th class="muted-table-text">quality</th>
-                                        <th class="muted-table-text">type</th>
+                                        <th class="muted-table-text text-left">name</th>
+                                        <th class="muted-table-text text-left">quality</th>
+                                        <th class="muted-table-text text-left">type</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -212,23 +212,23 @@
                             <table class="table table-sm">
                                 <thead>
                                     <tr>
-                                        <th class="muted-table-text">#</th>
-                                        <th class="muted-table-text">type</th>
-                                        <th class="muted-table-text">validity</th>
+                                        <th class="muted-table-text text-left">#</th>
+                                        <th class="muted-table-text text-left">type</th>
+                                        <th class="muted-table-text text-left">validity</th>
                                         {{? it.document_headers && it.document_headers.includes('issued_by') }}
-                                            <th class="muted-table-text">issued by</th>
+                                            <th class="muted-table-text text-left">issued by</th>
                                         {{?}}
                                         {{? it.document_headers && it.document_headers.includes('issued_in') }}
-                                            <th class="muted-table-text">issued in</th>
+                                            <th class="muted-table-text text-left">issued in</th>
                                         {{?}}
                                         {{? it.document_headers && it.document_headers.includes('issuing_authority') }}
-                                            <th class="muted-table-text">authorized by</th>
+                                            <th class="muted-table-text text-left">authorized by</th>
                                         {{?}}
                                         {{? it.document_headers && it.document_headers.includes('Issue Date') }}
-                                            <th class="muted-table-text">issued on</th>
+                                            <th class="muted-table-text text-left">issued on</th>
                                         {{?}}
                                         {{? it.document_headers && it.document_headers.includes('Expiration Date') }}
-                                            <th class="muted-table-text">expires on</th>
+                                            <th class="muted-table-text text-left">expires on</th>
                                         {{?}}
                                     </tr>
                                 </thead>
