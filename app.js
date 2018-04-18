@@ -49,7 +49,8 @@ app.get('/data', (req, res) => {
 });
 
 app.get('/sitemap.xml', (req, res) => {
-    sitemap.XMLtoWeb(res);
+    // sitemap.XMLtoWeb(res);
+    res.sendFile(__dirname + '/sitemap.xml');
 })
 
 app.get('/submit/email', async function(req, res) {
@@ -321,36 +322,44 @@ function get_keywords() {
 }
 
 // sitemap generation
-var today = new Date().toISOString().split('T')[0];
-sitemap = sitemap({
-      http: 'https',
-      url: 'sanctionsexplorer.org',
-      route: {
-        '/': {
-            lastmod: today,
-            changefreq: 'monthly',
-            priority: 1.0
-        },
-        '/sdn': {
-            lastmod: today,
-            changefreq: 'weekly',
-            priority: 0.8
-        },
-        '/press-releases': {
-            lastmod: today,
-            changefreq: 'weekly',
-            priority: 0.7
-        },
-        '/about': {
-            lastmod: today,
-            changefreq: 'weekly',
-            priority: 0.9
-        },
-        '/feedback': {
-            lastmod: today,
-            changefreq: 'monthly',
-            priority: 0.6
-        }
-      },
-    });
-sitemap.generate(app);
+// var today = new Date().toISOString().split('T')[0];
+// sitemap = sitemap({
+//       http: 'https',
+//       url: 'sanctionsexplorer.org',
+//       // map: {
+//       //   '/': ['get'],
+//       //   '/sdn': ['get'],
+//       //   'press-releases': ['get'],
+//       //   'about': ['get'],
+//       //   '/feedback': ['get'],
+//       //       },
+//       route: {
+//         '/': {
+//             lastmod: today,
+//             changefreq: 'monthly',
+//             priority: 1.0
+//         },
+//         '/sdn': {
+//             lastmod: today,
+//             changefreq: 'weekly',
+//             priority: 0.8
+//         },
+//         '/press-releases': {
+//             lastmod: today,
+//             changefreq: 'weekly',
+//             priority: 0.7
+//         },
+//         '/about': {
+//             lastmod: today,
+//             changefreq: 'weekly',
+//             priority: 0.9
+//         },
+//         '/feedback': {
+//             lastmod: today,
+//             changefreq: 'monthly',
+//             priority: 0.6
+//         }
+//       },
+//     });
+// sitemap.generate(app);
+// // sitemap.XMLtoFile();
