@@ -1,7 +1,7 @@
 'use strict'
 
 const express = require('express');
-let sitemap = require('express-sitemap');
+// let sitemap = require('express-sitemap');
 const app = express();
 const fs = require('fs');
 const path = require('path');
