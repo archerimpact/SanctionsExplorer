@@ -145,25 +145,24 @@ app.get('/search/sdn', async function(req, res) {
         'birthdate': '0',
         'fixed_ref': 'NONE',
         'party_sub_type': '0',
-        'sanction_dates': 'NONE',
+        'sanction_dates': '0',
     };
 
     const operators = {
         'programs': 'or',
-        'sanction_dates': 'or',
+        /* 'sanction_dates': 'and', */
     };
 
     let search_query;
 
-    let create_match_phrase = (field, query_str, is_fuzzy, boost) => {
+    let create_match_phrase = (field, query_str, is_fuzzy, boost, bool_op) => {
         let json = { match: {} };
-        let op = operators[field] || 'and';
+        let op = bool_op || operators[field] || 'and';
         json.match[field] = {
             query: query_str,
             operator: op,
         };
 
-        let fuzz_setting = 'AUTO';
         if (is_fuzzy) {
             if (fuzziness[field] != 'NONE') {
                 let fuzz_setting = fuzziness[field] || 'AUTO';
@@ -186,6 +185,8 @@ app.get('/search/sdn', async function(req, res) {
     };
 
     Object.keys(req.query).forEach(k => {
+        let op;
+
         if (k == 'all_fields') {
             // Prioritize primary names over all names (both over other fields)
             let all_should     = create_match_phrase('all_display_names',    req.query[k], false, 2000);
@@ -210,15 +211,15 @@ app.get('/search/sdn', async function(req, res) {
                 for (let y = parseInt(begin); y <= parseInt(end); y++) {
                     concat_years += ' ' + y;
                 }
-                console.log(concat_years);
                 req.query[k] = concat_years;        // overwrite range with concatenated list
+                op = 'or';
             }
         }
 
         if (get_keywords().includes(k)) {
             // There must be a fuzzy match.  Boost exact matches.
-            let must_phrase   = create_match_phrase(k, req.query[k], true);
-            let should_phrase = create_match_phrase(k, req.query[k], false, 1000);
+            let must_phrase   = create_match_phrase(k, req.query[k], true, 1, op);
+            let should_phrase = create_match_phrase(k, req.query[k], false, 1000, op);
             search_query.bool.must.push(must_phrase);
             search_query.bool.should.push(should_phrase);
         }
