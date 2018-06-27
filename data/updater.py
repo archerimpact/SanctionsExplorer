@@ -76,7 +76,7 @@ def download_and_parse(url, xml, json):
         quit()
 
 
-log(f'{datetime.now()}: Beginning the update process...', 'info')
+console.log(f'{datetime.now()}: Beginning the update process...')
 feed = feedparser.parse(RSS_FEED_URL)
 serialize_feed(feed, NEW_RSS_FILE)
 
@@ -101,9 +101,6 @@ if should_download:
     log('Scraping press releases from 2018...', 'info')
     scrape_prs.scrape_2018(PR_JSON_2018)
 
-    log('Scraping IDs from the OFAC website...', 'info')
-    scrape_ofac.write_ofac_ids(OFAC_INT, OFAC_IDS)
-
 run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
 run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
 
@@ -111,9 +108,14 @@ log('Matching SDN entities with press release data...', 'info')
 matcher.write_pr_matches(PR_MATCHES)
 run_nodejs(EXPORT_MATCHES, 'export PR matches to Elastic')
 
+# If we've successfully made it this far, we write this for next time.
+serialize_feed(feed, OLD_RSS_FILE)
+
+# Now do ID matching since it takes so long.
+log('Scraping IDs from the OFAC website...', 'info')
+scrape_ofac.write_ofac_ids(OFAC_INT, OFAC_IDS)
+
 log('Matching SDN entities with their IDs on the OFAC website...', 'info')
 matcher.write_ofac_id_matches(OFAC_IDS, OFAC_MATCHES)
 run_nodejs(EXPORT_IDS, 'export ID matches to Elastic')
 
-# If we've successfully made it this far, we write this for next time.
-serialize_feed(feed, OLD_RSS_FILE)

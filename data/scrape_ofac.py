@@ -103,7 +103,9 @@ def scrape(start_num, end_num):
 def write_ofac_ids(intermediate, filename):
 	print('start')
 	inf = open(intermediate, 'rb')
-	old_start, old_tups = pickle.load(inf)
+	#old_start, old_tups = pickle.load(inf)
+	old_start = 0
+	old_tups = []
 	inf.close()
 
 	num_tups = len(old_tups)
