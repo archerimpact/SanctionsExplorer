@@ -15,6 +15,7 @@ const weblog = util.weblog();
 
 const email_file    = path.join(__dirname, 'submissions', 'email.txt');
 const feedback_file = path.join(__dirname, 'submissions', 'feedback.txt');
+const vote_file     = path.join(__dirname, 'submissions', 'votes.txt');
 
 
 app.use(express.static(__dirname + '/static'));
@@ -90,6 +91,18 @@ app.get('/submit/feedback', async function(req, res) {
     return res.status(200).end();
 })
 
+app.get('/submit/vote', async function(req, res) {
+    const ip = req.headers['x-forwarded-for'];
+    const vote = req.query.vote;
+    const vote_details = {
+        vote: vote,
+        ip: ip,
+        time: (new Date()).toLocaleString(),
+    };
+
+    await fs.appendFile(vote_file, JSON.stringify(vote_details) + ',\n')
+    return res.status(200).end();
+})
 
 app.get('/search/press-releases', async function(req, res) {
     const ip = req.headers['x-forwarded-for'];

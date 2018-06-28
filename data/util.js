@@ -16,8 +16,7 @@ function log(owner) {
 
 function weblog() {
     return (msg, ip) => {
-        let user = crypto.createHash('sha256').update(ip).digest('hex').slice(0, 16);
-        console.log(user + ' @ ' + new Date() + ': ' + msg);
+        console.log(ip + ' @ ' + new Date() + ': ' + msg);
     }
 }
 
