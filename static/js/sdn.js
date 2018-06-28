@@ -71,6 +71,12 @@ const EMPTY_SELECT  = 'select-field';
 const FILTER_SUMMARY_LENGTH = 12;       // used for truncation in search.js
 
 $(document).ready(() => {
+    let counter = 0;
+    setInterval(() => {
+        counter += 10;
+        console.log(counter);
+        gtag('event', 'pageLoadedTimer', { event_label: counter, value: counter })
+    }, 10000)
     window.card = get_template('#card-template');
     window.searchRow = get_template('#search-row-template');
     window.searchRowID = 0;
