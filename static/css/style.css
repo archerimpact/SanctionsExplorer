@@ -6,6 +6,21 @@ html, body {
     font-weight: 400;
 }
 
+#update-bar {
+    height: 30px;
+    background-color: #0d77e2;
+    display: flex;
+    align-items: center;
+}
+
+#update-bar .update-text {
+    margin: 0 auto;
+}
+
+#update-bar .update-text a {
+    color: #fafafa;
+}
+
 .navbar-expand-lg .navbar-nav .nav-link {
     padding: 0;
 }
