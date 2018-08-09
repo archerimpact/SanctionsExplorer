@@ -39,6 +39,7 @@ EXPORT_PRS      = DIR + '/export_prs.js'
 EXPORT_MATCHES  = DIR + '/export_pr_matches.js'
 EXPORT_IDS      = DIR + '/export_ids.js'
 
+SEND_TO_GCS     = DIR + '/update_files/send_to_gcs.sh'
 
 def serialize_feed(feed, filename):
     try:
@@ -97,6 +98,8 @@ if should_download:
     download_and_parse(SDN_URL, SDN_XML_FILE, SDN_JSON)
     sdn_parser = importlib.reload(sdn_parser)                       # TODO this is horrible and hacky and needs to be removed
     download_and_parse(NONSDN_URL, NONSDN_XML_FILE, NONSDN_JSON)
+    subprocess.call(SEND_TO_GCS, shell=True)
+    log('Send to GCS...', 'info')
 
     log('Scraping press releases from 2018...', 'info')
     scrape_prs.scrape_2018(PR_JSON_2018)
