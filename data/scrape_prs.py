@@ -5,6 +5,7 @@ import re
 from urllib.parse import urljoin
 import os
 import json
+import datetime
 
 import util
 log = util.log('pr_scraper')
@@ -169,7 +170,7 @@ def scrape_urls(urls):
 
 
 def scrape_and_write_prs(outfile, all_years=False):
-	CURR_YEAR = 2018
+	CURR_YEAR = datetime.datetime.now().year
 
 	url_template_one = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/ofac-actions-{}.aspx'
 	url_template_two = 'https://www.treasury.gov/resource-center/sanctions/OFAC-Enforcement/Pages/{}.aspx'
@@ -195,5 +196,5 @@ def scrape_and_write_prs(outfile, all_years=False):
 def scrape_all_years(outfile):
 	scrape_and_write_prs(outfile, all_years=True)
 
-def scrape_2018(outfile):
+def scrape_current_year(outfile):
 	scrape_and_write_prs(outfile, all_years=False)

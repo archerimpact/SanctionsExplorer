@@ -28,7 +28,7 @@ NONSDN_XML_FILE = DIR + '/update_files/non_sdn_advanced.xml'
 
 SDN_JSON        = DIR + '/update_files/sdn.json'
 NONSDN_JSON     = DIR + '/update_files/non_sdn.json'
-PR_JSON_2018    = DIR + '/update_files/press_releases.json'
+PR_JSON         = DIR + '/update_files/press_releases.json'
 PR_MATCHES      = DIR + '/update_files/pr_matches.json'
 OFAC_INT        = DIR + '/update_files/ofac_names.txt'
 OFAC_IDS        = DIR + '/update_files/ofac_id_to_name.txt'
@@ -98,8 +98,8 @@ if should_download:
     sdn_parser = importlib.reload(sdn_parser)                       # TODO this is horrible and hacky and needs to be removed
     download_and_parse(NONSDN_URL, NONSDN_XML_FILE, NONSDN_JSON)
 
-    log('Scraping press releases from 2018...', 'info')
-    scrape_prs.scrape_2018(PR_JSON_2018)
+    log('Scraping press releases from this year...', 'info')
+    scrape_prs.scrape_current_year(PR_JSON)
 
 run_nodejs(EXPORT_SDN, 'export SDN and non-SDN to Elastic')
 run_nodejs(EXPORT_PRS, 'export PRs to Elastic')
