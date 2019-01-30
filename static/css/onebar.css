@@ -26,9 +26,9 @@ body {
 
 .attach-to-top {
     top: 0;
-    padding: 2rem 0;
-    /*background: linear-gradient(#343a40, #282c30); */
-    background-color: #0d77e2;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    background: linear-gradient(#343a40, #282c30);
 }
 
 #info-group {
