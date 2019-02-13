@@ -1,7 +1,10 @@
 import json
-import rollbar
+import sentry_sdk
+import logging
 import credentials
-rollbar.init(credentials.rollbar)
+
+sentry_sdk.init(credentials.sentry)
+
 
 def write_json(outfile, data):
     with open(outfile, 'w') as f:
@@ -20,10 +23,31 @@ def read_json(outfile):
 
 def log(owner):
     owner_tag = f'<{owner}>'
+
+    logger = logging.getLogger(owner_tag)
+    logger.setLevel(logging.INFO)
+
+    ch = logging.StreamHandler()
+    ch.setLevel(logging.INFO)
+
+    formatter = logging.Formatter('%(name)-13s %(levelname)s: %(message)s')
+    ch.setFormatter(formatter)
+    logger.addHandler(ch)
+
+    levels = {
+        'critical': logger.critical,
+        'error': logger.error,
+        'warning': logger.warning,
+        'info': logger.info,
+        'debug': logger.debug
+    }
+
     def f(msg, level):
-        rollbar.report_message(msg, level.lower())
-        print(f'{owner_tag:<14}{level.upper()}: {msg}.')
+        # levels[level](f'{owner_tag:<14}{level.upper()}: {msg}')
+        levels[level](msg)
+
     return f
 
+
 def exception_thrown():
-    rollbar.report_exc_info()
+    logging.error('An error occurred!', exc_info=True)

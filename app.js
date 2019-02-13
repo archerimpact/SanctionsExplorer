@@ -10,6 +10,8 @@ const client = new es.Client({
     host: 'localhost:9200'
 });
 const util = require(path.join(__dirname, 'data', 'util.js'));
+const credentials = require(path.join(__dirname, 'data', 'credentials.js'));
+
 const log = util.log('webserver');
 const weblog = util.weblog();
 
@@ -18,11 +20,18 @@ const feedback_file = path.join(__dirname, 'submissions', 'feedback.txt');
 const vote_file     = path.join(__dirname, 'submissions', 'votes.txt');
 
 
+const Sentry = require('@sentry/node');
+Sentry.init({
+    dsn: credentials.sentry,
+});
+
+app.use(Sentry.Handlers.requestHandler());
+app.use(Sentry.Handlers.errorHandler());
 app.use(express.static(__dirname + '/static'));
 app.use('/static', express.static(__dirname + '/static'));
 
 app.listen(8080, '127.0.0.1', () => {
-    console.log('Server has started');
+    log('Server has started', 'info');
 });
 
 app.get('/', (req, res) => {
@@ -55,22 +64,28 @@ app.get('/sitemap.xml', (req, res) => {
 })
 
 app.get('/submit/email', async function(req, res) {
+    log('Receiving new email submission', 'info');
+
     const email = req.query.email;
     if (!email) {
+        log('Email not found', 'error');
         return res.status(400).end();
     }
 
     await fs.appendFile(email_file, JSON.stringify(email) + ',\n', err => {
         if (err) {
-            log('Could not write to email file: ' + err, 'error');
+            log(err, 'error');
             return res.status(400).end();
         }
     });
-    log('New email submission!', 'error');
+
+    log('New email submission!', 'critical');
     return res.status(200).end();
 });
 
 app.get('/submit/feedback', async function(req, res) {
+    log('Receiving new feedback submission', 'info');
+
     const text = req.query.text;
     const type = req.query.feedback_type;
     const email = req.query.email;
@@ -83,11 +98,12 @@ app.get('/submit/feedback', async function(req, res) {
 
     await fs.appendFile(feedback_file, JSON.stringify(submission) + ',\n', err => {
         if (err) {
-            log('Could not write to feedback file: ' + err, 'error');
+            log(err, 'error');
             return res.status(400).end();
         }
     });
-    log('New feedback submission!', 'error');
+
+    log('New feedback submission!', 'critical');
     return res.status(200).end();
 })
 
@@ -279,7 +295,7 @@ async function search_ES(query, res) {
             'num_results': results.hits.total,
         };
     } catch (error) {
-        console.log(error);
+        log(error, 'error');
         return null;
     }
 }
