@@ -116,26 +116,26 @@ async function reload_index(operations, transform, index_name, index_type) {
 async function add_synonym_mappings(name){
     try{
         let map_body = {
-            properties:{
-                all_fields:{
-            type:"text",
-                    analyzer:"synonym"
+            properties: {
+                all_fields: {
+                    type: "text",
+                    analyzer: "synonym"
                 },
-                countries:{
-            type:"text",
-                    analyzer:"synonym"
+                countries: {
+                    type: "text",
+                    analyzer: "synonym"
                 },
-                nationality_country:{
-            type:"text",
-                    analyzer:"synonym"
+                nationality_country: {
+                    type: "text",
+                    analyzer: "synonym"
                 },
-                citizenship_country:{
-            type:"text",
-                    analyzer:"synonym"
+                citizenship_country: {
+                    type: "text",
+                    analyzer: "synonym"
                 },
-                nationality_of_registration:{
-            type:"text",
-            analyzer:"synonym"
+                nationality_of_registration: {
+                    type: "text",
+                    analyzer: "synonym"
                 }
             }
         }
