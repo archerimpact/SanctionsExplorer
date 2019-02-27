@@ -258,6 +258,11 @@ app.get('/search/sdn', async function(req, res) {
 });
 
 
+app.use((req, res) => {
+    res.sendFile(__dirname + '/views/404.html');
+});
+
+
 async function respond_with_search(req, res, search_query, index) {
     let size = req.query.size ? req.query.size : 50;
     let from = req.query.from ? req.query.from : 0;
