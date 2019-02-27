@@ -1,14 +1,33 @@
 const path = require('path');
 const credentials = require(path.join(__dirname, 'credentials.js'));
+const Sentry = require('@sentry/node');
 
-const Rollbar = require('rollbar');
-const rollbar = new Rollbar(credentials.rollbar);
+Sentry.init({
+    dsn: credentials.sentry,
+    integrations: integrations => {
+        return integrations.filter(integration => integration.name !== 'Console');
+    }
+ });
 
-const crypto = require('crypto');
 
 function log(owner) {
     return (msg, level) => {
-        rollbar[level.toLowerCase()](msg);
+        if (level == 'error' || level == 'critical') {
+            if (typeof msg == 'string') {
+                Sentry.captureException({ [msg]: 'error' });        // we want each error message to be a unique entry in Sentry
+            }
+            else {
+                Sentry.captureException(msg);
+            }
+        }
+        else {
+            Sentry.addBreadcrumb({
+                category: owner,
+                message: msg,
+                level: level,
+            });
+        }
+
         let owner_tag = ('<' + owner + '>').padEnd(14);
         console.log(owner_tag + level.toUpperCase() + ': ' + msg);
     }

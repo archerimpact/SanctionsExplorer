@@ -12,7 +12,7 @@ async function delete_index(name) {
         return await client.indices.delete({ index: name });
     }
     catch (error) {
-        log('Could not delete ' + name + ' index: ' + error, 'error');
+        log(error, 'error');
     }
 }
 
@@ -39,7 +39,8 @@ async function bulk_add(operations, index_name, index_type) {
 
         result.items.forEach(i => {
             if (i.index.error) {
-                log(JSON.stringify(i), 'error');
+                // TODO ensure this error is thrown & caught properly and that the error message is useful
+                throw new Error(JSON.stringify(i));
             }
         });
 
@@ -67,13 +68,13 @@ async function bulk_update(operations, index_name, index_type) {
     try {
         log('Bulk updating...', 'info');
         const result = await client.bulk({
-	    timeout:"6s",
-	    body: body
+            timeout:"6s",
+            body: body
         });
 
         result.items.forEach(i => {
             if (i.update.error) {
-                log(JSON.stringify(i), 'error');
+                throw new Error(JSON.stringify(i));
             }
         });
 
@@ -91,7 +92,7 @@ async function create_index(name) {
         return await client.indices.create({ index: name });
     }
     else {
-        log('Index ' + name + ' already existed; deletion failed', 'error');
+        log(error, 'error');
     }
 }
 
@@ -115,26 +116,26 @@ async function reload_index(operations, transform, index_name, index_type) {
 async function add_synonym_mappings(name){
     try{
         let map_body = {
-            properties:{
-                all_fields:{
-		    type:"text",
-                    analyzer:"synonym"
+            properties: {
+                all_fields: {
+                    type: "text",
+                    analyzer: "synonym"
                 },
-                countries:{
-		    type:"text",
-                    analyzer:"synonym"
+                countries: {
+                    type: "text",
+                    analyzer: "synonym"
                 },
-                nationality_country:{
-		    type:"text",
-                    analyzer:"synonym"
+                nationality_country: {
+                    type: "text",
+                    analyzer: "synonym"
                 },
-                citizenship_country:{
-		    type:"text",
-                    analyzer:"synonym"
+                citizenship_country: {
+                    type: "text",
+                    analyzer: "synonym"
                 },
-                nationality_of_registration:{
-		    type:"text",
-		    analyzer:"synonym"
+                nationality_of_registration: {
+                    type: "text",
+                    analyzer: "synonym"
                 }
             }
         }
