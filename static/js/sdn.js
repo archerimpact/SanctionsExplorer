@@ -16,7 +16,7 @@ const ROW_FIELDS    = [
 ];
 const PROGRAMS      = {
     'All programs': 'Do not filter by program',
-    '561List': '​(non-SDN) List of Foreign Financial Institutions Subject to Part 561',
+    '561List-Related': '(non-SDN) List of Foreign Financial Institutions Subject to Part 561',
     'BALKANS': 'Western Balkans Stabilization Regulations (EO 13304)',
     'BELARUS': 'Belarus Sanctions Regulations (EO 13405)',
     'BURUNDI': '(EO 13712)',
