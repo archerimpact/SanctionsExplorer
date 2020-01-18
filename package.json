@@ -16,7 +16,7 @@
     "express": "^4.16.3",
     "express-sitemap": "^1.8.0",
     "mongoosastic": "^4.4.1",
-    "mongoose": "^4.13.11",
+    "mongoose": "^5.7.5",
     "npm": "^5.8.0",
     "rollbar": "^2.3.9",
     "sleep": "^5.1.1",
